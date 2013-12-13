@@ -10,25 +10,25 @@
 \fi
 
 \ProvidesPackage{chef}
+
 \RequirePackage{cmap}
 \RequirePackage{graphicx}
 \RequirePackage{tabularx}
 \RequirePackage{indentfirst}
 \RequirePackage{mathtext}
-\RequirePackage[T2A]{fontenc}
+\RequirePackage[T1]{fontenc}
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[english]{babel}
-\RequirePackage{times}
+\RequirePackage{listings}
 \RequirePackage[scaled]{beramono}
 \RequirePackage{tgadventor}
-\RequirePackage[usenames,svgnames]{xcolor}
-\RequirePackage{color}
-\RequirePackage{amssymb,amsmath,amsfonts}
-%\RequirePackage[usenames,dvipsnames]{color}
-\RequirePackage{listings}
+\RequirePackage{times}
+\RequirePackage[usenames,dvipsnames]{color}
 \RequirePackage[colorlinks=true]{hyperref}
+\RequirePackage{amssymb,amsmath,amsfonts}
 \RequirePackage{perpage} %the perpage package
 \RequirePackage{wrapfig}
+\RequirePackage{pdfpages} % cover image
 \RequirePackage{lmodern}
 
 \ifpdf
@@ -38,9 +38,6 @@
 \graphicspath{{images/}{cover/}}
 
 \sloppy
-
-%\renewcommand{\familydefault}{\sfdefault}
-\renewcommand{\rmdefault}{ftm}
 
 \definecolor{lineno}{rgb}{0.5,0.5,0.5}
 \definecolor{code}{rgb}{0,0.1,0.6}
