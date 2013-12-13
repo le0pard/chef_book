@@ -1,0 +1,120 @@
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+  \pdffalse
+\else
+  \ifnum\pdfoutput=1
+    \pdftrue
+  \else
+    \pdffalse
+  \fi
+\fi
+
+\ProvidesPackage{chef}
+\RequirePackage{cmap}
+\RequirePackage{graphicx}
+\RequirePackage{tabularx}
+\RequirePackage{indentfirst}
+\RequirePackage{mathtext}
+\RequirePackage[T2A]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[english]{babel}
+\RequirePackage{times}
+\RequirePackage[scaled]{beramono}
+\RequirePackage{tgadventor}
+\RequirePackage[usenames,svgnames]{xcolor}
+\RequirePackage{color}
+\RequirePackage{amssymb,amsmath,amsfonts}
+%\RequirePackage[usenames,dvipsnames]{color}
+\RequirePackage{listings}
+\RequirePackage[colorlinks=true]{hyperref}
+\RequirePackage{perpage} %the perpage package
+\RequirePackage{wrapfig}
+\RequirePackage{lmodern}
+
+\ifpdf
+\RequirePackage{pdfpages} % cover image
+\fi
+
+\graphicspath{{images/}{schemes/}}
+
+\sloppy
+
+%\renewcommand{\familydefault}{\sfdefault}
+\renewcommand{\rmdefault}{ftm}
+
+\definecolor{lineno}{rgb}{0.5,0.5,0.5}
+\definecolor{code}{rgb}{0,0.1,0.6}
+\definecolor{keyword}{rgb}{0.5,0.1,0.1}
+\definecolor{titlebox}{rgb}{0.85,0.85,0.85}
+\definecolor{download}{rgb}{0.8,0.1,0.5}
+\definecolor{code_title}{rgb}{0.8,0.1,0.4}
+\definecolor{title}{rgb}{0.2,0.2,0.2}
+
+\lstset{
+    language=SQL,
+    basicstyle=\ttfamily\small\color{code},
+    showspaces=false,
+    showstringspaces=false,
+    breaklines=true,
+    breakatwhitespace=true,
+    numbers=left,
+    firstnumber=1,
+    stepnumber=5,
+    numberfirstline=true,
+    numberstyle=\color{lineno}\sffamily\scriptsize,
+    keywordstyle=\color{keyword}\bfseries,
+    stringstyle=\itshape,
+    morekeywords={dosync,if},
+    deletekeywords={alter},
+    title=Code,
+    keepspaces=true,
+    extendedchars=\true,
+    inputencoding=utf8
+}
+
+\makeatletter
+\gdef\lst@SkipOrPrintLabel{%
+    \ifnum\lst@skipnumbers=\z@
+        \global\advance\lst@skipnumbers-\lst@stepnumber\relax
+        \lst@PlaceNumber
+        \lst@numberfirstlinefalse
+    \else
+        \lst@ifnumberfirstline
+            {\def\thelstnumber{Line \@arabic\c@lstnumber}\lst@PlaceNumber}%
+            \lst@numberfirstlinefalse
+        \else
+            {\def\thelstnumber{-}\lst@PlaceNumber}%
+        \fi
+    \fi
+    \global\advance\lst@skipnumbers\@ne}%
+\def\lst@maketitle#1{
+   \vskip\abovecaptionskip
+   \colorbox{titlebox}{
+       %\scriptsize
+       \small
+       \color{download}\ttfamily\href{http://chef.leopard.in.ua/codes/#1}{Download}
+       \color{title}\sffamily\bfseries#1}
+   \vskip\belowcaptionskip}
+\def\lst@makecaption#1#2{
+  \vskip\abovecaptionskip
+  \colorbox{titlebox}{
+      %\scriptsize
+      \small
+      \color{code_title}\ttfamily#1
+      \color{title}\sffamily\bfseries#2}
+  \vskip\belowcaptionskip}
+\makeatother
+
+\let\olditemize=\itemize
+\def\itemize{
+  \olditemize
+  \setlength{\itemsep}{-1ex}
+}
+
+\let\oldenumerate=\enumerate
+\def\enumerate{
+  \oldenumerate
+  \setlength{\itemsep}{-1ex}
+}
+
+\MakePerPage{footnote} %the perpage package command

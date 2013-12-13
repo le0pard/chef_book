@@ -1,0 +1,20 @@
+\documentclass[a4paper,12pt,oneside]{memoir}
+
+\usepackage{chef}
+
+\input{variables}
+
+\begin{document}
+
+\input{titlepages}
+
+\setcounter{page}{1}
+\pagestyle{myindex}
+\chapterstyle{ell}
+\setcounter{tocdepth}{2} % subsections and above
+\tableofcontents
+
+\input{chef_introduction}
+\input{bibliography}
+
+\end{document}

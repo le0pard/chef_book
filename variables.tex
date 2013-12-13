@@ -1,0 +1,29 @@
+% Title Page
+\title{Cooking Infrastructure by Chef}
+\author{Alexey Vasiliev aka leopard}
+\date{Creative Commons Attribution-Noncommercial 4.0 International \\2013}
+
+
+\makepagestyle{myindex}
+\makeheadrule{myindex}{\textwidth}{\normalrulethickness}
+\makeevenhead{myindex}{\rightmark}{}{\leftmark}
+\makeoddhead{myindex}{\rightmark}{}{\leftmark}
+\makeevenfoot{myindex}{}{\thepage}{}
+\makeoddfoot{myindex}{}{\thepage}{}
+
+\makeevenhead{myindex}{\thepage}{}{\slshape\leftmark}
+\makeoddhead{myindex}{\slshape\rightmark}{}{}
+
+\makepsmarks{myindex}{%
+\nouppercaseheads
+\createmark{chapter}{left}{shownumber}{\@chapapp\ }{. \ }
+\createmark{section}{right}{shownumber}{}{. \ }
+\createplainmark{toc}{both}{\contentsname}
+\createplainmark{lof}{both}{\listfigurename}
+\createplainmark{lot}{both}{\listtablename}
+\createplainmark{bib}{both}{\bibname}
+\createplainmark{index}{both}{\indexname}
+\createplainmark{glossary}{both}{\glossaryname}
+}
+
+\semiisopage

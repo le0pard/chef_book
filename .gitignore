@@ -1,0 +1,15 @@
+*.aux
+*.backup
+*.log
+*.idx
+*.out
+*.snm
+*.sty~
+*.tex~
+*.toc
+*.epub
+chef.pdf
+.DS_Store
+chef.synctex.gz
+latex/*
+.sass-cache
