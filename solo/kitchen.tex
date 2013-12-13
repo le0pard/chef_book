@@ -1,40 +1,38 @@
 \section{Creation of kitchen (chef-repo)}
 
-Working with Chef Solo starts with creating kitchen(chef-repo). The kitchen is located on a workstation (location from which most users will do most of their work, ie. your computer) and should be synchronized with a version control system. To get started, you need to install the required software:
+Working with Chef Solo starts with creating kitchen(chef-repo). The kitchen is located on a workstation (location from which most users will do most of their work, ie. your computer) and should be synchronized with a version control system. To create a kitchen used knife-solo rubygems:
 
-\begin{itemize}
-  \item Virtual Box\footnote{https://www.virtualbox.org/} to provide a local virtual machine to manage using Chef
-  \item Vagrant\footnote{http://www.vagrantup.com/} to give a command line interface to manage Virtual Box
-  \item Git\footnote{http://git-scm.com/} to revision a Chef code
-  \item Ruby\footnote{https://www.ruby-lang.org} (since Chef runs on it). For simple installation of it you can use the RVM\footnote{https://rvm.io/} or Rbenv\footnote{https://github.com/sstephenson/rbenv}
-\end{itemize}
-
-Next, create a directory called <<my-cloud>> and inside it create file <<Gemfile>> with this content:
-
-\begin{lstlisting}[label=lst:my-cloud-kitchen1,title=my-cloud/Gemfile]
-source "https://rubygems.org"
-
-gem 'knife-solo'
-gem 'berkshelf'
+\begin{lstlisting}[language=Bash,label=lst:my-cloud-kitchen1,title=my-cloud]
+$ cd my-cloud
+$ knife solo init .
+WARNING: No knife configuration file found
+Creating kitchen...
+Creating knife.rb in kitchen...
+Creating cupboards...
+Setting up Berkshelf...
+$ ls -o
+total 32
+-rw-r--r--  1 leo    14 Dec 14 00:36 Berksfile
+-rw-r--r--@ 1 leo    63 Dec 14 00:36 Gemfile
+-rw-r--r--  1 leo  4427 Dec 14 00:36 Gemfile.lock
+drwxr-xr-x  3 leo   102 Dec 14 00:36 cookbooks
+drwxr-xr-x  3 leo   102 Dec 14 00:36 data_bags
+drwxr-xr-x  3 leo   102 Dec 14 00:36 environments
+drwxr-xr-x  3 leo   102 Dec 14 00:36 nodes
+drwxr-xr-x  3 leo   102 Dec 14 00:36 roles
+drwxr-xr-x  3 leo   102 Dec 14 00:36 site-cookbooks
 \end{lstlisting}
 
-and run command <<bundle>> in terminal. Upon completion of work should create a file <<Gemfile.lock>>. As a result, by using bundler\footnote{http://bundler.io/} we install a rubygems. Why do we need these gems?
-
-\subsection{Knife-solo}
-
-Knife-solo\footnote{http://matschaffer.github.io/knife-solo/} adds 5 subcommands to knife tool:
+Let's consider a directory structure:
 
 \begin{itemize}
-  \item <<knife solo init>> is used to create a new directory structure (i.e. kitchen) that fits with Chef's standard structure and can be used to build and store recipes.
-  \item <<knife solo prepare>> installs Chef on a given host. It's structured to auto-detect the target OS and change the installation process accordingly.
-  \item <<knife solo cook>> uploads the current kitchen to the target host and runs chef-solo on that host.
-  \item <<knife solo bootstrap>> combines the two previous ones (prepare and cook).
-  \item <<knife solo clean>> removes the uploaded kitchen from the target host.
+  \item \textbf{cookbooks} - directory for Chef cookbooks. This directory will be used for vendor cookbooks, that will be installed with the help of berkshelf
+  \item \textbf{data\_bags} - directory for Chef Data Bags
+  \item \textbf{environments} - directory for Chef environments
+  \item \textbf{nodes} - directory for Chef nodes
+  \item \textbf{roles} - directory for Chef roles
+  \item \textbf{site-cookbooks} - directory for your custom Chef cookbooks
+  \item \textbf{Berksfile} - file contains a list of sources identifying what cookbooks to retrieve and where to get them for berkshelf
 \end{itemize}
 
-Knife-solo also integrates with Berkshelf and Librarian-Chef.
-
-\subsection{Berkshelf}
-
-Berkshelf\footnote{http://berkshelf.com/} used as well as the bundler for rubygems - it manage a cookbooks and its dependencies. Also, there is exists a librarian-chef\footnote{https://github.com/applicationsonline/librarian-chef}, which performs a similar functions. I prefer to use berkshelf (it have a bigger set of features and integrations).
 
