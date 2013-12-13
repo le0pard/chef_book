@@ -1,0 +1,18 @@
+\chapter{Getting started}
+
+\begin{wrapfigure}{l}{0.3\textwidth}
+  \vspace{-20pt}
+  \begin{center}
+    \includegraphics[width=0.28\textwidth]{chef_logo}
+  \end{center}
+  \vspace{-20pt}
+\end{wrapfigure}
+
+Chef\footnote{http://www.getchef.com/} is a configuration management tool written in Ruby and Erlang. It uses a pure-Ruby, domain-specific language (DSL) for writing system configuration <<recipes>>. Chef is used to streamline the task of configuring and maintaining a company's servers, and can integrate with cloud-based platforms such as Rackspace and Amazon EC2 to automatically provision and configure new machines.
+
+The user writes <<recipes>> that describe how Chef manages server applications (such as Apache, MySQL, or Hadoop) and how they are to be configured. These recipes describe a series of resources that should be in a particular state: packages that should be installed, services that should be running, or files that should be written. Chef makes sure each resource is properly configured and corrects any resources that are not in the desired state.
+
+Traditionally, Chef is used to manage GNU/Linux but later versions support running on Windows as well.
+
+\input{infrastructure/principles}
+\input{infrastructure/benefits}
