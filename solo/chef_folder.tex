@@ -1,0 +1,29 @@
+\section{.Chef folder}
+
+After creating the kitchen you should find the <<.chef>> directory. The <<.chef>> directory will contain the configuration and credentials it use knife, the command line interface for Chef.
+
+For Chef Solo in this directory mostly contained only knife.rb file. A knife.rb file is used to specify the chef-repo-specific configuration details for Knife. This file is the default configuration file and is loaded every time this executable is run. The configuration file is located at: <<~/.chef/knife.rb>>. If a knife.rb file is present in the .chef/knife.rb directory in the chef-repo, the settings contained within that file will override the default configuration settings.
+
+My knife.rb have such content:
+
+\begin{lstlisting}[label=lst:my-cloud-chef-filder1,title=my-cloud/.chef/knife.rb]
+cookbook_path    ["cookbooks", "site-cookbooks"]
+node_path        "nodes"
+role_path        "roles"
+environment_path "environments"
+data_bag_path    "data_bags"
+#encrypted_data_bag_secret "data_bag_key"
+
+knife[:berkshelf_path] = "cookbooks"
+\end{lstlisting}
+
+Options:
+
+\begin{itemize}
+  \item \textbf{cookbook\_path} - the sub-directory for cookbooks on the chef-client
+  \item \textbf{node\_path} - the sub-directory for nodes on the chef-client
+  \item \textbf{role\_path} - the sub-directory for roles on the chef-client
+  \item \textbf{environment\_path} - the sub-directory for environments on the chef-client
+  \item \textbf{data\_bag\_path} - the sub-directory for Data Bags on the chef-client
+  \item \textbf{knife[:berkshelf\_path]} - as you remember, knife-solo gem have integration with Berkshelf and Librarian-Chef. By this option we set directory in which knife will install vendor cookbooks from Berksfile before cook node
+\end{itemize}
