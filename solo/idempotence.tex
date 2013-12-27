@@ -1,0 +1,18 @@
+\section{Idempotence}
+
+One of the main idea of Chef is idempotence. Idempotence is the property of certain operations in mathematics and computer science, that can be applied multiple times without changing the result beyond the initial application. It mean, what Chef can safely be run multiple times on the same mashine. Once you develop your configuration, your machines will apply the configuration and Chef will only make any changes to the system if the system state does not match the configured state.
+
+For now we have mashine which contain apache2 running inside it. Let's run <<vagrant provision>> again:
+
+\begin{lstlisting}[label=lst:my-cloud-idempotence1,title=my-cloud/nodes/Vagrantfile]
+$ vagrant provision
+[default] Running provisioner: chef_solo...
+Generating chef JSON and uploading...
+Running chef-solo...
+stdin: is not a tty
+...
+[2013-12-27T19:54:10+00:00] INFO: Chef Run complete in 1.092279021 seconds
+...
+\end{lstlisting}
+
+As you can see it did nothing, because configuration of the server the same as in chef kitchen (what is why execution time also so small).

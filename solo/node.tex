@@ -13,19 +13,11 @@ Node file should contain valid JSON document. Main key in this json is <<run\_li
 \begin{lstlisting}[language=JSON,label=lst:my-cloud-node2,title=my-cloud/nodes/web1.example.com.json]
 {
   "run_list": [
-    "recipe[apache2]",
-    "recipe[apache2::logrotate]"
+    "recipe[apache2]"
   ]
 }
 \end{lstlisting}
 
-This run\_list will execute default and logrotate recipes (btw, logrotate requires logrotate cookbook). Let's add a logrotate cookbook into Berksfile:
-
-\begin{lstlisting}[label=lst:my-cloud-node3,title=my-cloud/Berksfile]
-site :opscode
-
-cookbook 'apache2'
-cookbook 'logrotate'
-\end{lstlisting}
+This run\_list will execute default recipe from apache2 cookbook.
 
 Now all you need to check this kitchen.

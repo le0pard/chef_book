@@ -1,3 +1,5 @@
 {
-  "run_list": []
+  "run_list": [
+    "recipe[apache2]"
+  ]
 }

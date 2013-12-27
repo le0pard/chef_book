@@ -1,0 +1,184 @@
+\section{Vagrant}
+
+For testing our chef kitchen in most cases we are using Vagrant. So what is Vagrant?
+
+Vagrant is free and open-source software for creating and configuring virtual development environments. It can be considered a wrapper around VirtualBox and configuration management software such as Chef. Since version 1.1, Vagrant is no longer tied to VirtualBox and also works with other virtualization software such as VMware and Amazon EC2.
+
+Instead of building a virtual machine from scratch, which would be a slow and tedious process, Vagrant uses a base image to quickly clone a virtual machine. These base images are known as boxes in Vagrant, and specifying the box to use for your Vagrant environment is always the first step after creating a new Vagrantfile. For testing we will use precise64 (Ubuntu 12.04 LTS 64-bit) box.
+
+\begin{lstlisting}[label=lst:my-cloud-vagrant1,title=my-cloud/nodes/Vagrantfile]
+$ vagrant box add precise64 http://files.vagrantup.com/precise64.box
+\end{lstlisting}
+
+More boxes you can find on \href{http://www.vagrantbox.es/}{vagrantbox.es}.
+
+The first step for any project to use Vagrant is to configure Vagrant using a Vagrantfile. We should execute <<vagrant init precise64>> inside kitchen directory:
+
+\begin{lstlisting}[label=lst:my-cloud-vagrant2,title=my-cloud/nodes/Vagrantfile]
+$ vagrant init precise64
+A `Vagrantfile` has been placed in this directory. You are now
+ready to `vagrant up` your first virtual environment! Please read
+the comments in the Vagrantfile as well as documentation on
+`vagrantup.com` for more information on using Vagrant.
+\end{lstlisting}
+
+By default, Vagrantfile have such content:
+
+\begin{lstlisting}[language=Ruby,label=lst:my-cloud-vagrant3,title=my-cloud/nodes/Vagrantfile]
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "precise64"
+end
+\end{lstlisting}
+
+We can check, what vagrant is working fine by command <<vagrant up>>:
+
+\begin{lstlisting}[label=lst:my-cloud-vagrant4,title=my-cloud/nodes/Vagrantfile]
+$ vagrant up
+Bringing machine 'default' up with 'virtualbox' provider...
+[default] Importing base box 'precise64'...
+[default] Matching MAC address for NAT networking...
+[default] Setting the name of the VM...
+[default] Clearing any previously set forwarded ports...
+[default] Creating shared folders metadata...
+[default] Clearing any previously set network interfaces...
+[default] Preparing network interfaces based on configuration...
+[default] Forwarding ports...
+[default] -- 22 => 2222 (adapter 1)
+[default] Booting VM...
+[default] Waiting for machine to boot. This may take a few minutes...
+[default] Machine booted and ready!
+[default] Mounting shared folders...
+[default] -- /vagrant
+\end{lstlisting}
+
+After this you can use command <<vagrant ssh>> to SSH into a running Vagrant machine and give you access to a shell. Command <<vagrant halt>> shuts down the running machine Vagrant is managing. <<vagrant destroy>> command stops the running machine Vagrant is managing and destroys all resources that were created during the machine creation process.
+
+By default, in most cases, your mashine is not contain chef client and we should install it. As you remember, we have knife with command <<prepare>>. Let use this command:
+
+\begin{lstlisting}[label=lst:my-cloud-vagrant5,title=my-cloud/nodes/Vagrantfile]
+$ knife solo prepare vagrant@localhost -i ~/.vagrant.d/insecure_private_key -p 2222
+Bootstrapping Chef...
+--2013-12-27 19:12:56--  https://www.opscode.com/chef/install.sh
+Resolving www.opscode.com (www.opscode.com)... 184.106.28.91
+...
+Installing Chef 11.8.2
+installing with dpkg...
+Selecting previously unselected package chef.
+(Reading database ... 51095 files and directories currently installed.)
+Unpacking chef (from .../chef_11.8.2_amd64.deb) ...
+Setting up chef (11.8.2-1.ubuntu.12.04) ...
+Thank you for installing Chef!
+Generating node config 'nodes/localhost.json'...
+\end{lstlisting}
+
+As you can see, we use options <<-i>> to set ssh key for mashine and <<-p>> to set SSH port. In most cases, this port is 2222, but if you running several mashines from vagrant, it will be different. You can read what port is used for SSH by mashine from output of command <<vagrant up>>.
+
+As you can see from output of <<knife prepare>> command, we also have generated node file <<localhost.json>>. Right now we can just delete it.
+
+Vagrantfile inside use ruby syntax, so we can use Ruby to \href{http://en.wikipedia.org/wiki/Dont\_repeat\_yourself}{DRY} our config. We should install chef gem inside vagrant:
+
+\begin{lstlisting}[label=lst:my-cloud-vagrant6,title=my-cloud/nodes/Vagrantfile]
+$ vagrant plugin install chef
+Installing the 'chef' plugin. This can take a few minutes...
+Installed the plugin 'chef (11.8.2)'!
+\end{lstlisting}
+
+Next, we should define chef solo in Vagrantfile:
+
+\begin{lstlisting}[language=Ruby,label=lst:my-cloud-vagrant7,title=my-cloud/nodes/Vagrantfile]
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'chef'
+require 'json'
+
+Chef::Config.from_file(File.join(File.dirname(__FILE__), '.chef', 'knife.rb'))
+vagrant_json = JSON.parse(Pathname(__FILE__).dirname.join('nodes', 'web1.example.com.json').read)
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "precise64"
+
+  config.vm.provision :chef_solo do |chef|
+    chef.cookbooks_path = Chef::Config[:cookbook_path]
+    chef.roles_path = Chef::Config[:role_path]
+    chef.data_bags_path = Chef::Config[:data_bag_path]
+
+    chef.environments_path = Chef::Config[:environment_path]
+    #chef.environment = ENV['ENVIRONMENT'] || 'development'
+
+    chef.run_list = vagrant_json.delete('run_list')
+    chef.json = vagrant_json
+  end
+end
+\end{lstlisting}
+
+Now consider that we have added.
+
+On lines 4-5 required chef and json gem. JSON gem is as part of vagrant, but chef gem we installed by previous command <<vagrant plugin install chef>>. After this we load knife.rb in chef config and parse json from node file <<web1.example.com.json>>. After this we have <<Chef::Config>> ruby hash with knife configuration and <<vagrant\_json>> ruby hash will attributes from node. On lines 16-26 defined chef solo configuration for vagrant. More information about this you can find in \href{http://docs.vagrantup.com/v2/provisioning/chef\_solo.html}{vagrant website}.
+
+After all this setup, we can to check our chef kitchen. <<vagrant provision>> command runs any configured provisioners against the running Vagrant managed machine:
+
+\begin{lstlisting}[label=lst:my-cloud-vagrant8,title=my-cloud/nodes/Vagrantfile]
+$ vagrant reload
+[default] Attempting graceful shutdown of VM...
+...
+[default] -- /vagrant
+[default] -- /tmp/vagrant-chef-1/chef-solo-3/roles
+[default] -- /tmp/vagrant-chef-1/chef-solo-2/cookbooks
+[default] -- /tmp/vagrant-chef-1/chef-solo-1/cookbooks
+[default] -- /tmp/vagrant-chef-1/chef-solo-4/data_bags
+[default] -- /tmp/vagrant-chef-1/chef-solo-5/environments
+$ vagrant provision
+[default] Running provisioner: chef_solo...
+Generating chef JSON and uploading...
+Running chef-solo...
+stdin: is not a tty
+[2013-12-27T19:35:59+00:00] INFO: Forking chef instance to converge...
+[2013-12-27T19:35:59+00:00] INFO: *** Chef 11.8.2 ***
+[2013-12-27T19:35:59+00:00] INFO: Chef-client pid: 1216
+[2013-12-27T19:35:59+00:00] INFO: Setting the run_list to ["recipe[apache2]"] from JSON
+[2013-12-27T19:35:59+00:00] INFO: Run List is [recipe[apache2]]
+[2013-12-27T19:35:59+00:00] INFO: Run List expands to [apache2]
+[2013-12-27T19:35:59+00:00] INFO: Starting Chef Run for precise64
+[2013-12-27T19:35:59+00:00] INFO: Running start handlers
+...
+[2013-12-27T19:36:18+00:00] INFO: service[apache2] restarted
+[2013-12-27T19:36:18+00:00] INFO: Chef Run complete in 18.115479422 seconds
+[2013-12-27T19:36:18+00:00] INFO: Running report handlers
+[2013-12-27T19:36:18+00:00] INFO: Report handlers complete
+\end{lstlisting}
+
+To verify that the apache2 successfully installed into mashine, we can forward the 80 apache2 port. Modify <<Vagrantfile>>:
+
+\begin{lstlisting}[language=Ruby, label=lst:my-cloud-vagrant9,title=my-cloud/nodes/Vagrantfile]
+...
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "precise64"
+  config.vm.network :forwarded_port, guest: 80, host: 8085 # <==== add port forwarding
+
+...
+\end{lstlisting}
+
+And reload vagrant:
+
+\begin{lstlisting}[label=lst:my-cloud-vagrant10,title=my-cloud/nodes/Vagrantfile]
+$ vagrant reload
+...
+[default] Preparing network interfaces based on configuration...
+[default] Forwarding ports...
+[default] -- 22 => 2222 (adapter 1)
+[default] -- 80 => 8085 (adapter 1)
+...
+\end{lstlisting}
+
+Now in any of your browser you can open url <<http://localhost:8085/>> and see page 404 from apache2 server.

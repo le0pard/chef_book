@@ -3,10 +3,10 @@
 To get started working with Chef, you need to install the required software:
 
 \begin{itemize}
-  \item Virtual Box\footnote{https://www.virtualbox.org/} to provide a local virtual machine to manage using Chef
-  \item Vagrant\footnote{http://www.vagrantup.com/} to give a command line interface to manage Virtual Box
-  \item Git\footnote{http://git-scm.com/} to revision a Chef code
-  \item Ruby\footnote{https://www.ruby-lang.org} (since Chef runs on it). For simple installation of it you can use the RVM\footnote{https://rvm.io/} or Rbenv\footnote{https://github.com/sstephenson/rbenv}
+  \item \href{https://www.virtualbox.org/}{Virtual Box} to provide a local virtual machine to manage using Chef
+  \item \href{http://www.vagrantup.com/}{Vagrant} to give a command line interface to manage Virtual Box
+  \item \href{http://git-scm.com/}{Git} to revision a Chef code
+  \item \href{https://www.ruby-lang.org}{Ruby} (since Chef runs on it). For simple installation of it you can use the \href{https://rvm.io/}{RVM} or \href{https://github.com/sstephenson/rbenv}{Rbenv}
 \end{itemize}
 
 Next, create a directory called <<my-cloud>> and inside it create file <<Gemfile>> with this content:
@@ -18,11 +18,11 @@ gem 'knife-solo'
 gem 'berkshelf'
 \end{lstlisting}
 
-and run command <<bundle>> in terminal. As a result, by using bundler\footnote{http://bundler.io/} we install a required rubygems. Why do we need these rubygems?
+and run command <<bundle>> in terminal. As a result, by using \href{http://bundler.io/}{bundler} we install a required rubygems. Why do we need these rubygems?
 
 \subsection{Knife-solo}
 
-Knife-solo\footnote{http://matschaffer.github.io/knife-solo/} adds 5 subcommands to knife tool:
+\href{http://matschaffer.github.io/knife-solo/}{Knife-solo} adds 5 subcommands to knife tool:
 
 \begin{itemize}
   \item <<knife solo init>> is used to create a new directory structure (i.e. kitchen) that fits with Chef's standard structure and can be used to build and store recipes.
@@ -36,4 +36,4 @@ Knife-solo also integrates with Berkshelf and Librarian-Chef.
 
 \subsection{Berkshelf}
 
-Berkshelf\footnote{http://berkshelf.com/} used as well as the bundler for rubygems - it manage a cookbooks and its dependencies. Also, there is exists a librarian-chef\footnote{https://github.com/applicationsonline/librarian-chef}, which performs a similar functions. I prefer to use berkshelf (it have a bigger set of features and integrations).
+\href{http://berkshelf.com/}{Berkshelf} used as well as the bundler for rubygems - it manage a cookbooks and its dependencies. Also, there is exists a \href{https://github.com/applicationsonline/librarian-chef}{librarian-chef}, which performs a similar functions. I prefer to use berkshelf (it have a bigger set of features and integrations).
