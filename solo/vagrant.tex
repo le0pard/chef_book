@@ -123,7 +123,7 @@ end
 
 Now consider that we have added.
 
-On lines 4-5 required chef and json gem. JSON gem is as part of vagrant, but chef gem we installed by previous command <<vagrant plugin install chef>>. After this we load knife.rb in chef config and parse json from node file <<web1.example.com.json>>. After this we have <<Chef::Config>> ruby hash with knife configuration and <<vagrant\_json>> ruby hash will attributes from node. On lines 16-26 defined chef solo configuration for vagrant. More information about this you can find in \href{http://docs.vagrantup.com/v2/provisioning/chef\_solo.html}{vagrant website}.
+On lines 4-5 required chef and json gem. JSON gem is as part of Vagrant, but chef gem we installed by previous command <<vagrant plugin install chef>>. After this we load knife.rb in chef config and parse json from node file <<web1.example.com.json>>. After this we have <<Chef::Config>> ruby hash with knife configuration and <<vagrant\_json>> ruby hash will attributes from node. On lines 16-26 defined chef solo configuration for vagrant (we commented <<environment>>, because we don't have it right now, but we will use it later). More information about this you can find in \href{http://docs.vagrantup.com/v2/provisioning/chef\_solo.html}{vagrant website}.
 
 After all this setup, we can to check our chef kitchen. <<vagrant provision>> command runs any configured provisioners against the running Vagrant managed machine:
 
@@ -181,4 +181,4 @@ $ vagrant reload
 ...
 \end{lstlisting}
 
-Now in any of your browser you can open url <<http://localhost:8085/>> and see page 404 from apache2 server.
+Now in any of your browser you can open url \href{http://localhost:8085/}{http://localhost:8085/} and see page 404 from apache2 server.
