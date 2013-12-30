@@ -1,0 +1,93 @@
+\section{Role}
+
+Roles help classify the same server group. For example, in your project you can have web, queue and db servers. In this case you can create such type of nodes, which will include the same attributes and run\_list for nodes. Let's look at an example.
+
+In our project we have a web application servers, load balancer server and database server. First we will create roles <<web>>:
+
+\begin{lstlisting}[label=lst:my-cloud-role1,title=my-cloud/roles/web.json]
+{
+  "name": "web",
+  "description": "The base role for systems that serve web server",
+  "chef_type": "role",
+  "json_class": "Chef::Role",
+  "default_attributes": {
+    "apache": {
+      "listen_ports": ["80", "443"]
+    }
+  },
+  "run_list": [
+    "recipe[apache2]"
+  ]
+}
+\end{lstlisting}
+
+Let's consider a json structure:
+
+\begin{itemize}
+  \item \textbf{name} - a unique name of role. In most cases the same as name of file without extension
+  \item \textbf{description} - a description of the functionality that is covered by role
+  \item \textbf{chef\_type} - this should always be set to role
+  \item \textbf{json\_class} - this should always be set to Chef::Role
+  \item \textbf{default\_attributes} - a set of attributes that should be applied to all nodes, assuming the node does not already have a value for the attribute. This is useful for setting global defaults that can then be overridden for specific nodes. If more than one role attempts to set a default value for the same attribute, the last role applied will be the role to set the attribute value. This attribute is optional
+  \item \textbf{override\_attributes} - a set of attributes that should be applied to all nodes, even if the node already has a value for an attribute. This is useful for ensuring that certain attributes always have specific values. If more than one role attempts to set an override value for the same attribute, the last role applied will win. This attribute is optional
+  \item \textbf{run\_list} - a list of recipes and/or roles that will be applied and the order in which those recipes and/or roles will be applied
+\end{itemize}
+
+To use this role, we can create new node <<web2.example.com>>:
+
+\begin{lstlisting}[label=lst:my-cloud-role2,title=my-cloud/nodes/web2.example.com.json]
+{
+  "run_list": [
+    "role[web]"
+  ]
+}
+\end{lstlisting}
+
+And check that everything is working:
+
+\begin{lstlisting}[label=lst:my-cloud-role3,title=my-cloud/nodes/Vagrantfile]
+$ NODE=web2.example.com.json vagrant provision
+[default] Running provisioner: chef_solo...
+Generating chef JSON and uploading...
+Running chef-solo...
+stdin: is not a tty
+[2013-12-30T20:21:44+00:00] INFO: Forking chef instance to converge...
+[2013-12-30T20:21:44+00:00] INFO: *** Chef 11.8.2 ***
+[2013-12-30T20:21:44+00:00] INFO: Chef-client pid: 1224
+[2013-12-30T20:21:46+00:00] INFO: Setting the run_list to ["role[web]"] from JSON
+[2013-12-30T20:21:46+00:00] INFO: Run List is [role[web]]
+[2013-12-30T20:21:46+00:00] INFO: Run List expands to [apache2]
+...
+[2013-12-30T20:23:18+00:00] INFO: Chef Run complete in 1.437157496 seconds
+[2013-12-30T20:23:18+00:00] INFO: Running report handlers
+[2013-12-30T20:23:18+00:00] INFO: Report handlers complete
+\end{lstlisting}
+
+As you can see, role defined in run\_list by command <<role>> and role command replaced to run list of this role by chef client.
+
+This allow for use use several roles with recipes in the same node. For example, if web and database role must be on the same server for staging environment, you can define in node:
+
+\begin{lstlisting}[label=lst:my-cloud-role4,title=my-cloud/nodes/web2.example.com.json]
+{
+  "run_list": [
+    "role[web]",
+    "role[db]"
+  ]
+}
+\end{lstlisting}
+
+Role can contain in run list another roles. For example:
+
+\begin{lstlisting}[label=lst:my-cloud-role5,title=my-cloud/roles/test.json]
+{
+  "name": "test",
+  "description": "The test role, it is not used in kitchen",
+  "chef_type": "role",
+  "json_class": "Chef::Role",
+  "run_list": [
+    "role[web]",
+    "recipe[postgresql]"
+  ]
+}
+\end{lstlisting}
+
