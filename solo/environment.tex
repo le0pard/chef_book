@@ -4,7 +4,7 @@ An environment is a way to map an organization's real-life workflow to what can 
 
 We create for our example development environment:
 
-\begin{lstlisting}[label=lst:my-cloud-chef-environment1,title=my-cloud/environments/]
+\begin{lstlisting}[label=lst:my-cloud-chef-environment1,title=my-cloud/environments/development.json]
 {
   "name": "development",
   "description": "development environment",
@@ -14,9 +14,6 @@ We create for our example development environment:
     "apache2": {
       "listen_ports": ["80","443"]
     }
-  },
-  "cookbook_versions": {
-    "apache2": "= 1.7.0"
   }
 }
 \end{lstlisting}
@@ -30,6 +27,40 @@ Let's consider a json structure:
   \item \textbf{json\_class} - this should always be set to Chef::Environment
   \item \textbf{default\_attributes} - a set of attributes that should be applied to all nodes, assuming the node does not already have a value for the attribute. This is useful for setting global defaults that can then be overridden for specific nodes. This attribute is optional
   \item \textbf{override\_attributes} - a set of attributes that should be applied to all nodes, even if the node already has a value for an attribute. This is useful for ensuring that certain attributes always have specific values. This attribute is optional
-  \item \textbf{cookbook\_versions} - a version constraint for a group of cookbooks
 \end{itemize}
 
+As you can see environment doesn't have run\_list, but it have attributes. Attributes in most cases contain information, which specific for environment: connection information to databases, cluster settings for database or queue, etc.
+
+Now we can activate this development environment in Vagrantfile:
+
+\begin{lstlisting}[label=lst:my-cloud-chef-environment2,title=my-cloud/Vagrantfile]
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  ...
+    chef.environments_path = Chef::Config[:environment_path]
+    chef.environment = ENV['ENVIRONMENT'] || 'development'
+  ...
+end
+\end{lstlisting}
+
+and check how it works:
+
+\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-environment3,title=my-cloud/Vagrantfile]
+$ vagrant provision
+...
+[2013-12-31T21:53:57+00:00] INFO: Chef Run complete in 1.105324838 seconds
+[2013-12-31T21:53:57+00:00] INFO: Running report handlers
+[2013-12-31T21:53:57+00:00] INFO: Report handlers complete
+\end{lstlisting}
+
+To <<cook>> server by knife with environment you should use <<-E>> argument:
+
+\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-environment4,title=my-cloud/Vagrantfile]
+$ knife solo cook vagrant@localhost -i ~/.vagrant.d/insecure_private_key -p 2222 -N web1.example.com -E development
+Running Chef on localhost...
+Checking Chef version...
+...
+  * service[apache2] action start (up to date)
+Chef Client finished, 1 resources updated
+\end{lstlisting}
+
+As you can see in Chef Solo environment can be used only for setting attributes. In Chef Server it have additional feature for locking cookbook versions, which we will consider in Chef Server chapter.

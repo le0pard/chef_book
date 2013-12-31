@@ -7,8 +7,5 @@
     "apache2": {
       "listen_ports": ["80","443"]
     }
-  },
-  "cookbook_versions": {
-    "apache2": "= 1.7.0"
   }
 }
