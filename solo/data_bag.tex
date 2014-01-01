@@ -16,7 +16,7 @@ and run command <<bundle>> to install it.
 
 After instalation you knife should have new commands for working with Chef Solo:
 
-\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag2,title=my-cloud/Gemfile]
+\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag2]
 $ knife --help | grep solo
   knife solo cook [USER@]HOSTNAME [JSON] (options)
   knife solo init DIRECTORY
@@ -35,14 +35,14 @@ knife solo data bag show BAG [ITEM] (options)
 
 For beginning, let's create a plain text data bag:
 
-\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag3,title=my-cloud/Gemfile]
+\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag3]
 $ EDITOR=vim knife solo data bag create pass mysql
 Created data_bag_item[mysql]
 \end{lstlisting}
 
 <<EDITOR>> environment variable is used to set editor, which will open data bag file. I add in this JSON password for database and save it. Now we can see the result:
 
-\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag4,title=my-cloud/Gemfile]
+\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag4]
 $ knife solo data bag show pass
 mysql:
   id:       mysql
@@ -78,7 +78,7 @@ The contents of a data bag can be encrypted using shared secret encryption. This
 
 Encrypting a data bag requires a secret key. A secret key can be created in any number of ways. For example, OpenSSL can be used to generate a random number, which can then be used as the secret key:
 
-\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag5,title=my-cloud/Gemfile]
+\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag5]
 $ openssl rand -base64 512 | tr -d '\r\n' > .chef/encrypted_data_bag_secret
 \end{lstlisting}
 
@@ -86,14 +86,14 @@ The <<tr>> command eliminates any trailing line feeds. Doing so avoids key corru
 
 A data bag can be encrypted using a Knife command similar to:
 
-\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag6,title=my-cloud/Gemfile]
+\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag6]
 $ EDITOR=vim knife solo data bag create passwords mysql --secret-file .chef/encrypted_data_bag_secret
 Created data_bag_item[mysql]
 \end{lstlisting}
 
 As a result we obtain the encrypted data bag:
 
-\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag7,title=my-cloud/Gemfile]
+\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag7]
 $ knife solo data bag show passwords mysql
 id:       mysql
 password:
@@ -115,7 +115,7 @@ password: secret
 
 You can set <<encrypted\_data\_bag\_secret>> in knife.rb file:
 
-\begin{lstlisting}[label=lst:my-cloud-chef-databag9,title=.chef/knife.rb]
+\begin{lstlisting}[label=lst:my-cloud-chef-databag9,title=my-cloud/.chef/knife.rb]
 cookbook_path    ["cookbooks", "site-cookbooks"]
 node_path        "nodes"
 role_path        "roles"
@@ -128,7 +128,7 @@ knife[:berkshelf_path] = "cookbooks"
 
 and in this case no need to define <<secret-file>> for knife data bag commands:
 
-\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag11,title=my-cloud/Gemfile]
+\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag11]
 $ knife solo data bag show passwords mysql
 id:       mysql
 password: secret
@@ -147,7 +147,7 @@ end
 
 The Recipe DSL provides access to data bags and data bag items with the following methods: \textbf{data\_bag('bag')}, where bag is the name of the data bag and \textbf{data\_bag\_item('bag', 'item')}, where bag is the name of the data bag and item is the name of the data bag item. Examples:
 
-\begin{lstlisting}[label=lst:my-cloud-chef-databag13,title=my-cloud/Vagrantfile]
+\begin{lstlisting}[label=lst:my-cloud-chef-databag13]
 data_bag("pass")
 # => ["mysql"]
 item = data_bag_item("pass", "mysql")
@@ -157,7 +157,7 @@ item["password"]
 
 A recipe can access encrypted data bag items as long as the recipe is running on a node that has access to the shared-key that is required to decrypt the data. A secret can be specified by using the Chef::EncryptedDataBagItem.load method. For example:
 
-\begin{lstlisting}[label=lst:my-cloud-chef-databag14,title=my-cloud/Vagrantfile]
+\begin{lstlisting}[label=lst:my-cloud-chef-databag14]
 mysql_creds = Chef::EncryptedDataBagItem.load("passwords", "mysql", secret_key)
 mysql_creds["password"]
 # => "secret"
@@ -165,7 +165,7 @@ mysql_creds["password"]
 
 where <<secret\_key>> is the argument that specifies the location of the file that contains the encryption key. An encryption key can be configured so that the chef-client knows where to look using the Chef::Config[:encrypted\_data\_bag\_secret] method, which defaults to /etc/chef/encrypted\_data\_bag\_secret. When the default location is used, the argument that specifies the secret key file location is assumed to be the default and does not need to be explicitly specified in the recipe. For example:
 
-\begin{lstlisting}[label=lst:my-cloud-chef-databag14,title=my-cloud/Vagrantfile]
+\begin{lstlisting}[label=lst:my-cloud-chef-databag15]
 mysql_creds = Chef::EncryptedDataBagItem.load("passwords", "mysql")
 mysql_creds["password"]
 # => "secret"

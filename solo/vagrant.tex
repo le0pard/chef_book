@@ -6,7 +6,7 @@ Vagrant is free and open-source software for creating and configuring virtual de
 
 Instead of building a virtual machine from scratch, which would be a slow and tedious process, Vagrant uses a base image to quickly clone a virtual machine. These base images are known as boxes in Vagrant, and specifying the box to use for your Vagrant environment is always the first step after creating a new Vagrantfile. For testing we will use precise64 (Ubuntu 12.04 LTS 64-bit) box.
 
-\begin{lstlisting}[label=lst:my-cloud-vagrant1,title=my-cloud/nodes/Vagrantfile]
+\begin{lstlisting}[label=lst:my-cloud-vagrant1]
 $ vagrant box add precise64 http://files.vagrantup.com/precise64.box
 \end{lstlisting}
 
@@ -14,7 +14,7 @@ More boxes you can find on \href{http://www.vagrantbox.es/}{vagrantbox.es}.
 
 The first step for any project to use Vagrant is to configure Vagrant using a Vagrantfile. We should execute <<vagrant init precise64>> inside kitchen directory:
 
-\begin{lstlisting}[label=lst:my-cloud-vagrant2,title=my-cloud/nodes/Vagrantfile]
+\begin{lstlisting}[label=lst:my-cloud-vagrant2]
 $ vagrant init precise64
 A `Vagrantfile` has been placed in this directory. You are now
 ready to `vagrant up` your first virtual environment! Please read
@@ -38,7 +38,7 @@ end
 
 We can check, what vagrant is working fine by command <<vagrant up>>:
 
-\begin{lstlisting}[label=lst:my-cloud-vagrant4,title=my-cloud/nodes/Vagrantfile]
+\begin{lstlisting}[label=lst:my-cloud-vagrant4]
 $ vagrant up
 Bringing machine 'default' up with 'virtualbox' provider...
 [default] Importing base box 'precise64'...
@@ -61,7 +61,7 @@ After this you can use command <<vagrant ssh>> to SSH into a running Vagrant mac
 
 By default, in most cases, your mashine is not contain chef client and we should install it. As you remember, we have knife with command <<prepare>>. Let use this command:
 
-\begin{lstlisting}[label=lst:my-cloud-vagrant5,title=my-cloud/nodes/Vagrantfile]
+\begin{lstlisting}[label=lst:my-cloud-vagrant5]
 $ knife solo prepare vagrant@localhost -i ~/.vagrant.d/insecure_private_key -p 2222 -N web1.example.com
 Bootstrapping Chef...
 --2013-12-27 19:12:56--  https://www.opscode.com/chef/install.sh
@@ -80,7 +80,7 @@ As you can see, we use options <<-i>> to set ssh key for mashine, <<-N>> to set 
 
 Vagrantfile inside use ruby syntax, so we can use Ruby to \href{http://en.wikipedia.org/wiki/Dont\_repeat\_yourself}{DRY} our config. We should install chef gem inside vagrant:
 
-\begin{lstlisting}[label=lst:my-cloud-vagrant6,title=my-cloud/nodes/Vagrantfile]
+\begin{lstlisting}[label=lst:my-cloud-vagrant6]
 $ vagrant plugin install chef
 Installing the 'chef' plugin. This can take a few minutes...
 Installed the plugin 'chef (11.8.2)'!
@@ -124,7 +124,7 @@ On lines 4-5 required chef and json gem. JSON gem is as part of Vagrant, but che
 
 Basically, to run our kitchen on server we are using <<knife solo cook>> command:
 
-\begin{lstlisting}[label=lst:my-cloud-vagrant11,title=my-cloud/nodes/Vagrantfile]
+\begin{lstlisting}[label=lst:my-cloud-vagrant11]
 $ knife solo cook vagrant@localhost -i ~/.vagrant.d/insecure_private_key -p 2222 -N web1.example.com
 Running Chef on localhost...
 Checking Chef version...
@@ -138,7 +138,7 @@ Chef Client finished, 1 resources updated
 
 But in Vagrant we can use build in command <<vagrant provision>>. This command runs any configured provisioners against the running Vagrant managed machine (we changed Vagrantfile, what is why we run <<vagrant reload>> before it):
 
-\begin{lstlisting}[label=lst:my-cloud-vagrant8,title=my-cloud/nodes/Vagrantfile]
+\begin{lstlisting}[label=lst:my-cloud-vagrant8]
 $ vagrant reload
 [default] Attempting graceful shutdown of VM...
 ...
@@ -176,7 +176,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 And reload vagrant:
 
-\begin{lstlisting}[label=lst:my-cloud-vagrant10,title=my-cloud/nodes/Vagrantfile]
+\begin{lstlisting}[label=lst:my-cloud-vagrant10]
 $ vagrant reload
 ...
 [default] Preparing network interfaces based on configuration...
