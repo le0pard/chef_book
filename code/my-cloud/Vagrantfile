@@ -18,6 +18,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     chef.cookbooks_path = Chef::Config[:cookbook_path]
     chef.roles_path = Chef::Config[:role_path]
     chef.data_bags_path = Chef::Config[:data_bag_path]
+    chef.encrypted_data_bag_secret_key_path = Chef::Config[:encrypted_data_bag_secret]
 
     chef.environments_path = Chef::Config[:environment_path]
     chef.environment = ENV['ENVIRONMENT'] || 'development'
