@@ -163,7 +163,7 @@ mysql_creds["password"]
 # => "secret"
 \end{lstlisting}
 
-where <<secret_key>> is the argument that specifies the location of the file that contains the encryption key. An encryption key can be stored in a file on the nodes that need it and then configured so that the chef-client knows where to look using the Chef::Config[:encrypted\_data\_bag\_secret] method, which defaults to /etc/chef/encrypted\_data\_bag\_secret. When the default location is used, the argument that specifies the secret key file location is assumed to be the default and does not need to be explicitly specified in the recipe. For example:
+where <<secret\_key>> is the argument that specifies the location of the file that contains the encryption key. An encryption key can be stored in a file on the nodes that need it and then configured so that the chef-client knows where to look using the Chef::Config[:encrypted\_data\_bag\_secret] method, which defaults to /etc/chef/encrypted\_data\_bag\_secret. When the default location is used, the argument that specifies the secret key file location is assumed to be the default and does not need to be explicitly specified in the recipe. For example:
 
 \begin{lstlisting}[label=lst:my-cloud-chef-databag14,title=my-cloud/Vagrantfile]
 mysql_creds = Chef::EncryptedDataBagItem.load("passwords", "mysql")
