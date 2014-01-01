@@ -145,7 +145,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 end
 \end{lstlisting}
 
-The Recipe DSL provides access to data bags and data bag items with the following methods: \textbf{data\_bag(bag)}, where bag is the name of the data bag and \textbf{data\_bag\_item('bag', 'item')}, where bag is the name of the data bag and item is the name of the data bag item. Examples:
+The Recipe DSL provides access to data bags and data bag items with the following methods: \textbf{data\_bag('bag')}, where bag is the name of the data bag and \textbf{data\_bag\_item('bag', 'item')}, where bag is the name of the data bag and item is the name of the data bag item. Examples:
 
 \begin{lstlisting}[label=lst:my-cloud-chef-databag13,title=my-cloud/Vagrantfile]
 data_bag("pass")
