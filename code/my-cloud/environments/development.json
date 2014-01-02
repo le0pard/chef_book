@@ -4,8 +4,8 @@
   "chef_type": "environment",
   "json_class": "Chef::Environment",
   "default_attributes": {
-    "apache2": {
-      "listen_ports": ["80","443"]
+    "apache": {
+      "timeout": 120
     }
   }
 }
