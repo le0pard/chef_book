@@ -27,3 +27,20 @@ Creating knife.rb in kitchen...
 Creating cupboards...
 Setting up Berkshelf...
 \end{lstlisting}
+
+To install and configure Chef Server exists cookbook \href{http://community.opscode.com/cookbooks/chef-server}{chef-server}. Let's add this cookbook in Berkshelf:
+
+\begin{lstlisting}[label=lst:my-server-cloud-installation2,title=my-server-cloud/Berkshelf]
+site :opscode
+
+cookbook 'chef-server'
+\end{lstlisting}
+
+After running the command <<berks install>> this cookbook will be installed with dependencies.
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-installation3]
+$ berks install
+Installing chef-server (2.0.1) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+\end{lstlisting}
+
+Now we should configure a Chef Solo node for our Chef Server.
