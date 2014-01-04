@@ -7,4 +7,23 @@ Exists several ways to install own Chef Server:
   \item Use Chef Solo to install Chef Server
 \end{itemize}
 
-Of course, I prefer to use Chef Solo to install and configure Chef Server.
+Of course, I prefer to use Chef Solo to install and configure Chef Server. Chef Solo will help us quickly deploy Chef Server on a new server, if with it something happens (crash file system of server, etc.). Do not forget to make a backups of Chef Server (because compared with Chef Solo, Chef Server will be the point of failure in your configuration management system).
+
+Let's create our folder, which will contain all our Chef kitchen:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-installation1]
+$ mkdir my-server-cloud
+$ cd my-server-cloud
+$ cat Gemfile
+source "https://rubygems.org"
+
+gem 'knife-solo'
+gem 'berkshelf'
+$ bundle
+$ knife solo init .
+WARNING: No knife configuration file found
+Creating kitchen...
+Creating knife.rb in kitchen...
+Creating cupboards...
+Setting up Berkshelf...
+\end{lstlisting}
