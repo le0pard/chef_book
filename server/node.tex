@@ -72,4 +72,20 @@ And we can check what node created on server:
 \begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node6]
 $ knife node list
 first.example.com
+$ knife client show first.example.com
+admin:      false
+chef_type:  client
+json_class: Chef::ApiClient
+name:       first.example.com
+public_key: -----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw/dmDkNpaVeL7FVB72Hp
+bRn6iQgMU0dGrrO8kJUzmQaCTwuqjD09Pa8FeaEcpz8WZ1M28F0/Bp00uuQcXqZr
+M/0noxFkTZWLJkw+wQAB4X93mOq2v5vEGvs/tsz7YYfCAztd9ktYwfl3GVRaPgu8
+BcsH0tbP4RRCj6pd8+oGpVI+w9LETmtt1Tl5FcNyOgVpZD+PbCmb6HkeDf0qJQss
+7PJjqgIrTNx6hm1KWSWNGNAivl1VGYVMXpg0ULdHVCjQE1Fmz7Amy/9WTBDYtCI1
+fP5j0ti6WujVMfhgLRTQqRlFkc0SMwDlaaPjc3u4iX4pSCwkds+pM3773sI42ekd
+CQIDAQAB
+-----END PUBLIC KEY-----
+
+validator:  false
 \end{lstlisting}
