@@ -1,4 +1,5 @@
 {
+  "fqdn": "chef.server-cloud.dev",
   "chef-server": {
     "version": "latest",
     "configuration": {

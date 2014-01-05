@@ -1,4 +1,4 @@
-\section{.Chef folder}
+\section{.Chef folder}\label{sec:solo-chef-folder}
 
 After creating the kitchen you should find the <<.chef>> directory. The <<.chef>> directory will contain the configuration and credentials it use knife, the command line interface for Chef.
 
@@ -17,7 +17,7 @@ data_bag_path    "data_bags"
 knife[:berkshelf_path] = "cookbooks"
 \end{lstlisting}
 
-Options:
+Let's consider an options:
 
 \begin{itemize}
   \item \textbf{cookbook\_path} - the sub-directory for cookbooks on the chef-client

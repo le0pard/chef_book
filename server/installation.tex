@@ -49,6 +49,7 @@ Now we should configure a Chef Solo node for our Chef Server. From chapter~\ref{
 
 \begin{lstlisting}[language=JSON,label=lst:my-server-cloud-installation4,title=my-server-cloud/nodes/chef-server.example.com.json]
 {
+  "fqdn": "chef.server-cloud.dev",
   "chef-server": {
     "version": "latest",
     "configuration": {
@@ -64,7 +65,7 @@ Now we should configure a Chef Solo node for our Chef Server. From chapter~\ref{
 }
 \end{lstlisting}
 
-By <<configuration>> key you can change settings for Chef Server. All available setting, which is possible to redefined, you can find \href{https://github.com/opscode/omnibus-chef-server/blob/master/files/chef-server-cookbooks/chef-server/attributes/default.rb}{here}.
+By <<configuration>> key you can change settings for Chef Server. All available setting, which is possible to redefined, you can find \href{https://github.com/opscode/omnibus-chef-server/blob/master/files/chef-server-cookbooks/chef-server/attributes/default.rb}{here}. Our Chef Server by default takes your systems \href{http://en.wikipedia.org/wiki/Fully\_qualified\_domain\_name}{FQDN} as Chef Server url, what is why I set <<fqdn>> in node. Also for local usage you should add <<10.33.33.33 chef.server-cloud.dev>> into hosts file on your mashine (ip 10.33.33.33 we will set to vagrant mashine with Chef Server).
 
 First, we should generate Vagrantfile:
 
@@ -129,10 +130,12 @@ stdin: is not a tty
 ...
 \end{lstlisting}
 
-Our Chef Server by default takes your systems \href{http://en.wikipedia.org/wiki/Fully\_qualified\_domain\_name}{FQDN} as Chef Server url. We can check Chef Server web interface by \href{https://10.33.33.33}{https://10.33.33.33} and info about versions by \href{https://10.33.33.33/version}{https://10.33.33.33/version} url. It should looks like on figure~\ref{fig:chef-server-versions}.
+We can check Chef Server web interface by \href{https://chef.server-cloud.dev}{https://chef.server-cloud.dev} and info about versions by \href{https://chef.server-cloud.dev/version}{https://chef.server-cloud.dev/version} url. It should looks like on figure~\ref{fig:chef-server-versions}.
 
 \begin{figure}[ht!]
   \center{\includegraphics[width=1\textwidth]{chef_server_versions}}
   \caption{Chef Server Versions}
   \label{fig:chef-server-versions}
 \end{figure}
+
+Next we should configure our knife to work with this Chef Server.
