@@ -28,4 +28,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
+  config.vm.define :chef_client do |chef_client|
+    chef_client.vm.box = "precise64"
+    chef_client.vm.network "private_network", ip: "10.33.33.34"
+  end
+
 end

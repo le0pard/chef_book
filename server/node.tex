@@ -1,0 +1,75 @@
+\section{Bootstrap first node}
+
+Once the Chef Server workstation is configured, it can be used to install Chef on one (or more) nodes across the organization using a Knife bootstrap operation. The <<knife bootstrap>> command is used to SSH into the target machine, and then do what is needed to allow the chef-client to run on the node. It will install the chef-client executable (if necessary), generate keys, and register the node with the Chef Server. The bootstrap operation requires the IP address or FQDN of the target system, the SSH credentials (username, password or identity file) for an account that has root access to the node, and (if the operating system is not Ubuntu, which is the default distribution used by knife bootstrap) the operating system running on the target system.
+
+First, let's add new server in Vagrantfile:
+
+\begin{lstlisting}[label=lst:my-server-cloud-node1,title=my-server-cloud/Vagrantfile]
+...
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  ...
+
+  config.vm.define :chef_client do |chef_client|
+    chef_client.vm.box = "precise64"
+    chef_client.vm.network "private_network", ip: "10.33.33.34"
+  end
+
+end
+\end{lstlisting}
+
+And reload vagrant servers:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node2]
+$ vagrant halt chef_server
+[chef_server] Attempting graceful shutdown of VM...
+$ vagrant up
+Bringing machine 'chef_server' up with 'virtualbox' provider...
+Bringing machine 'chef_client' up with 'virtualbox' provider...
+...
+\end{lstlisting}
+
+And now we can bootstrap node:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node3]
+$ knife bootstrap localhost -x vagrant -p 2200 -i ~/.vagrant.d/insecure_private_key -N first.example.com --sudo
+Bootstrapping Chef on localhost
+localhost --2014-01-05 16:01:33--  https://www.opscode.com/chef/install.sh
+...
+localhost Chef Client finished, 0 resources updated
+$ knife node list
+first.example.com
+\end{lstlisting}
+
+If you have error like this:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node4]
+localhost Network Error:
+localhost --------------
+localhost There was a network error connecting to the Chef Server:
+localhost Error connecting to https://chef.server-cloud.dev/clients - getaddrinfo: Name or service not known
+\end{lstlisting}
+
+It is mean, what node couldn't find your chef server. Just add info hosts on client IP of Chef Server:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node5]
+$ vagrant ssh chef_client
+
+vagrant@precise64:~$ cat /etc/hosts
+127.0.0.1	localhost
+127.0.1.1	precise64
+
+10.33.33.33		chef.server-cloud.dev
+vagrant@precise64:~$ ping chef.server-cloud.dev
+PING chef.server-cloud.dev (10.33.33.33) 56(84) bytes of data.
+64 bytes from chef.server-cloud.dev (10.33.33.33): icmp_req=1 ttl=64 time=0.623 ms
+64 bytes from chef.server-cloud.dev (10.33.33.33): icmp_req=2 ttl=64 time=0.466 ms
+\end{lstlisting}
+
+And we can check what node created on server:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node6]
+$ knife node list
+first.example.com
+\end{lstlisting}
