@@ -86,7 +86,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 end
 \end{lstlisting}
 
-As you can see, options for <<chef\_client>> the same as we set in knife.rb. When you provision your Vagrant virtual machine with Chef server, it creates a new Chef node entry and Chef client entry on the Chef server, using the hostname of the machine. After you tear down your guest machine, Vagrant can be configured to do it automatically with the following settings:
+As you can see, options for <<chef\_client>> the same as we set in knife.rb. After command <<vagrant up>> you can check what new node registered:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node10]
+$ knife node list
+first.example.com
+second.example.com
+\end{lstlisting}
+
+When you provision your Vagrant virtual machine with Chef server, it creates a new Chef node entry and Chef client entry on the Chef server, using the hostname of the machine. After you tear down your guest machine, Vagrant can be configured to do it automatically with the following settings:
 
 \begin{lstlisting}[label=lst:my-server-cloud-node8]
 chef.delete_node = true
@@ -98,14 +106,6 @@ If you don't specify it or set it to false, you must explicitly delete these ent
 \begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node9]
 $ knife node delete second.example.com
 $ knife client delete second.example.com
-\end{lstlisting}
-
-After command <<vagrant up>> you can check what new node registered:
-
-\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node10]
-$ knife node list
-first.example.com
-second.example.com
 \end{lstlisting}
 
 And how works cleanup for destroy of server:
