@@ -41,6 +41,98 @@ After running the command <<berks install>> this cookbook will be installed with
 \begin{lstlisting}[language=Bash,label=lst:my-server-cloud-installation3]
 $ berks install
 Installing chef-server (2.0.1) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+$ berks install --path cookbooks
+Using chef-server (2.0.1)
 \end{lstlisting}
 
-Now we should configure a Chef Solo node for our Chef Server.
+Now we should configure a Chef Solo node for our Chef Server. From chapter~\ref{sec:solo-node} you should know how to define node.
+
+\begin{lstlisting}[language=JSON,label=lst:my-server-cloud-installation4,title=my-server-cloud/nodes/chef-server.example.com.json]
+{
+  "chef-server": {
+    "version": "latest",
+    "configuration": {
+      "notification_email": "notify@example.com",
+      "chef-server-webui": {
+        "enable": true
+      }
+    }
+  },
+  "run_list": [
+    "recipe[chef-server]"
+  ]
+}
+\end{lstlisting}
+
+By <<configuration>> key you can change settings for Chef Server. All available setting, which is possible to redefined, you can find \href{https://github.com/opscode/omnibus-chef-server/blob/master/files/chef-server-cookbooks/chef-server/attributes/default.rb}{here}.
+
+First, we should generate Vagrantfile:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-installation5]
+$ vagrant init precise64
+A `Vagrantfile` has been placed in this directory. You are now
+ready to `vagrant up` your first virtual environment! Please read
+the comments in the Vagrantfile as well as documentation on
+`vagrantup.com` for more information on using Vagrant.
+\end{lstlisting}
+
+Next we need modeling a cluster of machines by Vagrant. Right now we need only chef server. Let's modify Vagrantfile:
+
+\begin{lstlisting}[label=lst:my-server-cloud-installation6,title=my-server-cloud/Vagrantfile]
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'chef'
+require 'json'
+
+Chef::Config.from_file(File.join(File.dirname(__FILE__), '.chef', 'knife.rb'))
+
+chef_server_json = JSON.parse(Pathname(__FILE__).dirname.join('nodes', 'chef-server.example.com.json').read)
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.define :chef_server do |chef_server|
+    chef_server.vm.box = "precise64"
+    chef_server.vm.network "private_network", ip: "10.33.33.33"
+
+    chef_server.vm.provision :chef_solo do |chef|
+      chef.cookbooks_path = Chef::Config[:cookbook_path]
+      chef.roles_path = Chef::Config[:role_path]
+      chef.data_bags_path = Chef::Config[:data_bag_path]
+      chef.environments_path = Chef::Config[:environment_path]
+
+      chef.run_list = chef_server_json.delete('run_list')
+      chef.json = chef_server_json
+    end
+  end
+
+end
+\end{lstlisting}
+
+You should have installed chef gem inside vagrant, as we did in chapter <<\ref{sec:solo-vagrant}~Vagrant>> and install/update Chef Client inside server by command <<knife solo prepare>>.
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-installation7]
+$ vagrant provision
+[chef_server] Running provisioner: chef_solo...
+Generating chef JSON and uploading...
+Running chef-solo...
+stdin: is not a tty
+[2014-01-05T12:55:12+00:00] INFO: Forking chef instance to converge...
+[2014-01-05T12:55:12+00:00] INFO: *** Chef 11.8.2 ***
+[2014-01-05T12:55:12+00:00] INFO: Chef-client pid: 1831
+[2014-01-05T12:55:13+00:00] INFO: Setting the run_list to ["recipe[chef-server]"] from JSON
+[2014-01-05T12:55:13+00:00] INFO: Run List is [recipe[chef-server]]
+[2014-01-05T12:55:13+00:00] INFO: Run List expands to [chef-server]
+...
+\end{lstlisting}
+
+Our Chef Server by default takes your systems \href{http://en.wikipedia.org/wiki/Fully\_qualified\_domain\_name}{FQDN} as Chef Server url. We can check Chef Server web interface by \href{https://10.33.33.33}{https://10.33.33.33} and info about versions by \href{https://10.33.33.33/version}{https://10.33.33.33/version} url. It should looks like on figure~\ref{fig:chef-server-versions}.
+
+\begin{figure}[ht!]
+  \center{\includegraphics[width=1\textwidth]{chef_server_versions}}
+  \caption{Chef Server Versions}
+  \label{fig:chef-server-versions}
+\end{figure}
