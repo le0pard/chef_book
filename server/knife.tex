@@ -16,7 +16,7 @@ Next we should create for knife configuration file. As you remember from chapter
 \begin{lstlisting}[language=Bash,label=lst:my-server-cloud-knife2]
 $ knife configure -i
 Overwrite .../my-server-cloud/.chef/knife.rb? (Y/N) y
-Please enter the chef server URL: [https://macbookproleo:443] https://chef.server-cloud.dev
+Please enter the chef server URL: [https://macbookproleo:443] https://10.33.33.33
 Please enter a name for the new user: [leo]
 Please enter the existing admin name: [admin]
 Please enter the location of the existing admin's private key: [/etc/chef-server/admin.pem] .chef/admin.pem
@@ -38,7 +38,7 @@ node_name                'leo'
 client_key               '/Users/leo/Documents/chef_book/code/my-server-cloud/.chef/leo.pem'
 validation_client_name   'chef-validator'
 validation_key           '/Users/leo/Documents/chef_book/code/my-server-cloud/.chef/chef-validator.pem'
-chef_server_url          'https://chef.server-cloud.dev'
+chef_server_url          'https://10.33.33.33'
 syntax_check_cache_path  '/Users/leo/Documents/chef_book/code/my-server-cloud/.chef/syntax_check_cache'
 \end{lstlisting}
 
@@ -54,7 +54,7 @@ client_key               "#{current_dir}/leo.pem"
 syntax_check_cache_path  "#{current_dir}/syntax_check_cache"
 validation_client_name   "chef-validator"
 validation_key           "#{current_dir}/chef-validator.pem"
-chef_server_url          "https://chef.server-cloud.dev"
+chef_server_url          "https://10.33.33.33"
 cookbook_path            ["#{current_dir}/../cookbooks", "#{current_dir}/../site-cookbooks"]
 node_path                 "#{current_dir}/../nodes"
 role_path                 "#{current_dir}/../roles"

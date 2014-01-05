@@ -11,7 +11,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   ...
 
-  config.vm.define :chef_client do |chef_client|
+  config.vm.define :chef_first_client do |chef_client|
     chef_client.vm.box = "precise64"
     chef_client.vm.network "private_network", ip: "10.33.33.34"
   end
@@ -42,31 +42,6 @@ $ knife node list
 first.example.com
 \end{lstlisting}
 
-If you have error like this:
-
-\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node4]
-localhost Network Error:
-localhost --------------
-localhost There was a network error connecting to the Chef Server:
-localhost Error connecting to https://chef.server-cloud.dev/clients - getaddrinfo: Name or service not known
-\end{lstlisting}
-
-It is mean, what node couldn't find your chef server. Just add info hosts on client IP of Chef Server:
-
-\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node5]
-$ vagrant ssh chef_client
-
-vagrant@precise64:~$ cat /etc/hosts
-127.0.0.1	localhost
-127.0.1.1	precise64
-
-10.33.33.33		chef.server-cloud.dev
-vagrant@precise64:~$ ping chef.server-cloud.dev
-PING chef.server-cloud.dev (10.33.33.33) 56(84) bytes of data.
-64 bytes from chef.server-cloud.dev (10.33.33.33): icmp_req=1 ttl=64 time=0.623 ms
-64 bytes from chef.server-cloud.dev (10.33.33.33): icmp_req=2 ttl=64 time=0.466 ms
-\end{lstlisting}
-
 And we can check what node created on server:
 
 \begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node6]
@@ -78,14 +53,77 @@ chef_type:  client
 json_class: Chef::ApiClient
 name:       first.example.com
 public_key: -----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw/dmDkNpaVeL7FVB72Hp
-bRn6iQgMU0dGrrO8kJUzmQaCTwuqjD09Pa8FeaEcpz8WZ1M28F0/Bp00uuQcXqZr
-M/0noxFkTZWLJkw+wQAB4X93mOq2v5vEGvs/tsz7YYfCAztd9ktYwfl3GVRaPgu8
-BcsH0tbP4RRCj6pd8+oGpVI+w9LETmtt1Tl5FcNyOgVpZD+PbCmb6HkeDf0qJQss
-7PJjqgIrTNx6hm1KWSWNGNAivl1VGYVMXpg0ULdHVCjQE1Fmz7Amy/9WTBDYtCI1
-fP5j0ti6WujVMfhgLRTQqRlFkc0SMwDlaaPjc3u4iX4pSCwkds+pM3773sI42ekd
-CQIDAQAB
+...
 -----END PUBLIC KEY-----
 
 validator:  false
 \end{lstlisting}
+
+\subsection{Node in Vagrant}
+
+You can automate registration of node with your Chef Server in Vagrant. Let's add new node in Vagrantfile:
+
+\begin{lstlisting}[label=lst:my-server-cloud-node7,title=my-server-cloud/Vagrantfile]
+...
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  ...
+  config.vm.define :chef_second_client do |chef_client|
+    chef_client.vm.box = "precise64"
+    chef_client.vm.network "private_network", ip: "10.33.33.35"
+    chef_client.vm.provision :chef_client do |chef|
+      chef.chef_server_url = Chef::Config[:chef_server_url]
+      chef.validation_key_path = Chef::Config[:validation_key]
+      chef.client_key_path = Chef::Config[:client_key]
+      chef.node_name = 'second.example.com'
+      chef.validation_client_name = Chef::Config[:validation_client_name]
+
+      chef.delete_node = true
+      chef.delete_client = true
+    end
+  end
+
+end
+\end{lstlisting}
+
+As you can see, options for <<chef\_client>> the same as we set in knife.rb. When you provision your Vagrant virtual machine with Chef server, it creates a new Chef node entry and Chef client entry on the Chef server, using the hostname of the machine. After you tear down your guest machine, Vagrant can be configured to do it automatically with the following settings:
+
+\begin{lstlisting}[label=lst:my-server-cloud-node8]
+chef.delete_node = true
+chef.delete_client = true
+\end{lstlisting}
+
+If you don't specify it or set it to false, you must explicitly delete these entries from the Chef server before you provision a new one with Chef server. For example, using Chef's built-in knife tool:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node9]
+$ knife node delete second.example.com
+$ knife client delete second.example.com
+\end{lstlisting}
+
+After command <<vagrant up>> you can check what new node registered:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node10]
+$ knife node list
+first.example.com
+second.example.com
+\end{lstlisting}
+
+And how works cleanup for destroy of server:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node11]
+$ vagrant destroy chef_second_client
+Are you sure you want to destroy the 'chef_second_client' VM? [y/N] y
+[chef_second_client] Forcing shutdown of VM...
+[chef_second_client] Destroying VM and associated drives...
+[chef_second_client] Running cleanup tasks for 'chef_client' provisioner...
+Deleting client "second.example.com" from Chef server...
+Deleting node "second.example.com" from Chef server...
+$ knife node list
+first.example.com
+$ knife client list
+chef-validator
+chef-webui
+first.example.com
+\end{lstlisting}
+
+As you can see node and client removed from Chef server.

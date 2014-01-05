@@ -28,9 +28,24 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  config.vm.define :chef_client do |chef_client|
+  config.vm.define :chef_first_client do |chef_client|
     chef_client.vm.box = "precise64"
     chef_client.vm.network "private_network", ip: "10.33.33.34"
+  end
+
+  config.vm.define :chef_second_client do |chef_client|
+    chef_client.vm.box = "precise64"
+    chef_client.vm.network "private_network", ip: "10.33.33.35"
+    chef_client.vm.provision :chef_client do |chef|
+      chef.chef_server_url = Chef::Config[:chef_server_url]
+      chef.validation_key_path = Chef::Config[:validation_key]
+      chef.client_key_path = Chef::Config[:client_key]
+      chef.node_name = 'second.example.com'
+      chef.validation_client_name = Chef::Config[:validation_client_name]
+
+      chef.delete_node = true
+      chef.delete_client = true
+    end
   end
 
 end
