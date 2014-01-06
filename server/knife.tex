@@ -35,11 +35,11 @@ Now our file look like this:
 log_level                :info
 log_location             STDOUT
 node_name                'leo'
-client_key               '/Users/leo/Documents/chef_book/code/my-server-cloud/.chef/leo.pem'
+client_key               '.chef/leo.pem'
 validation_client_name   'chef-validator'
-validation_key           '/Users/leo/Documents/chef_book/code/my-server-cloud/.chef/chef-validator.pem'
+validation_key           '.chef/chef-validator.pem'
 chef_server_url          'https://10.33.33.33'
-syntax_check_cache_path  '/Users/leo/Documents/chef_book/code/my-server-cloud/.chef/syntax_check_cache'
+syntax_check_cache_path  '.chef/syntax_check_cache'
 \end{lstlisting}
 
 Let's little modify it:

@@ -6,9 +6,9 @@ To find the uptime of all of web servers (all node, which have role <<web>>):
 
 \begin{lstlisting}[language=Bash,label=lst:my-server-cloud-knife-ssh1]
 $ knife ssh "role:web" "uptime" -i ../keys/production.pem -x ubuntu
-ec2-***.com    13:18:28 up 55 days, 14 min,  1 user,  load average: 0.00, 0.01, 0.05
-ec2-***.com    13:18:28 up 75 days, 23:49,  1 user,  load average: 0.00, 0.01, 0.05
-ec2-***.com    13:18:28 up 55 days, 13 min,  1 user,  load average: 0.08, 0.03, 0.05
+***.com    13:18:28 up 55 days, 14 min,  1 user,  load average: 0.00, 0.01, 0.05
+***.com    13:18:28 up 75 days, 23:49,  1 user,  load average: 0.00, 0.01, 0.05
+***.com    13:18:28 up 55 days, 13 min,  1 user,  load average: 0.08, 0.03, 0.05
 \end{lstlisting}
 
 To run the chef-client on all nodes:
@@ -18,10 +18,28 @@ $ knife ssh 'name:*' 'sudo chef-client' -i ../keys/production.pem -x ubuntu
 ...
 \end{lstlisting}
 
-To upgrade all nodes:
+To run the chef-client on all nodes, which name begin from <<second>> string:
 
 \begin{lstlisting}[language=Bash,label=lst:my-server-cloud-knife-ssh3]
+$ knife ssh 'name:second*' 'sudo chef-client' -i ../keys/production.pem -x ubuntu
+...
+\end{lstlisting}
+
+To upgrade all nodes:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-knife-ssh4]
 $ knife ssh 'name:*' 'sudo aptitude upgrade -y' -i ../keys/production.pem -x ubuntu
+...
+\end{lstlisting}
+
+To get memory information from all nodes in staging environment:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-knife-ssh5]
+$ knife ssh "chef_environment:staging" "free -m" -i ../keys/production.pem -x ubuntu
+***.com              total       used       free     shared    buffers     cached
+***.com Mem:          1692       1182        509          0        181        491
+***.com -/+ buffers/cache:        509       1183
+***.com Swap:          895          6        889
 ...
 \end{lstlisting}
 
