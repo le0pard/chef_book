@@ -1,2 +1,83 @@
 \section{Role}
 
+Role work in the same way, as in Chef Solo (chapter <<\ref{sec:solo-role}~Defining roles>>). For example, we will install on <<first.example.com>> \href{http://community.opscode.com/cookbooks/nginx}{nginx}. First of all, we need add nginx cookbook in Berksfile:
+
+\begin{lstlisting}[label=lst:my-serer-cloud-role1,title=my-server-cloud/Berksfile]
+site :opscode
+
+cookbook 'chef-server'
+cookbook 'nginx'
+cookbook 'yum', '~> 3.0'
+\end{lstlisting}
+
+After command <<berks install>> we will create <<nginx>> role:
+
+\begin{lstlisting}[language=JSON,label=lst:my-serer-cloud-role2,title=my-server-cloud/roles/nginx.json]
+{
+  "name": "nginx",
+  "description": "The base role for systems that serve web server",
+  "chef_type": "role",
+  "json_class": "Chef::Role",
+  "default_attributes": {
+    "nginx": {
+      "version": "1.4.4",
+      "default_site_enabled": true,
+      "source": {
+        "url": "http://nginx.org/download/nginx-1.4.4.tar.gz"
+      },
+      "worker_rlimit_nofile": 30000,
+      "worker_connections": 4000
+    }
+  },
+  "run_list": [
+    "recipe[nginx::source]"
+  ]
+}
+\end{lstlisting}
+
+And <<first.example.com>> node:
+
+\begin{lstlisting}[language=JSON,label=lst:my-serer-cloud-role3,title=my-server-cloud/nodes/first.example.com.json]
+{
+  "name": "first.example.com",
+  "json_class": "Chef::Node",
+  "chef_type": "node",
+  "normal": {
+    "fqdn": "10.33.33.34"
+  },
+  "default": {},
+  "override": {},
+  "run_list": [
+    "role[nginx]"
+  ]
+}
+\end{lstlisting}
+
+As you can see, node have different format, than Chef Solo. Keys <<normal>>, <<default>> and <<override>> contain attributes. Difference of this attributes you can read in chapter <<\ref{sec:server-attributes}~Attributes>>. Now we should upload cookbooks, role and node in Chef Server. For this we can use knife and berkshelf:
+
+\begin{lstlisting}[language=Bash,label=lst:my-serer-cloud-role4]
+// upload all cookbooks from path 'cookbooks' and 'site-cookbooks' (use --force if cookbook frozen)
+$ knife cookbook upload -a
+// or upload all cookbooks by berks
+$ berks upload
+// create/update role from file
+$ knife role from file roles/nginx.json
+// update node from file
+$ knife node from file nodes/first.example.com.json
+\end{lstlisting}
+
+Next we should can use <<knife ssh>> command to do something on nodes. The <<knife ssh>> subcommand is used to invoke SSH commands (in parallel) on a subset of nodes within an organization, based on the results of a search query. Example:
+
+\begin{lstlisting}[language=Bash,label=lst:my-serer-cloud-role5]
+// execute on 'first.example.com' chef-client
+$ knife ssh 'name:first.example.com' 'sudo chef-client' -i ~/.vagrant.d/insecure_private_key -x vagrant
+10.33.33.34 Starting Chef Client, version 11.8.2
+10.33.33.34 resolving cookbooks for run list: ["nginx::source"]
+...
+10.33.33.34 Recipe: nginx::source
+10.33.33.34   * service[nginx] action nothing (up to date)
+10.33.33.34   * service[nginx] action reload
+10.33.33.34     - reload service service[nginx]
+10.33.33.34
+10.33.33.34 Chef Client finished, 4 resources updated
+\end{lstlisting}

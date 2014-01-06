@@ -17,6 +17,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     chef_server.vm.box = "precise64"
     chef_server.vm.network "private_network", ip: "10.33.33.33"
 
+    config.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--cpus", 2]
+      vb.customize ["modifyvm", :id, "--memory", 1024]
+    end
+
     chef_server.vm.provision :chef_solo do |chef|
       chef.cookbooks_path = Chef::Config[:cookbook_path]
       chef.roles_path = Chef::Config[:role_path]

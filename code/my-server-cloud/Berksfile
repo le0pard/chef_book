@@ -1,3 +1,5 @@
 site :opscode
 
 cookbook 'chef-server'
+cookbook 'nginx'
+cookbook 'yum', '~> 3.0'
