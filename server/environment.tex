@@ -1,0 +1,59 @@
+\section{Environment}
+
+Environment in Chef Server is similar to Chef Solo (chapter <<\ref{sec:solo-renvironment}~Defining environments>>). Except default attributes, environment in Chef Server can contain <<cookbook\_versions>> attribute. In this attibute you can lock cookbook versions. Example:
+
+\begin{lstlisting}[language=JSON,label=lst:my-serer-cloud-environment1,title=my-server-cloud/environments/development.json]
+{
+  "name": "development",
+  "description": "development environment",
+  "chef_type": "environment",
+  "json_class": "Chef::Environment",
+  "default_attributes": {},
+  "cookbook_versions": {
+    "nginx": "= 2.2.0"
+  }
+}
+\end{lstlisting}
+
+As you can see we locked nginx to 2.2.0 version for development environment. This is very usefull stuff, because when released new versions of some cookbooks, you need check what can you update to new version of cookbook without break a production environment. In this case you can change version of cookbooks inside <<cookbook\_versions>> in your test (development, staging, etc.) environment, check what all work fine with new cookbook and update production environment only in success case.
+
+Set environment to node similar to Chef Solo, but in this case you should use <<chef\_environment>> attribute. Example:
+
+\begin{lstlisting}[language=JSON,label=lst:my-serer-cloud-environment2,title=my-server-cloud/nodes/second.example.com.json]
+{
+  "name": "second.example.com",
+  "json_class": "Chef::Node",
+  "chef_type": "node",
+  "chef_environment": "development",
+  "normal": {
+    "fqdn": "10.33.33.35"
+  },
+  "default": {},
+  "override": {},
+  "run_list": [
+    "role[nginx]"
+  ]
+}
+\end{lstlisting}
+
+To check what all work fine, first of all you should upload you environment and update node in Chef Server:
+
+\begin{lstlisting}[language=Bash,label=lst:my-serer-cloud-environment3]
+$ knife environment from file environments/development.json
+Updated Environment development
+
+$ knife node from file nodes/second.example.com.json
+Updated Node second.example.com!
+\end{lstlisting}
+
+And check what all work fine by command <<vagrant provision>> for second node:
+
+\begin{lstlisting}[language=Bash,label=lst:my-serer-cloud-environment4]
+$ vagrant provision chef_second_client
+[chef_second_client] Running provisioner: chef_client...
+Creating folder to hold client key...
+Uploading chef client validation key...
+Generating chef JSON and uploading...
+...
+\end{lstlisting}
+

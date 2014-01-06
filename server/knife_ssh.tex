@@ -1,0 +1,32 @@
+\section{Knife ssh}
+
+The knife ssh subcommand is used to invoke SSH commands (in parallel) on a subset of nodes within an organization, based on the results of a search query. We already use it to run chef-client on <<first.example.com>> node. It is very handy command. Let's consider an examples.
+
+To find the uptime of all of web servers (all node, which have role <<web>>):
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-knife-ssh1]
+$ knife ssh "role:web" "uptime" -i ../keys/production.pem -x ubuntu
+ec2-***.com    13:18:28 up 55 days, 14 min,  1 user,  load average: 0.00, 0.01, 0.05
+ec2-***.com    13:18:28 up 75 days, 23:49,  1 user,  load average: 0.00, 0.01, 0.05
+ec2-***.com    13:18:28 up 55 days, 13 min,  1 user,  load average: 0.08, 0.03, 0.05
+\end{lstlisting}
+
+To run the chef-client on all nodes:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-knife-ssh2]
+$ knife ssh 'name:*' 'sudo chef-client' -i ../keys/production.pem -x ubuntu
+...
+\end{lstlisting}
+
+To upgrade all nodes:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-knife-ssh3]
+$ knife ssh 'name:*' 'sudo aptitude upgrade -y' -i ../keys/production.pem -x ubuntu
+...
+\end{lstlisting}
+
+
+
+\subsection{Chef-client cookbook}
+
+\href{http://community.opscode.com/cookbooks/chef-client}{chef-client}
