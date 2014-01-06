@@ -74,9 +74,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     chef_client.vm.provision :chef_client do |chef|
       chef.chef_server_url = Chef::Config[:chef_server_url]
       chef.validation_key_path = Chef::Config[:validation_key]
-      chef.client_key_path = Chef::Config[:client_key]
-      chef.node_name = 'second.example.com'
       chef.validation_client_name = Chef::Config[:validation_client_name]
+      chef.node_name = 'second.example.com'
 
       chef.delete_node = true
       chef.delete_client = true
