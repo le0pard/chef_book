@@ -1,6 +1,6 @@
 \section{Knife ssh}
 
-The knife ssh subcommand is used to invoke SSH commands (in parallel) on a subset of nodes within an organization, based on the results of a search query. We already use it to run chef-client on <<first.example.com>> node. It is very handy command. Let's consider an examples.
+The knife ssh subcommand is used to invoke SSH commands (in parallel) on a subset of nodes within an organization, based on the results of a search query. We already use it to run chef-client on <<first.example.com>> node. Let's consider an examples.
 
 To find the uptime of all of web servers (all node, which have role <<web>>):
 
@@ -24,8 +24,6 @@ To upgrade all nodes:
 $ knife ssh 'name:*' 'sudo aptitude upgrade -y' -i ../keys/production.pem -x ubuntu
 ...
 \end{lstlisting}
-
-
 
 \subsection{Chef-client cookbook}
 
