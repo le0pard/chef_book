@@ -9,6 +9,9 @@
     "yum": {
       "locked_version": "3.0.4"
     },
+    "chef-client": {
+      "locked_version": "3.2.0"
+    },
     "apt": {
       "locked_version": "2.3.4"
     },
@@ -29,6 +32,12 @@
     },
     "yum-epel": {
       "locked_version": "0.2.0"
+    },
+    "cron": {
+      "locked_version": "1.2.4"
+    },
+    "logrotate": {
+      "locked_version": "1.2.0"
     }
   }
 }

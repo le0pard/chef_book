@@ -45,4 +45,91 @@ $ knife ssh "chef_environment:staging" "free -m" -i ../keys/production.pem -x ub
 
 \subsection{Chef-client cookbook}
 
-\href{http://community.opscode.com/cookbooks/chef-client}{chef-client}
+Sometimes you may want update you servers automaticaly (instead using <<knife ssh>>). For example, you just updated new cookbooks, roles and nodes and all nodes should automaticaly fetch new cookbooks and execute its, if it updated (and for you not critical update speed). We can use special cookbook \href{http://community.opscode.com/cookbooks/chef-client}{chef-client}. It allow for use bluepill, daemontools, runit or cron to configure your systems to run Chef Client as a service. First of all we need add this cookbook in Berksfile and run <<berks install>>:
+
+\begin{lstlisting}[label=lst:my-server-cloud-knife-ssh6,title=my-server-cloud/Berksfile]
+$ knife ssh "chef_environment:staging" "free -m" -i ../keys/production.pem -x ubuntu
+***.com              total       used       free     shared    buffers     cached
+***.com Mem:          1692       1182        509          0        181        491
+***.com -/+ buffers/cache:        509       1183
+***.com Swap:          895          6        889
+...
+\end{lstlisting}
+
+Next we will create new node:
+
+\begin{lstlisting}[language=JSON,label=lst:my-server-cloud-knife-ssh7,title=my-server-cloud/roles/chef-client.json]
+{
+  "name": "chef-client",
+  "description": "The base role for chef-client",
+  "chef_type": "role",
+  "json_class": "Chef::Role",
+  "default_attributes": {
+    "chef_client": {
+      "interval": 1800,
+      "init_style": "upstart",
+      "config": {
+        "client_fork": true
+      }
+    }
+  },
+  "run_list": [
+    "recipe[chef-client]",
+    "recipe[chef-client::config]"
+  ]
+}
+\end{lstlisting}
+
+By attributes, it will check for updates Chef Server each 1800 sec (30 min) and use fork method for execution of chef-client.
+
+And add this to nodes:
+
+\begin{lstlisting}[language=JSON,label=lst:my-server-cloud-knife-ssh8,title=my-server-cloud/nodes/second.example.com.json]
+{
+  "name": "second.example.com",
+  "json_class": "Chef::Node",
+  "chef_type": "node",
+  "chef_environment": "development",
+  "normal": {
+    "fqdn": "10.33.33.35"
+  },
+  "default": {},
+  "override": {},
+  "run_list": [
+    "role[chef-client]",
+    "role[nginx]"
+  ]
+}
+\end{lstlisting}
+
+After upload coobooks, role and nodes on Chef Server, we can check what chef-client will be added to upstart:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-knife-ssh9]
+$ vagrant provision chef_second_client
+[chef_second_client] Running provisioner: chef_client...
+Creating folder to hold client key...
+Uploading chef client validation key...
+...
+[2014-01-07T00:11:27+00:00] INFO: service[chef-client] restarted
+[2014-01-07T00:11:27+00:00] INFO: Chef Run complete in 9.599237616 seconds
+[2014-01-07T00:11:27+00:00] INFO: Running report handlers
+[2014-01-07T00:11:27+00:00] INFO: Report handlers complete
+\end{lstlisting}
+
+And we can use command <<knife status>> to see chef-client status on nodes:
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-knife-ssh10]
+$ knife status
+3 minutes ago, first.example.com, precise64, 10.0.2.14, ubuntu 12.04.
+2 minutes ago, second.example.com, precise64, 10.0.2.15, ubuntu 12.04.
+\end{lstlisting}
+
+Of course, you can filter this list, if you have too many nodes (filter by role, environment, etc.):
+
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-knife-ssh11]
+$ knife status 'name:second*'
+4 minutes ago, second.example.com, precise64, 10.0.2.15, ubuntu 12.04.
+$ knife status 'role:nginx'
+6 minutes ago, first.example.com, precise64, 10.0.2.14, ubuntu 12.04.
+5 minutes ago, second.example.com, precise64, 10.0.2.15, ubuntu 12.04.
+\end{lstlisting}

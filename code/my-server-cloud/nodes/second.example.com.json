@@ -9,6 +9,7 @@
   "default": {},
   "override": {},
   "run_list": [
+    "role[chef-client]",
     "role[nginx]"
   ]
 }

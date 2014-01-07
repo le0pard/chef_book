@@ -1,0 +1,19 @@
+{
+  "name": "chef-client",
+  "description": "The base role for chef-client",
+  "chef_type": "role",
+  "json_class": "Chef::Role",
+  "default_attributes": {
+    "chef_client": {
+      "interval": 1800,
+      "init_style": "upstart",
+      "config": {
+        "client_fork": true
+      }
+    }
+  },
+  "run_list": [
+    "recipe[chef-client]",
+    "recipe[chef-client::config]"
+  ]
+}
