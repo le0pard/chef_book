@@ -1,2 +1,60 @@
 \section{Cookbook file organization}
 
+For beginning we will generate cokbook by knife or berks. You can install both by bundler (we already did this in our kitchens). So, let's create <<my\_cool\_app>> cookbook:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-organization1]
+$ cd site-cookbooks
+$ knife cookbook create my_cool_app -o .
+# or another way by berks
+$ berks cookbook my_cool_app
+\end{lstlisting}
+
+After this you should see inside <<site-cookbooks>> new folder <<my\_cool\_app>>. This is our cookbook, which have such file structure inside:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-organization2]
+$ ls -l my_cool_app
+total 72
+drwxr-xr-x  .
+drwxr-xr-x  ..
+drwxr-xr-x  .git
+-rw-r--r--  .gitignore
+-rw-r--r--  Berksfile
+-rw-r--r--  Gemfile
+-rw-r--r--@ LICENSE
+-rw-r--r--  README.md
+-rw-r--r--  Thorfile
+-rw-r--r--  Vagrantfile
+drwxr-xr-x  attributes
+-rw-r--r--  chefignore
+drwxr-xr-x  definitions
+drwxr-xr-x  files
+drwxr-xr-x  libraries
+-rw-r--r--  metadata.rb
+drwxr-xr-x  providers
+drwxr-xr-x  recipes
+drwxr-xr-x  resources
+drwxr-xr-x  templates
+\end{lstlisting}
+
+Let's consider this structure:
+
+\begin{itemize}
+  \item \textbf{.git} - git repository skeleton (no need to do <<git init>>)
+  \item \textbf{.gitignore} - specifies intentionally untracked files to ignore by Git
+  \item \textbf{Berksfile} - file with cookbook dependencies for berkshelf (used for testing)
+  \item \textbf{Gemfile} - file with gems for bundler (used for testing)
+  \item \textbf{LICENSE} - file contain license information about cookbook
+  \item \textbf{README.md} - file contains information about cookbook. <<.md>> mean \href{http://daringfireball.net/projects/markdown/syntax}{markdown} syntax
+  \item \textbf{Thorfile} - file include tasks for thor gem (toolkit for building command-line interfaces, used for testing)
+  \item \textbf{Vagrantfile} - file describe the type of machine required for a cookbook for vagrant
+  \item \textbf{attributes} - ...
+  \item \textbf{chefignore} - ...
+  \item \textbf{definitions} - ...
+  \item \textbf{files} - ...
+  \item \textbf{attributes} - ...
+  \item \textbf{metadata.rb} - ...
+  \item \textbf{providers} - ...
+  \item \textbf{recipes} - ...
+  \item \textbf{resources} - ...
+  \item \textbf{templates} - ...
+\end{itemize}
