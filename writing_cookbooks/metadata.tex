@@ -22,4 +22,28 @@ This file written on Ruby and can have such settings:
   \item \textbf{description} - a short description of a cookbook and its functionality
   \item \textbf{long\_description} - a longer description that ideally contains full instructions on the proper use of a cookbook, including definitions, libraries, dependencies, and so on. In example the contents pulled from <<README.md>> file
   \item \textbf{version} - the current version of a cookbook. Version numbers always follow a simple three-number version sequence
+  \item \textbf{attribute} - the list of attributes that are required to configure a cookbook
+  \item \textbf{depends} - indicates that a cookbook has a dependency on another cookbook
+  \item \textbf{recommends} - adds a dependency on another cookbook that is recommended, but not required
+  \item \textbf{suggests} - adds a dependency on another cookbook that is suggested, but not required
+  \item \textbf{conflicts} - indicates that a cookbook conflicts with another cookbook or cookbook version
+  \item \textbf{grouping} - adds a title and description to a group of attributes within a namespace
+  \item \textbf{provides} - adds a recipe, definition, or resource that is provided by this cookbook, should the auto-populated list be insufficient
+  \item \textbf{recipe} - a description for a recipe, mostly for cosmetic value within the server user interface
+  \item \textbf{replaces} - indicates that this cookbook should replace another (and can be used in-place of that cookbook)
+  \item \textbf{supports} - indicates that a cookbook has a supported platform
 \end{itemize}
+
+For our cookbook we need little modify it:
+
+\begin{lstlisting}[label=lst:cookbook-metadata2,title=my-server-cloud/site-cookbooks/my\_cool\_app/metadata.rb]
+name             'my_cool_app'
+maintainer       'Alexey Vasiliev'
+maintainer_email 'leopard_ne@inbox.ru'
+license          'MIT'
+description      'Installs/Configures my_cool_app'
+long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
+version          '0.1.0'
+\end{lstlisting}
+
+As of writing this cookbook, we will be adding information to this file on it.

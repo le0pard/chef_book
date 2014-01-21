@@ -1,1 +1,82 @@
 \section{Recipes}
+
+Any cookbook contains recipes. The default recipe inside cookbook have name <<default>>. Let's add our default recipe, which will install \href{http://git-scm.com/}{git}:
+
+\begin{lstlisting}[label=lst:cookbook-recipes1,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
+#
+# Cookbook Name:: my_cool_app
+# Recipe:: default
+#
+# Copyright (C) 2014 Alexey Vasiliev
+#
+# MIT
+#
+
+package 'git'
+\end{lstlisting}
+
+As you can see, at the beginning of recipe we have comments about this recipe. Next we add resource <<package>> with argument <<git>>. The <<package>> resource is used to manage packages on the system. For example, on Debian or Ubuntu resource <<package>> will use <<apt-get>> command to install git on system.
+
+Now you should add <<my\_cool\_app>> into run-list to use this cookbook:
+
+\begin{lstlisting}[label=lst:cookbook-recipes2,title=my-server-cloud/site-cookbooks/nodes/second.example.com.json]
+{
+  "name": "second.example.com",
+  "json_class": "Chef::Node",
+  "chef_type": "node",
+  "chef_environment": "development",
+  "normal": {
+    "fqdn": "10.33.33.35"
+  },
+  "default": {},
+  "override": {},
+  "run_list": [
+    "role[chef-client]",
+    "role[nginx]",
+    "my_cool_app"
+  ]
+}
+\end{lstlisting}
+
+If you using Chef Server, don't forget upload this cookbook and update node on Chef Server by knife.
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes3]
+$ knife cookbook upload my_cool_app
+Uploading my_cool_app    [0.1.0]
+Uploaded 1 cookbook.
+$ knife node from file nodes/second.example.com.json
+Updated Node second.example.com!
+// on real environment you will execute "knife ssh 'name:second.example.com' 'sudo chef-client' -i ../keys/production.pem -x ubuntu"
+$ vagrant provision chef_second_client
+[2014-01-21T18:21:55+00:00] INFO: Chef Run complete in 26.935610739 seconds
+[2014-01-21T18:21:55+00:00] INFO: Running report handler
+\end{lstlisting}
+
+Let's install also \href{http://en.wikipedia.org/wiki/Network\_Time\_Protocol}{ntp} package in the same recipe. Because we have in recipe Ruby syntax, we can little \href{http://ru.wikipedia.org/wiki/Dont\_repeat\_yourself}{DRY} our code:
+
+\begin{lstlisting}[label=lst:cookbook-recipes4,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
+%w(git ntp).each do |pack|
+  package pack
+end
+\end{lstlisting}
+
+Again upload cookbook and run chef-client:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes5]
+$ knife cookbook upload my_cool_app
+Uploading my_cool_app    [0.1.0]
+Uploaded 1 cookbook.
+// on real environment you will execute "knife ssh 'name:second.example.com' 'sudo chef-client' -i ../keys/production.pem -x ubuntu"
+$ vagrant provision chef_second_client
+[2014-01-21T18:21:55+00:00] INFO: Chef Run complete in 26.935610739 seconds
+[2014-01-21T18:21:55+00:00] INFO: Running report handler
+$ vagrant ssh chef_second_client
+...
+vagrant@precise64:~$ ps ax | grep ntp
+ 1115 ?        Ss     0:00 /usr/sbin/ntpd -p /var/run/ntpd.pid -g -u 103:108
+13839 pts/2    S+     0:00 grep --color=auto ntp
+vagrant@precise64:~$ git --version
+git version 1.7.9.5
+\end{lstlisting}
+
+As you can see our simple cookbook is working.

@@ -1,1 +1,24 @@
-\section{Resources}
+\section{Resources and Providers}
+
+As you read from previous chapter, Chef inside have resources (in example we used <<package>> resource). A resource defines the actions that can be taken, such as when a package should be installed, whether a service should be enabled or restarted, which groups, users, or groups of users should be created, where to put a collection of files, what the name of a new directory should be, and so on. During a chef-client run, each resource is identified and then associated with a provider. The provider then does the work to complete the action defined by the resource. Each resource is processed in the same order as they appear in a recipe. The chef-client ensures that the same actions are taken the same way everywhere and that actions produce the same result every time. A resource is implemented within a recipe using Ruby.
+
+Let's look at the most necessary resources.
+
+\subsection{Bash}
+
+The bash resource is used to execute scripts using the Bash interpreter and includes all of the actions and attributes that are available to the execute resource. Example:
+
+\begin{lstlisting}[label=lst:cookbook-resources-bash]
+bash "install_something" do
+  user "root"
+  cwd "/tmp"
+  code <<-EOH
+  wget http://www.example.com/tarball.tar.gz
+  tar -zxf tarball.tar.gz
+  cd tarball
+  ./configure
+  make
+  make install
+  EOH
+end
+\end{lstlisting}

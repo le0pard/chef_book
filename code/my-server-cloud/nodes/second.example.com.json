@@ -10,6 +10,7 @@
   "override": {},
   "run_list": [
     "role[chef-client]",
-    "role[nginx]"
+    "role[nginx]",
+    "my_cool_app"
   ]
 }
