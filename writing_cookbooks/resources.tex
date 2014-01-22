@@ -74,6 +74,23 @@ bash "install_ruby_build" do
 end
 \end{lstlisting}
 
+\subsection{Link}
+
+The link resource is used to create symbolic or hard links. Example:
+
+\begin{lstlisting}[label=lst:cookbook-resources-cookbook-link1]
+link "/tmp/passwd" do
+  to "/etc/passwd"
+end
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:cookbook-resources-cookbook-link2]
+link "/tmp/passwd" do
+  to "/etc/passwd"
+  link_type :hard
+end
+\end{lstlisting}
+
 \subsection{Cookbook\_file}
 
 The cookbook\_file resource is used to transfer files from a sub-directory of the files/ directory in a cookbook to a specified path that is located on the host running the chef-client or chef-solo. The file in a cookbook is selected according to file specificity, which allows different source files to be used based on the hostname, host platform (operating system, distro, or as appropriate), or platform version. Files that are located under COOKBOOK\_NAME/files/default can be used on any platform. Example:
@@ -109,6 +126,26 @@ template "/tmp/somefile" do
   mode 00644
   source "somefile.erb"
   not_if {File.exists?("/etc/passwd")}
+end
+\end{lstlisting}
+
+\subsection{Script}
+
+The script resource is used to execute scripts using the specified interpreter (Bash, Csh, Perl, Python, or Ruby) and includes all of the actions and attributes that are available to the execute resource. Example:
+
+\begin{lstlisting}[label=lst:cookbook-resources-cookbook-script1]
+script "install_something" do
+  interpreter "bash"
+  user "root"
+  cwd "/tmp"
+  code <<-EOH
+  wget http://www.example.com/tarball.tar.gz
+  tar -zxf tarball.tar.gz
+  cd tarball
+  ./configure
+  make
+  make install
+  EOH
 end
 \end{lstlisting}
 
