@@ -22,3 +22,124 @@ bash "install_something" do
   EOH
 end
 \end{lstlisting}
+
+\subsection{Cron}
+
+The cron resource is used to manage cron entries for time-based job scheduling. Attributes for a schedule will default to * if not provided. The cron resource requires access to a crontab program, typically cron. Example:
+
+\begin{lstlisting}[label=lst:cookbook-resources-cron1]
+cron "name_of_cron_entry" do
+  hour "8"
+  weekday "6"
+  mailto "admin@opscode.com"
+  action :create
+end
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:cookbook-resources-cron2]
+cron "noop" do
+  hour "5"
+  minute "0"
+  command "/bin/true"
+end
+\end{lstlisting}
+
+\subsection{Git}
+
+The git resource is used to manage source control resources that exist in a git repository. git version 1.6.5 (or higher) is required to use all of the functionality in the git resource. Example:
+
+\begin{lstlisting}[label=lst:cookbook-resources-git1]
+git "/opt/mysources/couch" do
+  repository "git://git.apache.org/couchdb.git"
+  reference "master"
+  action :sync
+end
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:cookbook-resources-git2]
+git "#{Chef::Config[:file_cache_path]}/ruby-build" do
+ repository "git://github.com/sstephenson/ruby-build.git"
+ reference "master"
+ action :sync
+end
+
+bash "install_ruby_build" do
+ cwd "#{Chef::Config[:file_cache_path]}/ruby-build"
+ user "rbenv"
+ group "rbenv"
+ code <<-EOH
+   ./install.sh
+   EOH
+ environment 'PREFIX' => "/usr/local"
+end
+\end{lstlisting}
+
+\subsection{Cookbook\_file}
+
+The cookbook\_file resource is used to transfer files from a sub-directory of the files/ directory in a cookbook to a specified path that is located on the host running the chef-client or chef-solo. The file in a cookbook is selected according to file specificity, which allows different source files to be used based on the hostname, host platform (operating system, distro, or as appropriate), or platform version. Files that are located under COOKBOOK\_NAME/files/default can be used on any platform. Example:
+
+\begin{lstlisting}[label=lst:cookbook-resources-cookbook-file1]
+cookbook_file "/tmp/testfile" do
+  source "testfile"
+  mode 00644
+end
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:cookbook-resources-cookbook-file2]
+cookbook_file "/etc/yum.repos.d/custom.repo" do
+  source "custom"
+  mode 00644
+  notifies :run, "execute[create-yum-cache]", :immediately
+  notifies :create, "ruby_block[reload-internal-yum-cache]", :immediately
+end
+\end{lstlisting}
+
+\subsection{Template}
+
+The template resource is used to manage file contents with an embedded Ruby (erb) template. This resource includes actions and attributes from the file resource. Template files managed by the template resource follow the same file specificity rules as the remote\_file and file resources. Example:
+
+\begin{lstlisting}[label=lst:cookbook-resources-cookbook-template1]
+template "/tmp/config.conf" do
+  source "config.conf.erb"
+end
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:cookbook-resources-cookbook-template2]
+template "/tmp/somefile" do
+  mode 00644
+  source "somefile.erb"
+  not_if {File.exists?("/etc/passwd")}
+end
+\end{lstlisting}
+
+\subsection{User}
+
+The user resource is used to add users, update existing users, remove users, and to lock/unlock user passwords. Example:
+
+\begin{lstlisting}[label=lst:cookbook-resources-cookbook-user1]
+user "random" do
+  supports :manage_home => true
+  comment "Random User"
+  uid 1234
+  gid "users"
+  home "/home/random"
+  shell "/bin/bash"
+  password "$1$JJsvHslV$szsCjVEroftprNn4JHtDi."
+end
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:cookbook-resources-cookbook-user2]
+user "systemguy" do
+  comment "system guy"
+  system true
+  shell "/bin/false"
+end
+\end{lstlisting}
+
+\subsection{Deploy}
+
+The deploy resource is used to manage and control deployments. This is a popular resource, but is also complex, having the most attributes, multiple providers, the added complexity of callbacks, plus four attributes that support layout modifications from within a recipe.
+
+The deploy resource is modeled after Capistrano, a utility and framework for executing commands in parallel on multiple remote machines via SSH. The deploy resource is designed to behave in a way that is similar to the deploy and deploy:migration tasks in Capistrano.
+
+TODO
