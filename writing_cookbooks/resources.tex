@@ -44,6 +44,31 @@ cron "noop" do
 end
 \end{lstlisting}
 
+\subsection{Directory}
+
+The directory resource is used to manage a directory, which is a hierarchy of folders that comprises all of the information stored on a computer. The root directory is the top-level, under which the rest of the directory is organized. The directory resource uses the name attribute to specify the path to a location in a directory. Typically, permission to access that location in the directory is required. Example:
+
+\begin{lstlisting}[label=lst:cookbook-resources-directory1]
+directory "/tmp/something" do
+  owner "root"
+  group "root"
+  mode 00755
+  action :create
+end
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:cookbook-resources-directory2]
+%w{dir1 dir2 dir3}.each do |dir|
+  directory "/tmp/mydirs/#{dir}" do
+    mode 00775
+    owner "root"
+    group "root"
+    action :create
+    recursive true
+  end
+end
+\end{lstlisting}
+
 \subsection{Git}
 
 The git resource is used to manage source control resources that exist in a git repository. git version 1.6.5 (or higher) is required to use all of the functionality in the git resource. Example:
