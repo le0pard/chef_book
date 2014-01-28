@@ -90,4 +90,78 @@ Even though this is a very simple example, the full capabilities of Ruby can be 
 
 A cookbook will frequently be designed to work across many platforms and will often be required to distribute a specific file to a specific platform. A cookbook can be designed to support distributing files across platforms, but ensuring that the right file ends up on each system.
 
-TODO
+The pattern for file specificity is as follows:
+
+\begin{enumerate}
+  \item \inline{host-node[:fqdn]}
+  \item \inline{node[:platform]-node[:platform_version]}
+  \item \inline{node[:platform]-version_components}: The version string is split on decimals and searched from greatest specificity to least; for example, if the location from the last rule was centos-5.7.1, then centos-5.7 and centos-5 would also be searched.
+  \item \inline{node[:platform]}
+  \item \inline{default}
+\end{enumerate}
+
+The naming of folders within cookbook directories must literally match the host notation used for template specificity matching. For example, if a host is named <<foo.example.com>>, then the folder must be named <<host-foo.example.com>>.
+
+A cookbook may have a \inline{/templates} directory structure like this:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-templates7]
+templates/
+  windows-6.2
+  windows-6.1
+  windows-6.0
+  windows
+  default
+\end{lstlisting}
+
+and a resource that looks something like the following:
+
+\begin{lstlisting}[label=lst:cookbook-templates8]
+template "C:\path\to\file\text_file.txt" do
+  source "text_file.txt"
+  mode 0755
+  owner "root"
+  group "root"
+end
+\end{lstlisting}
+
+This resource would be matched in the same order as the /templates directory structure. For a node named <<host-node-desktop>> that is running Windows 7, the second item would be the matching item and the location:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-templates8]
+/templates
+  windows-6.2/text_file.txt
+  windows-6.1/text_file.txt
+  windows-6.0/text_file.txt
+  windows/text_file.txt
+  default/text_file.txt
+\end{lstlisting}
+
+\subsection{Partial Templates}
+
+A template can be built in a way that allows it to contain references to one (or more) smaller template files. (These smaller template files are also referred to as partials.) A partial can be referenced from a template file in one of the following ways:
+
+\begin{itemize}
+  \item By using the Ruby render method in the template file
+  \item By using the template resource and the variables parameter
+\end{itemize}
+
+Use the render method in a template to reference a partial template file with the following syntax:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-templates9]
+<%= render "partial_name.txt.erb", :option => {} %>
+\end{lstlisting}
+
+where \inline{partial_name.txt.erb} is the name of the partial template file and \inline{:option} is one (or more) of the following options:
+
+\begin{itemize}
+  \item \inline{:cookbook} - by default, a partial template file is assumed to be located in the cookbook that contains the top-level template. Use this option to specify the path to a different cookbook
+  \item \inline{:local} - indicates that the name of the partial template file should be interpreted as a path to a file in the local file system or looked up in a cookbook using the normal rules for template files. Set to true to interpret as a path to a file in the local file system and to false to use the normal rules for template files
+  \item \inline{:source} - by default, a partial template file is identified by its file name. Use this option to specify a different name or a local path to use (instead of the name of the partial template file)
+  \item \inline{:variables} - a hash of \inline{variable_name => value} that will be made available to the partial template file. When this option is used, any variables that are defined in the top-level template that are required by the partial template file must have them defined explicitly using this option
+\end{itemize}
+
+For example:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-templates10]
+<%= render "simple.txt.erb", :variables => {:user => @user }, :local => true %>
+\end{lstlisting}
+

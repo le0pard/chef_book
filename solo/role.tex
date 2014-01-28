@@ -24,14 +24,14 @@ In our project we have a web application servers, load balancer server and datab
 Let's consider a json structure:
 
 \begin{itemize}
-  \item \textbf{name} - a unique name of role. In most cases the same as name of file without extension
-  \item \textbf{description} - a description of the functionality that is covered by role
-  \item \textbf{chef\_type} - this should always be set to role
-  \item \textbf{json\_class} - this should always be set to Chef::Role
-  \item \textbf{default\_attributes} - a set of attributes that should be applied to all nodes, assuming the node does not already have a value for the attribute. This is useful for setting global defaults that can then be overridden for specific nodes. If more than one role attempts to set a default value for the same attribute, the last role applied will be the role to set the attribute value. This attribute is optional
-  \item \textbf{override\_attributes} - a set of attributes that should be applied to all nodes, even if the node already has a value for an attribute. This is useful for ensuring that certain attributes always have specific values. If more than one role attempts to set an override value for the same attribute, the last role applied will win. This attribute is optional
-  \item \textbf{run\_list} - a list of recipes and/or roles that will be applied and the order in which those recipes and/or roles will be applied
-  \item \textbf{env\_run\_lists} - a list of environments, each specifying a recipe or a role that will be applied to that environment. This setting must specify the <<\_default>> environment. If the <<\_default>> environment is set to [] or nil, then the run list will be empty. This attribute is optional
+  \item \inline{name} - a unique name of role. In most cases the same as name of file without extension
+  \item \inline{description} - a description of the functionality that is covered by role
+  \item \inline{chef_type} - this should always be set to role
+  \item \inline{json_class} - this should always be set to Chef::Role
+  \item \inline{default_attributes} - a set of attributes that should be applied to all nodes, assuming the node does not already have a value for the attribute. This is useful for setting global defaults that can then be overridden for specific nodes. If more than one role attempts to set a default value for the same attribute, the last role applied will be the role to set the attribute value. This attribute is optional
+  \item \inline{override_attributes} - a set of attributes that should be applied to all nodes, even if the node already has a value for an attribute. This is useful for ensuring that certain attributes always have specific values. If more than one role attempts to set an override value for the same attribute, the last role applied will win. This attribute is optional
+  \item \inline{run_list} - a list of recipes and/or roles that will be applied and the order in which those recipes and/or roles will be applied
+  \item \inline{env_run_lists} - a list of environments, each specifying a recipe or a role that will be applied to that environment. This setting must specify the \inline{_default} environment. If the \inline{_default} environment is set to [] or nil, then the run list will be empty. This attribute is optional
 \end{itemize}
 
 To use this role, we can create new node <<web2.example.com>>:

@@ -39,22 +39,22 @@ drwxr-xr-x  templates
 Let's consider this structure:
 
 \begin{itemize}
-  \item \textbf{.git} - git repository skeleton (no need to do <<git init>>)
-  \item \textbf{.gitignore} - specifies intentionally untracked files to ignore by Git
-  \item \textbf{Berksfile} - file with cookbook dependencies for berkshelf (used for testing)
-  \item \textbf{Gemfile} - file with gems for bundler (used for testing)
-  \item \textbf{LICENSE} - file contain license information about cookbook
-  \item \textbf{README.md} - file contains information about cookbook. <<.md>> mean \href{http://daringfireball.net/projects/markdown/syntax}{markdown} syntax
-  \item \textbf{Thorfile} - file include tasks for thor gem (toolkit for building command-line interfaces, used for testing)
-  \item \textbf{Vagrantfile} - file describe the type of machine required for a cookbook for vagrant
-  \item \textbf{attributes} - this folder contain ruby files with default cookbook attributes, which you can redefine in environment, role or node attributes
-  \item \textbf{chefignore} - specifies intentionally untracked files to ignore by Chef, Knife
-  \item \textbf{definitions} - this folder contain ruby files which is used to declare resources so they can be added to the resource collection
-  \item \textbf{files} - this folder contain files, which just need transfer to node (used by command <<cookbook\_file>>)
-  \item \textbf{libraries} - this folder contain ruby files with Ruby code to be included in a cookbook, either as a way to extend the classes used by the chef-client or to implement a new class directly
-  \item \textbf{metadata.rb} - a file, which contain all information (metadata) about the cookbook: name, dependencies, etc. (it is like gemset for ruby gems, package.json for npm, etc)
-  \item \textbf{providers} - this folder contain providers for chef resources
-  \item \textbf{recipes} - this folder contain recipes of this cookbook
-  \item \textbf{resources} - this folder contain resources for chef (like build-in cron, deploy, etc)
-  \item \textbf{templates} - this folder contain files written in a markup language that allows the contents of a file to be dynamically generated based on variables or complex logic. Used an Embedded Ruby (ERB) templates.
+  \item \inline{.git} - git repository skeleton (no need to do <<git init>>)
+  \item \inline{.gitignore} - specifies intentionally untracked files to ignore by Git
+  \item \inline{Berksfile} - file with cookbook dependencies for berkshelf (used for testing)
+  \item \inline{Gemfile} - file with gems for bundler (used for testing)
+  \item \inline{LICENSE} - file contain license information about cookbook
+  \item \inline{README.md} - file contains information about cookbook. <<.md>> mean \href{http://daringfireball.net/projects/markdown/syntax}{markdown} syntax
+  \item \inline{Thorfile} - file include tasks for thor gem (toolkit for building command-line interfaces, used for testing)
+  \item \inline{Vagrantfile} - file describe the type of machine required for a cookbook for vagrant
+  \item \inline{attributes} - this folder contain ruby files with default cookbook attributes, which you can redefine in environment, role or node attributes
+  \item \inline{chefignore} - specifies intentionally untracked files to ignore by Chef, Knife
+  \item \inline{definitions} - this folder contain ruby files which is used to declare resources so they can be added to the resource collection
+  \item \inline{files} - this folder contain files, which just need transfer to node (used by command \inline{cookbook_file})
+  \item \inline{libraries} - this folder contain ruby files with Ruby code to be included in a cookbook, either as a way to extend the classes used by the chef-client or to implement a new class directly
+  \item \inline{metadata.rb} - a file, which contain all information (metadata) about the cookbook: name, dependencies, etc. (it is like gemset for ruby gems, package.json for npm, etc)
+  \item \inline{providers} - this folder contain providers for chef resources
+  \item \inline{recipes} - this folder contain recipes of this cookbook
+  \item \inline{resources} - this folder contain resources for chef (like build-in cron, deploy, etc)
+  \item \inline{templates} - this folder contain files written in a markup language that allows the contents of a file to be dynamically generated based on variables or complex logic. Used an Embedded Ruby (ERB) templates.
 \end{itemize}

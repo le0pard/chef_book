@@ -25,11 +25,11 @@ and run command \inline{bundle} in terminal. As a result, by using \href{http://
 \href{http://matschaffer.github.io/knife-solo/}{Knife-solo} adds 5 subcommands to knife tool:
 
 \begin{itemize}
-  \item <<knife solo init>> is used to create a new directory structure (i.e. kitchen) that fits with Chef's standard structure and can be used to build and store recipes.
-  \item <<knife solo prepare>> installs Chef on a given host. It's structured to auto-detect the target OS and change the installation process accordingly.
-  \item <<knife solo cook>> uploads the current kitchen to the target host and runs chef-solo on that host.
-  \item <<knife solo bootstrap>> combines the two previous ones (prepare and cook).
-  \item <<knife solo clean>> removes the uploaded kitchen from the target host.
+  \item \inline{knife solo init} is used to create a new directory structure (i.e. kitchen) that fits with Chef's standard structure and can be used to build and store recipes.
+  \item \inline{knife solo prepare} installs Chef on a given host. It's structured to auto-detect the target OS and change the installation process accordingly.
+  \item \inline{knife solo cook} uploads the current kitchen to the target host and runs chef-solo on that host.
+  \item \inline{knife solo bootstrap} combines the two previous ones (prepare and cook).
+  \item \inline{knife solo clean} removes the uploaded kitchen from the target host.
 \end{itemize}
 
 Knife-solo also integrates with Berkshelf and Librarian-Chef.

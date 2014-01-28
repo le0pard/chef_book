@@ -67,11 +67,11 @@ If you open data bag file, you will see this JSON:
 Let's consider a json structure:
 
 \begin{itemize}
-  \item \textbf{name} - a unique name of data bag
-  \item \textbf{chef\_type} - this should always be set to data\_bag\_item
-  \item \textbf{json\_class} - this should always be set to Chef::DataBagItem
-  \item \textbf{data\_bag} - name of data bag
-  \item \textbf{raw\_data} - values of data bag
+  \item \inline{name} - a unique name of data bag
+  \item \inline{chef_type} - this should always be set to \inline{data_bag_item}
+  \item \inline{json_class} - this should always be set to Chef::DataBagItem
+  \item \inline{data_bag} - name of data bag
+  \item \inline{raw_data} - values of data bag
 \end{itemize}
 
 The contents of a data bag can be encrypted using shared secret encryption. This allows a data bag to store confidential information (such as a database password) or to be managed in a source control system (without plain-text data appearing in revision history).
