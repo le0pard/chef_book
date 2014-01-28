@@ -8,14 +8,14 @@ site :opscode
 cookbook 'apache2'
 \end{lstlisting}
 
-After running the command <<berks install>> this cookbook will be installed with dependencies.
+After running the command \inline{berks install} this cookbook will be installed with dependencies.
 
 \begin{lstlisting}[language=Bash,label=lst:my-cloud-berkshelf2]
 $ berks install
 Using apache2 (1.7.0)
 \end{lstlisting}
 
-By default, you will not find this cookbook in <<cookbooks>> directory. Berkshelf install cookbooks in <<~/.berkshelf>> directory (to avoid duplication of cookbooks). To install it in special path you can use \texttt{-\--path} option in berkshelf:
+By default, you will not find this cookbook in <<cookbooks>> directory. Berkshelf install cookbooks in <<~/.berkshelf>> directory (to avoid duplication of cookbooks). To install it in special path you can use \inline{--path} option in berkshelf:
 
 \begin{lstlisting}[language=Bash,label=lst:my-cloud-berkshelf3]
 $ berks install --path cookbooks
@@ -24,6 +24,6 @@ $ ls cookbooks
 apache2
 \end{lstlisting}
 
-Option <<knife[:berkshelf\_path]>> in knife.rb file set to install our cookbooks into cookbooks directory, so no need to run <<berks install -\--path cookbooks>> each time, when you need cook a node - knife-solo will do it automatically.
+Option \inline{knife[:berkshelf_path]} in knife.rb file set to install our cookbooks into cookbooks directory, so no need to run \inline{berks install --path cookbooks} each time, when you need cook a node - knife-solo will do it automatically.
 
 Now we can start to work with a nodes.

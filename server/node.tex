@@ -1,6 +1,6 @@
 \section{Bootstrap first node}
 
-Once the Chef Server workstation is configured, it can be used to install Chef on one (or more) nodes across the organization using a Knife bootstrap operation. The <<knife bootstrap>> command is used to SSH into the target machine, and then do what is needed to allow the chef-client to run on the node. It will install the chef-client executable (if necessary), generate keys, and register the node with the Chef Server. The bootstrap operation requires the IP address or FQDN of the target system, the SSH credentials (username, password or identity file) for an account that has root access to the node, and (if the operating system is not Ubuntu, which is the default distribution used by knife bootstrap) the operating system running on the target system.
+Once the Chef Server workstation is configured, it can be used to install Chef on one (or more) nodes across the organization using a Knife bootstrap operation. The \inline{knife bootstrap} command is used to SSH into the target machine, and then do what is needed to allow the chef-client to run on the node. It will install the chef-client executable (if necessary), generate keys, and register the node with the Chef Server. The bootstrap operation requires the IP address or FQDN of the target system, the SSH credentials (username, password or identity file) for an account that has root access to the node, and (if the operating system is not Ubuntu, which is the default distribution used by knife bootstrap) the operating system running on the target system.
 
 First, let's add new server in Vagrantfile:
 
@@ -85,7 +85,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 end
 \end{lstlisting}
 
-As you can see, options for <<chef\_client>> the same as we set in knife.rb. After command <<vagrant up>> you can check what new node registered:
+As you can see, options for <<chef\_client>> the same as we set in knife.rb. After command \inline{vagrant up} you can check what new node registered:
 
 \begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node10]
 $ knife node list

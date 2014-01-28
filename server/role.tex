@@ -10,7 +10,7 @@ cookbook 'nginx'
 cookbook 'yum', '~> 3.0'
 \end{lstlisting}
 
-After command <<berks install>> we will create <<nginx>> role:
+After command \inline{berks install} we will create <<nginx>> role:
 
 \begin{lstlisting}[language=JSON,label=lst:my-serer-cloud-role2,title=my-server-cloud/roles/nginx.json]
 {
@@ -53,7 +53,7 @@ And <<first.example.com>> node:
 }
 \end{lstlisting}
 
-As you can see, node have different format, than Chef Solo. Keys <<normal>>, <<default>> and <<override>> contain attributes. Difference of this attributes you can read in chapter <<\ref{sec:server-attributes}~Attributes>>. Now we should upload cookbooks, role and node in Chef Server. For this we can use knife and berkshelf:
+As you can see, node have different format, than Chef Solo. Keys \inline{normal}, \inline{default} and \inline{override} contain attributes. Difference of this attributes you can read in chapter <<\ref{sec:server-attributes}~Attributes>>. Now we should upload cookbooks, role and node in Chef Server. For this we can use knife and berkshelf:
 
 \begin{lstlisting}[language=Bash,label=lst:my-serer-cloud-role4]
 // upload all cookbooks from path 'cookbooks' and 'site-cookbooks' (use --force if cookbook frozen).
@@ -67,7 +67,7 @@ $ knife role from file roles/nginx.json
 $ knife node from file nodes/first.example.com.json
 \end{lstlisting}
 
-Next we should can use <<knife ssh>> command to do something on nodes. The <<knife ssh>> subcommand is used to invoke SSH commands (in parallel) on a subset of nodes within an organization, based on the results of a search query. Example:
+Next we should can use \inline{knife ssh} command to do something on nodes. The \inline{knife ssh} subcommand is used to invoke SSH commands (in parallel) on a subset of nodes within an organization, based on the results of a search query. Example:
 
 \begin{lstlisting}[language=Bash,label=lst:my-serer-cloud-role5]
 // execute on 'first.example.com' chef-client
@@ -105,7 +105,7 @@ After first run of this command next time you can get errors like <<Failed to co
 $ knife node from file nodes/second.example.com.json
 \end{lstlisting}
 
-Now you can just run <<vagrant provision>> for second node:
+Now you can just run \inline{vagrant provision} for second node:
 
 \begin{lstlisting}[language=Bash,label=lst:my-serer-cloud-role8]
 $ vagrant provision chef_second_client

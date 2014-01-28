@@ -2,7 +2,7 @@
 
 An attribute can be defined in a cookbook (or a recipe) and then used to override the default settings on a node. When a cookbook is loaded during a chef-client run, these attributes are compared to the attributes that are already present on the node. When the cookbook attributes take precedence over the default attributes, the chef-client will apply those new settings and values during the chef-client run on the node.
 
-An attribute file is located in the <<attributes/>> sub-directory for a cookbook. When a cookbook is run against a node, the attributes contained in all attribute files are evaluated in the context of the node object. Node methods (when present) are used to set attribute values on a node. For example, the apache2 cookbook contains an attribute file called <<default.rb>>, which contains the following attributes:
+An attribute file is located in the \inline{attributes/} sub-directory for a cookbook. When a cookbook is run against a node, the attributes contained in all attribute files are evaluated in the context of the node object. Node methods (when present) are used to set attribute values on a node. For example, the apache2 cookbook contains an attribute file called \inline{default.rb}, which contains the following attributes:
 
 \begin{lstlisting}[label=lst:cookbook-attributes1]
 default["apache"]["dir"]          = "/etc/apache2"
@@ -45,7 +45,8 @@ cookbook_file "#{node['my_cool_app']['web_dir']}/index.html" do
 end
 
 # create nginx config from temlate nginx.conf.erb
-nginx_config = "#{node['nginx']['dir']}/sites-available/#{node['my_cool_app']['name']}.conf"
+nginx_config = "#{node['nginx']['dir']}" +
+  "/sites-available/#{node['my_cool_app']['name']}.conf"
 template nginx_config do
   source "nginx.conf.erb"
   mode "0644"

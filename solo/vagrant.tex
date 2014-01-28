@@ -12,7 +12,7 @@ $ vagrant box add precise64 http://files.vagrantup.com/precise64.box
 
 More boxes you can find on \href{http://www.vagrantbox.es/}{vagrantbox.es}.
 
-The first step for any project to use Vagrant is to configure Vagrant using a Vagrantfile. We should execute <<vagrant init precise64>> inside kitchen directory:
+The first step for any project to use Vagrant is to configure Vagrant using a Vagrantfile. We should execute \inline{vagrant init precise64} inside kitchen directory:
 
 \begin{lstlisting}[label=lst:my-cloud-vagrant2]
 $ vagrant init precise64
@@ -57,9 +57,9 @@ Bringing machine 'default' up with 'virtualbox' provider...
 [default] -- /vagrant
 \end{lstlisting}
 
-After this you can use command <<vagrant ssh>> to SSH into a running Vagrant machine and give you access to a shell. Command <<vagrant halt>> shuts down the running machine Vagrant is managing. <<vagrant destroy>> command stops the running machine Vagrant is managing and destroys all resources that were created during the machine creation process.
+After this you can use command \inline{vagrant ssh} to SSH into a running Vagrant machine and give you access to a shell. Command <<vagrant halt>> shuts down the running machine Vagrant is managing. \inline{vagrant destroy} command stops the running machine Vagrant is managing and destroys all resources that were created during the machine creation process.
 
-By default, in most cases, your mashine is not contain chef client and we should install it. As you remember, we have knife with command <<prepare>>. Let use this command:
+By default, in most cases, your mashine is not contain chef client and we should install it. As you remember, we have knife with command \inline{prepare}. Let use this command:
 
 \begin{lstlisting}[label=lst:my-cloud-vagrant5]
 $ knife solo prepare vagrant@localhost -i ~/.vagrant.d/insecure_private_key -p 2222 -N web1.example.com
@@ -76,7 +76,7 @@ Setting up chef (11.8.2-1.ubuntu.12.04) ...
 Thank you for installing Chef!
 \end{lstlisting}
 
-As you can see, we use options <<-i>> to set ssh key for mashine, <<-N>> to set node name (if it different from host name) and <<-p>> to set SSH port. In most cases, this port is 2222, but if you running several mashines from vagrant, it will be different. You can read what port is used for SSH by mashine from output of command <<vagrant up>>.
+As you can see, we use options \inline{-i} to set ssh key for mashine, \inline{-N} to set node name (if it different from host name) and \inline{-p} to set SSH port. In most cases, this port is 2222, but if you running several mashines from vagrant, it will be different. You can read what port is used for SSH by mashine from output of command \inline{vagrant up}.
 
 Vagrantfile inside use ruby syntax, so we can use Ruby to \href{http://en.wikipedia.org/wiki/Dont\_repeat\_yourself}{DRY} our config. We should install chef gem inside vagrant:
 
@@ -120,9 +120,9 @@ end
 
 Now consider that we have added.
 
-On lines 4-5 required chef and json gem. JSON gem is as part of Vagrant, but chef gem we installed by previous command <<vagrant plugin install chef>>. After this we load knife.rb in chef config and parse json from node file <<web1.example.com.json>>. After this we have <<Chef::Config>> ruby hash with knife configuration and <<vagrant\_json>> ruby hash will attributes from node. On lines 16-26 defined chef solo configuration for vagrant (we commented <<environment>>, because we don't have it right now, but we will use it later). More information about this you can find in \href{http://docs.vagrantup.com/v2/provisioning/chef\_solo.html}{vagrant website}.
+On lines 4-5 required chef and json gem. JSON gem is as part of Vagrant, but chef gem we installed by previous command \inline{vagrant plugin install chef}. After this we load knife.rb in chef config and parse json from node file <<web1.example.com.json>>. After this we have \inline{Chef::Config} ruby hash with knife configuration and \inline{vagrant_json} ruby hash will attributes from node. On lines 16-26 defined chef solo configuration for vagrant (we commented \inline{environment}, because we don't have it right now, but we will use it later). More information about this you can find in \href{http://docs.vagrantup.com/v2/provisioning/chef\_solo.html}{vagrant website}.
 
-Basically, to run our kitchen on server we are using <<knife solo cook>> command:
+Basically, to run our kitchen on server we are using \inline{knife solo cook} command:
 
 \begin{lstlisting}[label=lst:my-cloud-vagrant11]
 $ knife solo cook vagrant@localhost -i ~/.vagrant.d/insecure_private_key -p 2222 -N web1.example.com
@@ -136,7 +136,7 @@ Uploading the kitchen...
 Chef Client finished, 1 resources updated
 \end{lstlisting}
 
-But in Vagrant we can use build in command <<vagrant provision>>. This command runs any configured provisioners against the running Vagrant managed machine (we changed Vagrantfile, what is why we run <<vagrant reload>> before it):
+But in Vagrant we can use build in command \inline{vagrant provision}. This command runs any configured provisioners against the running Vagrant managed machine (we changed Vagrantfile, what is why we run \inline{vagrant reload} before it):
 
 \begin{lstlisting}[label=lst:my-cloud-vagrant8]
 $ vagrant reload

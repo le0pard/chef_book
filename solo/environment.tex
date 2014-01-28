@@ -29,7 +29,7 @@ Let's consider a json structure:
   \item \textbf{override\_attributes} - a set of attributes that should be applied to all nodes, even if the node already has a value for an attribute. This is useful for ensuring that certain attributes always have specific values. This attribute is optional
 \end{itemize}
 
-As you can see environment doesn't have run\_list, but it have attributes. Attributes in most cases contain information, which specific for environment: connection information to databases, cluster settings for database or queue, etc.
+As you can see environment doesn't have run-list, but it have attributes. Attributes in most cases contain information, which specific for environment: connection information to databases, cluster settings for database or queue, etc.
 
 Now we can activate this development environment in Vagrantfile:
 
@@ -52,7 +52,7 @@ $ vagrant provision
 [2013-12-31T21:53:57+00:00] INFO: Report handlers complete
 \end{lstlisting}
 
-To <<cook>> server by knife with environment you should use <<-E>> argument:
+To \inline{cook} server by knife with environment you should use \inline{-E} argument:
 
 \begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-environment4]
 $ knife solo cook vagrant@localhost -i ~/.vagrant.d/insecure_private_key -p 2222 -N web1.example.com -E development
@@ -63,7 +63,7 @@ Checking Chef version...
 Chef Client finished, 1 resources updated
 \end{lstlisting}
 
-You can set environment for node by attribute <<environment>>:
+You can set environment for node by attribute \inline{environment}:
 
 \begin{lstlisting}[language=JSON,label=lst:my-cloud-chef-environment5,title=my-cloud/nodes/web1.example.com.json]
 {
@@ -74,8 +74,8 @@ You can set environment for node by attribute <<environment>>:
 }
 \end{lstlisting}
 
-and use commad <<knife solo cook>> without <<-E>> argument.
+and use commad \inline{knife solo cook} without \inline{-E} argument.
 
-Once an environment exists on the server, a node can be associated with that environment using the <<chef\_environment>> method of <<node>> object in Ruby.
+Once an environment exists on the server, a node can be associated with that environment using the \inline{chef\_environment} method of <<node>> object in Ruby.
 
 As you can see in Chef Solo environment can be used only for setting attributes. In Chef Server it have additional feature for locking cookbook versions, which we will consider in Chef Server chapter.

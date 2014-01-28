@@ -1,6 +1,6 @@
 \section{Defining roles}\label{sec:solo-role}
 
-Roles help classify the same server group. For example, in your project you can have web, queue and db servers. In this case you can create such type of roles, which will include the same attributes and run\_list for nodes. Let's look at an example.
+Roles help classify the same server group. For example, in your project you can have web, queue and db servers. In this case you can create such type of roles, which will include the same attributes and \inline{run_list} for nodes. Let's look at an example.
 
 In our project we have a web application servers, load balancer server and database server. First we will create roles <<web>>:
 
@@ -64,7 +64,7 @@ stdin: is not a tty
 [2013-12-30T20:23:18+00:00] INFO: Report handlers complete
 \end{lstlisting}
 
-As you can see, role defined in run\_list by command <<role>> and role command replaced to run list of this role by chef client. This allow for use use several roles with recipes in the same node. For example, if web and database role must be on the same server for staging environment, you can define in node:
+As you can see, role defined in \inline{run_list} by command \inline{role} and role command replaced to run list of this role by chef client. This allow for use use several roles with recipes in the same node. For example, if web and database role must be on the same server for staging environment, you can define in node:
 
 \begin{lstlisting}[label=lst:my-cloud-role4,title=my-cloud/nodes/web2.example.com.json]
 {
@@ -90,4 +90,4 @@ Role can contain in run list another roles. For example:
 }
 \end{lstlisting}
 
-Role can contain attributes inside <<default\_attributes>> or <<override\_attributes>> keys. For example, for <<web>> role its can contain general settings for http listen ports, timeout of web server, etc. So let's look in more detail about the use of attributes.
+Role can contain attributes inside \inline{default_attributes} or \inline{override_attributes} keys. For example, for <<web>> role its can contain general settings for http listen ports, timeout of web server, etc. So let's look in more detail about the use of attributes.

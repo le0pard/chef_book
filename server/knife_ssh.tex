@@ -45,7 +45,7 @@ $ knife ssh "chef_environment:staging" "free -m" -i ../keys/production.pem -x ub
 
 \subsection{Chef-client cookbook}
 
-Sometimes you may want update you servers automaticaly (instead using <<knife ssh>>). For example, you just updated new cookbooks, roles and nodes and all nodes should automaticaly fetch new cookbooks and execute its, if it updated (and for you not critical update speed). We can use special cookbook \href{http://community.opscode.com/cookbooks/chef-client}{chef-client}. It allow for use bluepill, daemontools, runit or cron to configure your systems to run Chef Client as a service. First of all we need add this cookbook in Berksfile and run <<berks install>>:
+Sometimes you may want update you servers automaticaly (instead using \inline{knife ssh}). For example, you just updated new cookbooks, roles and nodes and all nodes should automaticaly fetch new cookbooks and execute its, if it updated (and for you not critical update speed). We can use special cookbook \href{http://community.opscode.com/cookbooks/chef-client}{chef-client}. It allow for use bluepill, daemontools, runit or cron to configure your systems to run Chef Client as a service. First of all we need add this cookbook in Berksfile and run \inline{berks install}:
 
 \begin{lstlisting}[label=lst:my-server-cloud-knife-ssh6,title=my-server-cloud/Berksfile]
 $ knife ssh "chef_environment:staging" "free -m" -i ../keys/production.pem -x ubuntu
@@ -116,7 +116,7 @@ Uploading chef client validation key...
 [2014-01-07T00:11:27+00:00] INFO: Report handlers complete
 \end{lstlisting}
 
-And we can use command <<knife status>> to see chef-client status on nodes:
+And we can use command \inline{knife status} to see chef-client status on nodes:
 
 \begin{lstlisting}[language=Bash,label=lst:my-server-cloud-knife-ssh10]
 $ knife status
