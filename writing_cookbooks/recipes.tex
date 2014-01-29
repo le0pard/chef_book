@@ -80,3 +80,76 @@ git version 1.7.9.5
 \end{lstlisting}
 
 As you can see our simple cookbook is working.
+
+
+\subsection{Assign Dependencies}
+
+If a cookbook has a dependency on a recipe that is located in another cookbook, that dependency must be declared in the metadata.rb file for that cookbook using the depends keyword.
+
+For example, if the following recipe is included in a cookbook named <<my\_app>>:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes6]
+include_recipe "apache2::mod_ssl"
+\end{lstlisting}
+
+Then the metadata.rb file for that cookbook would have:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes7]
+depends "apache2"
+\end{lstlisting}
+
+\subsection{Create Exceptions}
+
+A recipe can write events to a log file and can cause exceptions using \inline{Chef::Log}. The levels include debug, info, warn, error, and fatal. For example, to just capture information:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes7]
+Chef::Log.info('some useful information')
+\end{lstlisting}
+
+Or to trigger a fatal exception:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes8]
+Chef::Log.fatal!('something bad')
+\end{lstlisting}
+
+\subsection{Include Recipes}
+
+A recipe can include one (or more) recipes located in external cookbooks by using the \inline{include_recipe} method. When a recipe is included, the resources found in that recipe will be inserted (in the same exact order) at the point where the \inline{include_recipe} keyword is located. The syntax for including a recipe is like this:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes9]
+include_recipe "recipe"
+\end{lstlisting}
+
+For example:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes10]
+include_recipe "apache2::mod_ssl"
+\end{lstlisting}
+
+If the \inline{include_recipe} method is used more than once to include a recipe, only the first inclusion is processed and any subsequent inclusions are ignored.
+
+\subsection{Reload Attributes}
+
+Attributes sometimes depend on actions taken from within recipes, so it may be necessary to reload a given attribute from within a recipe. For example:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes11]
+ruby_block 'some_code' do
+  block do
+    node.from_file(run_context.resolve_attribute("COOKBOOK_NAME", "ATTR_FILE"))
+  end
+  action :nothing
+end
+\end{lstlisting}
+
+\subsection{Accessor Methods}
+
+Attribute accessor methods are automatically created and the method invocation can be used interchangeably with the keys. For example:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes12]
+default.apache.dir          = "/etc/apache2"
+default.apache.listen_ports = [ "80","443" ]
+ion :nothing
+end
+\end{lstlisting}
+
+This is a matter of style and preference for how attributes are reloaded from recipes, and may be seen when retrieving the value of an attribute.
