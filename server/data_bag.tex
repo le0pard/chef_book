@@ -1,5 +1,48 @@
 \section{Data bags}
 
-Role work similar as in Chef Solo (chapter <<\ref{sec:solo-data-bag}~Defining data bags>>).
+Role work similar as in Chef Solo (chapter <<\ref{sec:solo-data-bag}~Defining data bags>>). But in your recipe you can use \inline{search} command to search data bags on servers. Any search for a data bag (or a data bag item) must specify the name of the data bag and then provide the search query string that will be used during the search. For example, to use Knife to search within a data bag named <<admin\_data>> across all items, except for the <<admin\_users>> item, enter the following:
 
-TODO
+\begin{lstlisting}[language=Bash,label=lst:my-server-cloud-databag1]
+$ knife search admin_data "(NOT id:admin_users)"
+\end{lstlisting}
+
+Or, to include the same search query in a recipe, use a code block similar to:
+
+\begin{lstlisting}[label=lst:my-server-cloud-databag2]
+search(:admin_data, "NOT id:admin_users")
+\end{lstlisting}
+
+It may not be possible to know which data bag items will be needed. It may be necessary to load everything in a data bag (but not know what <<everything>> is). Using a search query is the ideal way to deal with that ambiguity, yet still ensure that all of the required data is returned. The following examples show how a recipe can use a series of search queries to search within a data bag named <<admins>>. For example, to find every administrator:
+
+\begin{lstlisting}[label=lst:my-server-cloud-databag3]
+search(:admins, "*:*")
+\end{lstlisting}
+
+Or to search for an administrator named <<charlie>>:
+
+\begin{lstlisting}[label=lst:my-server-cloud-databag4]
+search(:admins, "id:charlie")
+\end{lstlisting}
+
+Or to search for an administrator with a group identifier of <<ops>>:
+
+\begin{lstlisting}[label=lst:my-server-cloud-databag5]
+search(:admins, "gid:ops")
+\end{lstlisting}
+
+Or to search for an administrator whose name begins with the letter <<c>>:
+
+\begin{lstlisting}[label=lst:my-server-cloud-databag6]
+search(:admins, "id:c*")
+\end{lstlisting}
+
+Data bag items that are returned by a search query can be used as if they were a hash. For example:
+
+\begin{lstlisting}[label=lst:my-server-cloud-databag7]
+charlie = search(:admins, "id:charlie").first
+# => variable 'charlie' is set to the charlie data bag item
+charlie["gid"]
+# => "ops"
+charlie["shell"]
+# => "/bin/zsh"
+\end{lstlisting}
