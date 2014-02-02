@@ -1,0 +1,23 @@
+\section{LWRPs}
+
+A LWRP is a part of a cookbook that is used to extend the chef-client in a way that allows custom actions to be defined, and then used in recipes in much the same way as any platform resource. A LWRP has two principal components:
+
+\begin{itemize}
+  \item A lightweight resource that defines a set of actions and attributes
+  \item A lightweight provider that tells the chef-client how to handle each action, what to do if certain conditions are met, and so on
+\end{itemize}
+
+In addition, most lightweight providers are built using platform resources and some lightweight providers are built using custom Ruby code.
+
+Once created, a LWRP becomes a Ruby class within the organization. During each chef-client run, the chef-client will read the lightweight resources from recipes and process them alongside all of the other resources. When it is time to configure the node, the chef-client will use the corresponding lightweight provider to determine the steps required to bring the system into the desired state.
+
+Where the lightweight resource represents a piece of the system, its current state, and the action that is needed to move it to the desired state, a lightweight provider defines the steps that are required to bring that piece of the system from its current state to the desired state. A LWRP behaves similar to platform resources and providers:
+
+\begin{itemize}
+  \item A lightweight resource is a key part of a recipe
+  \item A lightweight resource defines the actions that can be taken
+  \item During a chef-client run, each lightweight resource is identified, and then associated with a lightweight provider
+  \item A lightweight provider does the work to complete the action requested by the lightweight resource
+\end{itemize}
+
+TODO
