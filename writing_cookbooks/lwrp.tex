@@ -20,10 +20,128 @@ Where the lightweight resource represents a piece of the system, its current sta
   \item A lightweight provider does the work to complete the action requested by the lightweight resource
 \end{itemize}
 
-TODO
+Lightweight resources and providers are loaded from files that are saved in the following cookbook sub-directories:
 
-http://docs.opscode.com/chef/lwrps_custom.html
+\begin{tabular}{ | l | l | }
+  \hline
+  Directory	& Description \\
+  \hline
+  providers/ & The sub-directory in which lightweight providers are located. \\
+  resources/ & The sub-directory in which lightweight resources are located. \\
+  \hline
+\end{tabular}
 
-http://dougireton.com/blog/2012/12/31/creating-an-lwrp/
+The naming patterns of lightweight resources and providers are determined by the name of the cookbook and by the name of the files in the <<resources/>> and <<providers/>> sub-directories. For example, if a cookbook named <<example>> was downloaded to the chef-repo, it would be located at <</cookbooks/example/>>. If that cookbook contained two resources and two providers, the following files would be part of the <<resources/>> directory:
 
-https://github.com/opscode-cookbooks/ssh_known_hosts
+\begin{tabular}{ | l | l | l | }
+  \hline
+  Files	& Resource Name	& Generated Class \\
+  \hline
+  default.rb & example & Chef::Resource::Example \\
+  custom.rb	& example\_custom & Chef::Resource::ExampleCustom \\
+  \hline
+\end{tabular}
+
+And the following files would be part of the <<providers/>> directory:
+
+\begin{tabular}{ | l | l | l | }
+  \hline
+  Files	& Provider Name	& Generated Class \\
+  \hline
+  default.rb & example & Chef::Provider::Example \\
+  custom.rb	& custom & Chef::Provider::ExampleCustom \\
+  \hline
+\end{tabular}
+
+Let's add in our <<my\_cool\_app>> LWRP, which will add in \inline{/etc/ssh/ssh_known_hosts} host. First of all we should create direcotry <<resources>> and add to it \inline{know_host.rb} file with content:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp1,title=my-server-cloud/site-cookbooks/my\_cool\_app/resources/know\_host.rb]
+actions :create, :delete
+default_action :create
+
+attribute :host, :kind_of => String, :name_attribute => true, :required => true
+attribute :key, :kind_of => String
+attribute :port, :kind_of => Fixnum, :default => 22
+attribute :known_hosts_file, :kind_of => String, :default => '/etc/ssh/ssh_known_hosts'
+
+# Needed for Chef versions < 0.10.10
+def initialize(*args)
+  super
+  @action = :create
+end
+\end{lstlisting}
+
+Let's take it line by line. The first line specifies the allowed actions. Actions are what your resource can do, e.g. start, stop, create, delete, etc. In this case, you can \inline{:create} or \inline{:delete} known host. The next line defines the \inline{default_action} for our resource, in this case \inline{:create}. If you don't specify an action when you use the resource in a recipe, it will default to creating a known host, which is what you probably want. A general philosophy of Chef is to define intelligent or <<sane>> defaults.
+
+Lines 4-7 define attributes, or properties of the known host resource we are creating. Line 4 defines an \inline{:host} attribute. Its \inline{:name_attribute} is true, which means that this attribute will be set to the string between \inline{my_cool_app_know_host} and \inline{do}. Example:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp2]
+my_cool_app_know_host "Add github host" do
+  host 'github.com'
+end
+
+my_cool_app_know_host 'github.com' do
+  # The :host attribute will be set to 'github.com'
+end
+\end{lstlisting}
+
+In the second example above, the \inline{:host} attribute wll be set to <<github.com>>.
+
+Also, on line 4, we are definining the \inline{kind_of} validation parameter to tell the resource which kind of data we should expect (in this case, a string), whether this attribute is required (yes). Line 5 defines a \inline{:key} attribute, which is an optional string with no default. Line 6 defines a \inline{:port} attribute, a Ruby Fixnum (i.e. an integer) with a default of 22, which is the default when you create a known host. Line 7 defines a \inline{:known_hosts_file} attribute, a string with a default of \inline{/etc/ssh/ssh_known_hosts}, which is the default file with known hosts for ssh client.
+
+Now we need to create file \inline{know_host.rb} in <<providers>> directory:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp3,title=my-server-cloud/site-cookbooks/my\_cool\_app/providers/know\_host.rb]
+action :create do
+  key = (new_resource.key || `ssh-keyscan -H -p #{new_resource.port} #{new_resource.host} 2>&1`)
+  comment = key.split("\n").first || ""
+
+  Chef::Application.fatal! "Could not resolve #{new_resource.host}" if key =~ /getaddrinfo/
+
+  # Ensure that the file exists and has minimal content (required by Chef::Util::FileEdit)
+  file new_resource.known_hosts_file do
+    action        :create
+    backup        false
+    content       '# This file must contain at least one line. This is that line.'
+    only_if do
+      !::File.exists?(new_resource.known_hosts_file) || ::File.new(new_resource.known_hosts_file).readlines.length == 0
+    end
+  end
+
+  # Use a Ruby block to edit the file
+  ruby_block "add #{new_resource.host} to #{new_resource.known_hosts_file}" do
+    block do
+      file = ::Chef::Util::FileEdit.new(new_resource.known_hosts_file)
+      file.insert_line_if_no_match(/#{Regexp.escape(comment)}|#{Regexp.escape(key)}/, key)
+      file.write_file
+    end
+  end
+  new_resource.updated_by_last_action(true)
+end
+
+action :delete do
+  key = (new_resource.key || `ssh-keyscan -H -p #{new_resource.port} #{new_resource.host} 2>&1`)
+  comment = key.split("\n").first || ""
+
+  Chef::Application.fatal! "Could not resolve #{new_resource.host}" if key =~ /getaddrinfo/
+
+  # Use a Ruby block to edit the file
+  ruby_block "del #{new_resource.host} from #{new_resource.known_hosts_file}" do
+    block do
+      file = ::Chef::Util::FileEdit.new(new_resource.known_hosts_file)
+      file.search_file_delete_line(/#{Regexp.escape(comment)}|#{Regexp.escape(key)}/, key)
+      file.write_file
+    end
+    only_if do
+      ::File.exists?(new_resource.known_hosts_file)
+    end
+  end
+  new_resource.updated_by_last_action(true)
+end
+\end{lstlisting}
+
+\begin{lstlisting}
+http://docs.opscode.com/lwrp_custom_provider.html
+http://dougireton.com/blog/2013/01/07/creating-an-lwrp-part-2/
+https://github.com/opscode-cookbooks/ssh_known_hosts/blob/master/providers/entry.rb
+\end{lstlisting}
