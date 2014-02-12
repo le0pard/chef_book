@@ -15,6 +15,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define :chef_server do |chef_server|
     chef_server.vm.box = "precise64"
+    chef_server.vm.box_url = "http://files.vagrantup.com/precise64.box"
     chef_server.vm.network "private_network", ip: "10.33.33.33"
 
     config.vm.provider "virtualbox" do |vb|
@@ -35,11 +36,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define :chef_first_client do |chef_client|
     chef_client.vm.box = "precise64"
+    chef_client.vm.box_url = "http://files.vagrantup.com/precise64.box"
     chef_client.vm.network "private_network", ip: "10.33.33.34"
   end
 
   config.vm.define :chef_second_client do |chef_client|
     chef_client.vm.box = "precise64"
+    chef_client.vm.box_url = "http://files.vagrantup.com/precise64.box"
     chef_client.vm.network "private_network", ip: "10.33.33.35"
     chef_client.vm.provision :chef_client do |chef|
       chef.chef_server_url = Chef::Config[:chef_server_url]
