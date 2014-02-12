@@ -13,31 +13,31 @@
       "locked_version": "3.2.0"
     },
     "apt": {
-      "locked_version": "2.3.4"
+      "locked_version": "2.3.6"
     },
     "bluepill": {
-      "locked_version": "2.3.0"
+      "locked_version": "2.3.1"
     },
     "rsyslog": {
-      "locked_version": "1.5.0"
+      "locked_version": "1.10.2"
     },
     "build-essential": {
-      "locked_version": "1.4.0"
+      "locked_version": "1.4.2"
     },
     "ohai": {
-      "locked_version": "1.1.8"
+      "locked_version": "1.1.12"
     },
     "runit": {
-      "locked_version": "1.3.0"
+      "locked_version": "1.5.8"
     },
     "yum-epel": {
       "locked_version": "0.2.0"
     },
     "cron": {
-      "locked_version": "1.2.4"
+      "locked_version": "1.2.8"
     },
     "logrotate": {
-      "locked_version": "1.2.0"
+      "locked_version": "1.5.0"
     }
   }
 }
