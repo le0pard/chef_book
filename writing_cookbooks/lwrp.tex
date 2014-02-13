@@ -184,24 +184,229 @@ end
 
 \subsubsection{action}
 
+The action method is used to define the steps that will be taken for each of the possible actions defined by the lightweight resource. Each action must be defined in separate action blocks within the same file. The syntax for the action method is as follows:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp-dsl-action]
+action :action_name do
+  if @current_resource.exists
+    Chef::Log.info "#{ @new_resource } already exists - nothing to do."
+  else
+    resource "resource_name" do
+      Chef::Log.info "#{ @new_resource } created."
+    end
+  end
+  new_resource.updated_by_last_action(true)
+end
+\end{lstlisting}
+
+where:
+
+\begin{itemize}
+  \item \inline{:action_name} corresponds to an action defined by a lightweight resource
+  \item if \inline{@current_resource.exists} is a condition test that is using an instance variable to see if the object already exists on the node; this is an example of a test for idempotence
+  \item If the object already exists, a \inline{@new_resource} already exists - nothing to do. log entry is created
+  \item If the object does not already exists, the resource block is run. This block is a recipe that tells the chef-client what to do. A \inline{@new_resource} created. log entry is created
+\end{itemize}
+
 \subsubsection{current\_resource}
+
+The \inline{current_resource} method is used to represent a resource as it exists on the node at the beginning of the chef-client run. In other words: what the resource is currently. The chef-client compares the resource as it exists on the node to the resource that is created during the chef-client run to determine what steps need to be taken to bring the resource into the desired state. This method is often used as an instance variable (\inline{@current_resource}).
+
+For example:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp-dsl-current-resource]
+action :add do
+  unless @current_resource.exists
+    cmd = "#{appcmd} add app /site.name:\"#{@new_resource.app_name}\""
+    cmd << " /path:\"#{@new_resource.path}\""
+    cmd << " /applicationPool:\"#{@new_resource.application_pool}\"" if @new_resource.application_pool
+    cmd << " /physicalPath:\"#{@new_resource.physical_path}\"" if @new_resource.physical_path
+    Chef::Log.debug(cmd)
+    shell_out!(cmd)
+    Chef::Log.info("App created")
+  else
+    Chef::Log.debug("#{@new_resource} app already exists - nothing to do")
+  end
+end
+\end{lstlisting}
+
+where the \inline{unless} conditional statement checks to make sure the resource doesn't already exist on a node, and then runs a series of commands when it doesn't. If the resource already exists, the log entry would be <<Foo app already exists - nothing to do.>>
+
+\subsubsection{load\_current\_resource}
+
+The \inline{load_current_resource} method is used to find a resource on a node based on a collection of attributes. These attributes are defined in a lightweight resource and are loaded by the chef-client when processing a recipe during a chef-client run. This method will ask the chef-client to look on the node to see if a resource exists with specific matching attributes.
+
+For example:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp-dsl-load-current-resource]
+def load_current_resource
+  @current_resource = Chef::Resource::TransmissionTorrentFile.new(@new_resource.name)
+  Chef::Log.debug("#{@new_resource} torrent hash = #{torrent_hash}")
+  path = "foo:#{@new_resource.att1}@#{@new_resource.att2}:#{@new_resource.att3}/path"
+  @transmission = Opscode::Transmission::Client.new(path)
+  @torrent = nil
+  begin
+    @torrent = @transmission.get_torrent(torrent_hash)
+    info = "Found existing #{@new_resource} in swarm "+
+    "with name of '#{@torrent.name}' and status of '#{@torrent.status_message}'"
+    Chef::Log.info(info)
+    @current_resource.torrent(@new_resource.torrent)
+  rescue
+    Chef::Log.debug("Cannot find #{@new_resource} in the swarm")
+  end
+  @current_resource
+end
+\end{lstlisting}
+
+In the previous example, if a resource exists with matching attributes, the chef-client does nothing and if a resource does not exist with matching attributes, the chef-client will enforce the state declared in \inline{new_resource}.
 
 \subsubsection{new\_resource}
 
+The \inline{new_resource} method is used to represent a resource as loaded by the chef-client during the chef-client run. In other words: what the resource should be. The chef-client compares the resource as it exists on the node to the resource that is created during the chef-client run to determine what steps need to be taken to bring the resource into the desired state.
+
+For example:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp-dsl-new-resource]
+action :delete do
+  if exists?
+    if ::File.writable?(new_resource.path)
+      Chef::Log.info("Deleting #{new_resource} at #{new_resource.path}")
+      ::File.delete(new_resource.path)
+      new_resource.updated_by_last_action(true)
+    else
+      raise "Cannot delete #{new_resource} at #{new_resource.path}!"
+    end
+  end
+end
+\end{lstlisting}
+
+where the chef-client checks to see if the file exists, then if the file is writable, and then attempts to delete the resource. \inline{path} is an attribute of the new resource that is defined by the lightweight resource.
+
 \subsubsection{updated\_by\_last\_action}
+
+The \inline{updated_by_last_action} method is used to notify a lightweight resource that a node was updated successfully. For example, the \inline{cron_d} lightweight resource in the cron cookbook:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp-dsl-updated]
+action :create do
+  t = template "/etc/cron.d/#{new_resource.name}" do
+    cookbook new_resource.cookbook
+    source "cron.d.erb"
+    mode "0644"
+    variables({
+        :name => new_resource.name,
+        :minute => new_resource.minute,
+        :hour => new_resource.hour,
+        :day => new_resource.day,
+        :month => new_resource.month,
+        :weekday => new_resource.weekday,
+        :command => new_resource.command,
+        :user => new_resource.user,
+        :mailto => new_resource.mailto,
+        :path => new_resource.path,
+        :home => new_resource.home,
+        :shell => new_resource.shell
+      })
+    action :create
+  end
+  new_resource.updated_by_last_action(t.updated_by_last_action?)
+end
+\end{lstlisting}
+
+where \inline{t.updated_by_last_action?} uses a variable to check whether a new crontab entry was created.
 
 \subsubsection{use\_inline\_resources}
 
+A lightweight resource should be set to inline compile mode by adding the \inline{use_inline_resources} method at the top of the provider. This ensures that notifications work properly across the resource collection. The \inline{use_inline_resources} method was added to the chef-client starting in version 11.0 to address the behavior described below. The \inline{use_inline_resources} method should be considered a requirement for any lightweight resource authored against the 11.0+ versions of the chef-client. This behavior will become the default behavior in an upcoming version of the chef-client.
+
 \subsubsection{whyrun\_supported?}
+
+why-run mode is a way to see what the chef-client would have configured, had an actual chef-client run occurred. This approach is similar to the concept of <<no-operation>> (or <<no-op>>): decide what should be done, but then don't actually do anything until it's done right. This approach to configuration management can help identify where complexity exists in the system, where inter-dependencies may be located, and to verify that everything will be configured in the desired manner.
+
+When why-run mode is enabled, a chef-client run will occur that does everything up to the point at which configuration would normally occur. This includes getting the configuration data, authenticating to the server, rebuilding the node object, expanding the run list, getting the necessary cookbook files, resetting node attributes, identifying the resources, and building the resource collection and does not include mapping each resource to a provider or configuring any part of the system.
+
+When the chef-client is run in why-run mode, certain assumptions are made:
+
+\begin{itemize}
+  \item If the service resource cannot find the appropriate command to verify the status of a service, why-run mode will assume that the command would have been installed by a previous resource and that the service would not be running
+  \item For \inline{not_if} and \inline{only_if} attribute, why-run mode will assume these are commands or blocks that are safe to run. These conditions are not designed to be used to change the state of the system, but rather to help facilitate idempotency for the resource itself. That said, it may be possible that these attributes are being used in a way that modifies the system state
+  \item The closer the current state of the system is to the desired state, the more useful why-run mode will be. For example, if a full run-list is run against a fresh system, that run-list may not be completely correct on the first try, but also that run-list will produce more output than smaller run-list
+\end{itemize}
+
+The \inline{whyrun_supported?} method is used to set a lightweight provider to support why-run mode. The syntax for the \inline{whyrun_supported?} method is as follows:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp-why-run]
+def whyrun_supported?
+  true
+end
+\end{lstlisting}
+
+where \inline{whyrun_supported?} is set to true for any lightweight provider that supports using why-run mode. When why-run mode is supported by the a lightweight provider, the \inline{converge_by} method is used to define the strings that are logged by the chef-client when it is run in why-run mode.
 
 \subsubsection{Log entries and rescue}
 
-\subsection{Using lwrp}
+Use the \inline{Chef::Log} class in a lightweight provider to define log entries that are created during a chef-client run. The syntax for a log message is as follows:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp-logs1]
+Chef::Log.log_type("message")
+\end{lstlisting}
+
+where
+
+\begin{itemize}
+  \item \inline{log_type} can be .debug, .info, .warn, .error, or .fatal
+  \item <<message>> is the message that is logged
+\end{itemize}
+
+For example, from the <<repository.rb>> provider in the yum cookbook:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp-logs2]
+action :add do
+  unless ::File.exists?("/etc/yum.repos.d/#{new_resource.repo_name}.repo")
+    Chef::Log.info "Adding #{new_resource.repo_name} repository to /etc/yum.repos.d/#{new_resource.repo_name}.repo"
+    repo_config
+  end
+end
+\end{lstlisting}
+
+where the \inline{Chef::Log} class appends .info as the log type. If the name of the repo was <<foo>>, then the log message would be <<Adding foo repository to /etc/yum.repos.d/foo.repo>>.
+
+Another example shows two log entries, one that is triggered when a service is being restarted, and then another that is triggered after the service has been restarted:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp-logs3]
+action :restart do
+  if @current_resource.running
+    Chef::Log.debug "Restarting #{new_resource.service_name}"
+    shell_out!(restart_command)
+    new_resource.updated_by_last_action(true)
+    Chef::Log.debug "Restarted #{new_resource.service_name}"
+  end
+end
+\end{lstlisting}
+
+Use the \inline{rescue} clause to make sure that a log message is always provided. For example:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp-logs3]
+def load_current_resource
+  ...
+  begin
+    ...
+  rescue
+    Chef::Log.debug("Cannot find #{@new_resource} in the swarm")
+  end
+  ...
+end
+\end{lstlisting}
+
+\subsection{Using LWRP}
+
+We finished with our LWRP. Let's test it. Just add to <<default.rb>> you new LWRP, which will add to known hosts <<github.com>>:
 
 \begin{lstlisting}[label=lst:cookbook-lwrp4,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
 # known hosts for github.com
 my_cool_app_know_host 'github.com'
 \end{lstlisting}
+
+Upload cookbook on server and run chef-client on node:
 
 \begin{lstlisting}[language=Bash,label=lst:cookbook-lwrp5]
 $ knife cookbook upload my_cool_app
@@ -225,6 +430,7 @@ $ cat /etc/ssh/ssh_known_hosts
 |1|fvGKZG+jIkEntM5yBvzJ230TX1o=|9qP2wRdFIS+cAouirLYDb1Ibl7A= ssh-rsa...
 \end{lstlisting}
 
+Let's check how it will delete this hosts:
 
 \begin{lstlisting}[label=lst:cookbook-lwrp6,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
 my_cool_app_know_host 'github.com' do
@@ -232,6 +438,7 @@ my_cool_app_know_host 'github.com' do
 end
 \end{lstlisting}
 
+Again upload on server and run chef-client:
 
 \begin{lstlisting}[language=Bash,label=lst:cookbook-lwrp7]
 $ knife cookbook upload my_cool_app
@@ -253,13 +460,4 @@ $ cat /etc/ssh/ssh_known_hosts
 # This file must contain at least one line. This is that line.
 \end{lstlisting}
 
-
-
-
-
-\begin{lstlisting}
-http://docs.opscode.com/lwrp_custom_provider.html
-http://docs.opscode.com/lwrp_custom_resource.html
-http://dougireton.com/blog/2013/01/07/creating-an-lwrp-part-2/
-https://github.com/opscode-cookbooks/ssh_known_hosts/blob/master/providers/entry.rb
-\end{lstlisting}
+As you can see, all works as expected.

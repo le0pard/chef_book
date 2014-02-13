@@ -17,15 +17,11 @@ $ cd my-server-cloud
 $ cat Gemfile
 source "https://rubygems.org"
 
-gem 'knife-solo'
+gem 'chef'
 gem 'berkshelf'
 $ bundle
-$ knife solo init .
-WARNING: No knife configuration file found
-Creating kitchen...
-Creating knife.rb in kitchen...
-Creating cupboards...
-Setting up Berkshelf...
+$ git clone https://github.com/opscode/chef-repo.git .
+# or you can use "knife solo init .", if you will install knife-solo
 \end{lstlisting}
 
 To install and configure Chef Server exists cookbook \href{http://community.opscode.com/cookbooks/chef-server}{chef-server}. Let's add this cookbook in Berkshelf:
