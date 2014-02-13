@@ -53,7 +53,11 @@ And the following files would be part of the <<providers/>> directory:
   \hline
 \end{tabular}
 
-Let's add in our <<my\_cool\_app>> LWRP, which will add in \inline{/etc/ssh/ssh_known_hosts} host. First of all we should create direcotry <<resources>> and add to it \inline{know_host.rb} file with content:
+Let's add in our <<my\_cool\_app>> LWRP, which will add in \inline{/etc/ssh/ssh_known_hosts} host.
+
+\subsection{Resources}
+
+First of all we should create direcotry <<resources>> and add to it \inline{know_host.rb} file with content:
 
 \begin{lstlisting}[label=lst:cookbook-lwrp1,title=my-server-cloud/site-cookbooks/my\_cool\_app/resources/know\_host.rb]
 actions :create, :delete
@@ -89,10 +93,75 @@ In the second example above, the \inline{:host} attribute wll be set to <<github
 
 Also, on line 4, we are definining the \inline{kind_of} validation parameter to tell the resource which kind of data we should expect (in this case, a string), whether this attribute is required (yes). Line 5 defines a \inline{:key} attribute, which is an optional string with no default. Line 6 defines a \inline{:port} attribute, a Ruby Fixnum (i.e. an integer) with a default of 22, which is the default when you create a known host. Line 7 defines a \inline{:known_hosts_file} attribute, a string with a default of \inline{/etc/ssh/ssh_known_hosts}, which is the default file with known hosts for ssh client.
 
+For example, the \inline{cron_d} lightweight resource (found in the cron cookbook) can be used to manage files located in \inline{/etc/cron.d}:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp3]
+actions :create, :delete
+default_action :create
+
+attribute :name, :kind_of => String, :name_attribute => true
+attribute :cookbook, :kind_of => String, :default => "cron"
+attribute :minute, :kind_of => [Integer, String], :default => "*"
+attribute :hour, :kind_of => [Integer, String], :default => "*"
+attribute :day, :kind_of => [Integer, String], :default => "*"
+attribute :month, :kind_of => [Integer, String], :default => "*"
+attribute :weekday, :kind_of => [Integer, String], :default => "*"
+attribute :command, :kind_of => String, :required => true
+attribute :user, :kind_of => String, :default => "root"
+attribute :mailto, :kind_of => [String, NilClass]
+attribute :path, :kind_of => [String, NilClass]
+attribute :home, :kind_of => [String, NilClass]
+attribute :shell, :kind_of => [String, NilClass]
+\end{lstlisting}
+
+where
+
+\begin{itemize}
+  \item the \inline{actions} allow a recipe to manage entries in a crontab file (create entry, delete entry)
+  \item \inline{:create} is the default action
+  \item \inline{:minute}, \inline{:hour}, \inline{:day}, \inline{:month}, and \inline{:weekday} are the collection of attributes used to schedule a cron job, assigned a default value of <<*>>
+  \item \inline{:command} is the command that will be run (and also required)
+  \item \inline{:user} is the user by which the command is run
+  \item \inline{:mailto}, \inline{:path}, \inline{:home}, and \inline{:shell} are optional environment variables that do not have default value, which each being defined as an array that supports the String and NilClass Ruby classes
+\end{itemize}
+
+\subsection{Providers}
+
 Now we need to create file \inline{know_host.rb} in <<providers>> directory:
 
 \begin{lstlisting}[label=lst:cookbook-lwrp3,title=my-server-cloud/site-cookbooks/my\_cool\_app/providers/know\_host.rb]
+# Support whyrun
+def whyrun_supported?
+  true
+end
+
 action :create do
+  key, comment = insure_for_file(new_resource)
+  # Use a Ruby block to edit the file
+  ruby_block "add #{new_resource.host} to #{new_resource.known_hosts_file}" do
+    block do
+      file = ::Chef::Util::FileEdit.new(new_resource.known_hosts_file)
+      file.insert_line_if_no_match(/#{Regexp.escape(comment)}|#{Regexp.escape(key)}/, key)
+      file.write_file
+    end
+  end
+  new_resource.updated_by_last_action(true)
+end
+
+action :delete do
+  key, comment = insure_for_file(new_resource)
+  # Use a Ruby block to edit the file
+  ruby_block "del #{new_resource.host} from #{new_resource.known_hosts_file}" do
+    block do
+      file = ::Chef::Util::FileEdit.new(new_resource.known_hosts_file)
+      file.search_file_delete_line(/#{Regexp.escape(comment)}|#{Regexp.escape(key)}/)
+      file.write_file
+    end
+  end
+  new_resource.updated_by_last_action(true)
+end
+
+def insure_for_file(new_resource)
   key = (new_resource.key || `ssh-keyscan -H -p #{new_resource.port} #{new_resource.host} 2>&1`)
   comment = key.split("\n").first || ""
 
@@ -107,41 +176,90 @@ action :create do
       !::File.exists?(new_resource.known_hosts_file) || ::File.new(new_resource.known_hosts_file).readlines.length == 0
     end
   end
-
-  # Use a Ruby block to edit the file
-  ruby_block "add #{new_resource.host} to #{new_resource.known_hosts_file}" do
-    block do
-      file = ::Chef::Util::FileEdit.new(new_resource.known_hosts_file)
-      file.insert_line_if_no_match(/#{Regexp.escape(comment)}|#{Regexp.escape(key)}/, key)
-      file.write_file
-    end
-  end
-  new_resource.updated_by_last_action(true)
-end
-
-action :delete do
-  key = (new_resource.key || `ssh-keyscan -H -p #{new_resource.port} #{new_resource.host} 2>&1`)
-  comment = key.split("\n").first || ""
-
-  Chef::Application.fatal! "Could not resolve #{new_resource.host}" if key =~ /getaddrinfo/
-
-  # Use a Ruby block to edit the file
-  ruby_block "del #{new_resource.host} from #{new_resource.known_hosts_file}" do
-    block do
-      file = ::Chef::Util::FileEdit.new(new_resource.known_hosts_file)
-      file.search_file_delete_line(/#{Regexp.escape(comment)}|#{Regexp.escape(key)}/, key)
-      file.write_file
-    end
-    only_if do
-      ::File.exists?(new_resource.known_hosts_file)
-    end
-  end
-  new_resource.updated_by_last_action(true)
+  [key, comment]
 end
 \end{lstlisting}
 
+\subsection{DSL Methods}
+
+\subsubsection{action}
+
+\subsubsection{current\_resource}
+
+\subsubsection{new\_resource}
+
+\subsubsection{updated\_by\_last\_action}
+
+\subsubsection{use\_inline\_resources}
+
+\subsubsection{whyrun\_supported?}
+
+\subsubsection{Log entries and rescue}
+
+\subsection{Using lwrp}
+
+\begin{lstlisting}[label=lst:cookbook-lwrp4,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
+# known hosts for github.com
+my_cool_app_know_host 'github.com'
+\end{lstlisting}
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-lwrp5]
+$ knife cookbook upload my_cool_app
+  Uploading my_cool_app    [0.1.0]
+  Uploaded 1 cookbook.
+
+$ vagrant provision chef_second_client
+...
+[2014-02-13T13:05:02+00:00] INFO: Found chef-client in /usr/bin/chef-client
+[2014-02-13T13:05:12+00:00] INFO: runit_service[nginx] configured
+[2014-02-13T13:05:13+00:00] INFO: ruby_block[add github.com to /etc/ssh/ssh_known_hosts] called
+[2014-02-13T13:05:13+00:00] INFO: Chef Run complete in 11.920336698 seconds
+[2014-02-13T13:05:13+00:00] INFO: Running report handlers
+[2014-02-13T13:05:13+00:00] INFO: Report handlers complete
+
+$ vagrant ssh chef_second_client
+
+$ cat /etc/ssh/ssh_known_hosts
+# This file must contain at least one line. This is that line.
+# github.com SSH-2.0-OpenSSH_5.9p1 Debian-5ubuntu1+github5
+|1|fvGKZG+jIkEntM5yBvzJ230TX1o=|9qP2wRdFIS+cAouirLYDb1Ibl7A= ssh-rsa...
+\end{lstlisting}
+
+
+\begin{lstlisting}[label=lst:cookbook-lwrp6,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
+my_cool_app_know_host 'github.com' do
+  action :delete
+end
+\end{lstlisting}
+
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-lwrp7]
+$ knife cookbook upload my_cool_app
+  Uploading my_cool_app    [0.1.0]
+  Uploaded 1 cookbook.
+
+$ vagrant provision chef_second_client
+...
+[2014-02-13T13:05:02+00:00] INFO: Found chef-client in /usr/bin/chef-client
+[2014-02-13T13:05:12+00:00] INFO: runit_service[nginx] configured
+[2014-02-13T13:11:35+00:00] INFO: ruby_block[del github.com from /etc/ssh/ssh_known_hosts] called
+[2014-02-13T13:11:35+00:00] INFO: Chef Run complete in 17.109379291 seconds
+[2014-02-13T13:05:13+00:00] INFO: Running report handlers
+[2014-02-13T13:05:13+00:00] INFO: Report handlers complete
+
+$ vagrant ssh chef_second_client
+
+$ cat /etc/ssh/ssh_known_hosts
+# This file must contain at least one line. This is that line.
+\end{lstlisting}
+
+
+
+
+
 \begin{lstlisting}
 http://docs.opscode.com/lwrp_custom_provider.html
+http://docs.opscode.com/lwrp_custom_resource.html
 http://dougireton.com/blog/2013/01/07/creating-an-lwrp-part-2/
 https://github.com/opscode-cookbooks/ssh_known_hosts/blob/master/providers/entry.rb
 \end{lstlisting}

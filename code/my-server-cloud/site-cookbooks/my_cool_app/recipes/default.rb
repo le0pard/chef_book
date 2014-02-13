@@ -35,3 +35,10 @@ end
 
 # activate nginx.conf in nginx
 nginx_site "#{node['my_cool_app']['name']}.conf"
+
+# known hosts for github.com
+my_cool_app_know_host 'github.com'
+
+#my_cool_app_know_host 'github.com' do
+#  action :delete
+#end
