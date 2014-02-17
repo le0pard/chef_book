@@ -4,7 +4,199 @@ When Chef first came out, there was no Light Weight Resource Provider (LWRP) syn
 
 While writing a LWRP is meant to be simple and elegant, writing a HWRP is meant to be flexible. It gives you the full power of ruby in exchange for elegance.
 
-http://tech.yipit.com/2013/05/09/advanced-chef-writing-heavy-weight-resource-providers-hwrp/
+\subsection{HWRPs and LWRPS are interchangeable}
+
+With LWRP you are taught to create a Resource and a Provider together. This is the simplest way. However, just because you need to convert a resource definition or a provider into a HWRP you do not need to convert both.
+
+The LWRP syntax <<compiles>> into real ruby code, so Chef will not know the difference in how they were defined. A valid cookbook directory structure:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-hwrp1]
+libraries/
+    provider_default.rb
+providers/
+resources/
+    default.rb
+recipes/
+    default.rb
+metadata.rb
+\end{lstlisting}
+
+\subsection{HWRPs live in library files}
+
+Anything you put in <<resources/>> or <<providers/>> Chef will attempt to parse at runtime. We don't want Chef trying to read our HWRP as the Chef DSL, we want it to interpret it as code. Luckily, anything stored in the <<libraries/>> folder Chef will try to import at runtime. A good example of this can be seen in the runit cookbook.
+
+\subsection{Example}
+
+Let's go through an example. We are going to create a HWRP that is very simple, it already written as a LWRP.
+
+\subsubsection{Resource}
+
+We need to inherit from the appropriate Chef classes in our HWRP. Note the class hierarchy as well as the inheritance:
+
+\begin{lstlisting}[label=lst:cookbook-hwrp2]
+require 'chef/resource'
+
+class Chef
+  class Resource
+    class MyCoolAppKnowHost < Chef::Resource
+
+    # Some Magic Happens
+
+    end
+  end
+end
+\end{lstlisting}
+
+We need to override the initialize method to make sure we have some defaults. We aren't defining all of our resource attributes here, just the ones that need defaults.
+
+\begin{lstlisting}[label=lst:cookbook-hwrp3]
+require 'chef/resource'
+
+class Chef
+  class Resource
+    class MyCoolAppKnowHost < Chef::Resource
+
+      def initialize(name, run_context=nil)
+        super
+        # Bind ourselves to the name with an underscore
+        @resource_name = :my_cool_app_know_host
+        # We need to tie to our provider
+        @provider = Chef::Provider::MyCoolAppKnowHost
+        # Default Action Goes here
+        @action = :create
+        @allowed_actions = [:create, :delete]
+
+        # Now we need to set up any resource defaults
+        @port = 22
+        @known_hosts_file = '/etc/ssh/ssh_known_hosts'
+        @host = name  # This is equivalent to setting :name_attribute => true
+      end
+
+    end
+  end
+end
+\end{lstlisting}
+
+Now lets set up some attribute methods in our HWRP. Make sure to read the code comments for an explanation of what is going on.
+
+\begin{lstlisting}[label=lst:cookbook-hwrp3]
+require 'chef/resource'
+
+class Chef
+  class Resource
+    class MyCoolAppKnowHost < Chef::Resource
+
+      def initialize(name, run_context=nil)
+        super
+        # Bind ourselves to the name with an underscore
+        @resource_name = :my_cool_app_know_host
+        # We need to tie to our provider
+        @provider = Chef::Provider::MyCoolAppKnowHost
+        # Default Action Goes here
+        @action = :create
+        @allowed_actions = [:create, :delete]
+
+        # Now we need to set up any resource defaults
+        @port = 22
+        @known_hosts_file = '/etc/ssh/ssh_known_hosts'
+        @host = name  # This is equivalent to setting :name_attribute => true
+      end
+
+      # Define the attributes we set defaults for
+      def host(arg=nil)
+        set_or_return(:host, arg, :kind_of => String)
+      end
+
+      def port(arg=nil)
+        set_or_return(:port, arg, :kind_of => Integer)
+      end
+
+      def known_hosts_file(arg=nil)
+        set_or_return(:known_hosts_file, arg, :kind_of => String)
+      end
+
+    end
+  end
+end
+\end{lstlisting}
+
+\subsubsection{Providers}
+
+Very similar to resources, here is the basic class structure for a provider.
+
+\begin{lstlisting}[label=lst:cookbook-hwrp4]
+class Chef
+  class Provider
+    class MyCoolAppKnowHost < Chef::Provider
+
+    # Magic Happens
+
+    end
+  end
+end
+\end{lstlisting}
+
+While we don’t need to write an initialize method (we can), we do need to override \inline{load_current_resource}.
+
+\begin{lstlisting}[label=lst:cookbook-hwrp4]
+class Chef
+  class Provider
+    class MyCoolAppKnowHost < Chef::Provider
+
+      # We MUST override this method in our custom provider
+      def load_current_resource
+        # Here we keep the existing version of the resource
+        # if none exists we create a new one from the resource we defined earlier
+        @current_resource ||= Chef::Resource::MyCoolAppKnowHost.new(new_resource.name)
+
+        # New resource represents the chef DSL block that is being run (from a recipe for example)
+        @current_resource.port(new_resource.port)
+        @current_resource.known_hosts_file(new_resource.known_hosts_file)
+        # Although you can reference @new_resource throughout the provider it is best to
+        # only make modifications to the current version
+        @current_resource.host(new_resource.host)
+        @current_resource
+      end
+
+    end
+  end
+end
+\end{lstlisting}
+
+Now it is time to define what we do in our actions, with our HWRP we need to define methods like \inline{action_create} to define a \inline{:create} action. Chef will do some introspection to find these methods and hook them up.
+
+\begin{lstlisting}[label=lst:cookbook-hwrp5]
+class Chef
+  class Provider
+    class MyCoolAppKnowHost < Chef::Provider
+
+      # We MUST override this method in our custom provider
+      def load_current_resource
+        # Here we keep the existing version of the resource
+        # if none exists we create a new one from the resource we defined earlier
+        @current_resource ||= Chef::Resource::MyCoolAppKnowHost.new(new_resource.name)
+
+        # New resource represents the chef DSL block that is being run (from a recipe for example)
+        @current_resource.port(new_resource.port)
+        @current_resource.known_hosts_file(new_resource.known_hosts_file)
+        # Although you can reference @new_resource throughout the provider it is best to
+        # only make modifications to the current version
+        @current_resource.host(new_resource.host)
+        @current_resource
+      end
+
+      def action_create
+        # Some ruby code
+      end
+
+      def action_delete
+        # More ruby code
+      end
+
+    end
+  end
+end
+\end{lstlisting}
 
 https://github.com/opscode-cookbooks/database
 https://github.com/sethvargo-cookbooks/swap
