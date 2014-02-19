@@ -153,13 +153,13 @@ $ vagrant provision
 Generating chef JSON and uploading...
 Running chef-solo...
 stdin: is not a tty
-[2013-12-27T19:35:59+00:00] INFO: Forking chef instance to converge...
-[2013-12-27T19:35:59+00:00] INFO: *** Chef 11.8.2 ***
+INFO: Forking chef instance to converge...
+INFO: *** Chef 11.8.2 ***
 ...
-[2013-12-27T19:36:18+00:00] INFO: service[apache2] restarted
-[2013-12-27T19:36:18+00:00] INFO: Chef Run complete in 18.115479422 seconds
-[2013-12-27T19:36:18+00:00] INFO: Running report handlers
-[2013-12-27T19:36:18+00:00] INFO: Report handlers complete
+INFO: service[apache2] restarted
+INFO: Chef Run complete in 18.115479422 seconds
+INFO: Running report handlers
+INFO: Report handlers complete
 \end{lstlisting}
 
 To verify that the apache2 successfully installed into mashine, we can forward the 80 apache2 port. Modify <<Vagrantfile>>:

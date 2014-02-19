@@ -38,7 +38,7 @@ require 'chef/resource'
 
 class Chef
   class Resource
-    class MyCoolAppKnowHost < Chef::Resource
+    class MyCoolAppKnownHost < Chef::Resource
 
     # Some Magic Happens
 
@@ -54,14 +54,14 @@ require 'chef/resource'
 
 class Chef
   class Resource
-    class MyCoolAppKnowHost < Chef::Resource
+    class MyCoolAppKnownHost < Chef::Resource
 
       def initialize(name, run_context=nil)
         super
         # Bind ourselves to the name with an underscore
-        @resource_name = :my_cool_app_know_host
+        @resource_name = :my_cool_app_known_host
         # We need to tie to our provider
-        @provider = Chef::Provider::MyCoolAppKnowHost
+        @provider = Chef::Provider::MyCoolAppKnownHost
         # Default Action Goes here
         @action = :create
         @allowed_actions = [:create, :delete]
@@ -84,14 +84,14 @@ require 'chef/resource'
 
 class Chef
   class Resource
-    class MyCoolAppKnowHost < Chef::Resource
+    class MyCoolAppKnownHost < Chef::Resource
 
       def initialize(name, run_context=nil)
         super
         # Bind ourselves to the name with an underscore
-        @resource_name = :my_cool_app_know_host
+        @resource_name = :my_cool_app_known_host
         # We need to tie to our provider
-        @provider = Chef::Provider::MyCoolAppKnowHost
+        @provider = Chef::Provider::MyCoolAppKnownHost
         # Default Action Goes here
         @action = :create
         @allowed_actions = [:create, :delete]
@@ -127,7 +127,7 @@ Very similar to resources, here is the basic class structure for a provider.
 \begin{lstlisting}[label=lst:cookbook-hwrp4]
 class Chef
   class Provider
-    class MyCoolAppKnowHost < Chef::Provider
+    class MyCoolAppKnownHost < Chef::Provider
 
     # Magic Happens
 
@@ -141,13 +141,13 @@ While we don’t need to write an initialize method (we can), we do need to over
 \begin{lstlisting}[label=lst:cookbook-hwrp4]
 class Chef
   class Provider
-    class MyCoolAppKnowHost < Chef::Provider
+    class MyCoolAppKnownHost < Chef::Provider
 
       # We MUST override this method in our custom provider
       def load_current_resource
         # Here we keep the existing version of the resource
         # if none exists we create a new one from the resource we defined earlier
-        @current_resource ||= Chef::Resource::MyCoolAppKnowHost.new(new_resource.name)
+        @current_resource ||= Chef::Resource::MyCoolAppKnownHost.new(new_resource.name)
 
         # New resource represents the chef DSL block that is being run (from a recipe for example)
         @current_resource.port(new_resource.port)
@@ -168,13 +168,13 @@ Now it is time to define what we do in our actions, with our HWRP we need to def
 \begin{lstlisting}[label=lst:cookbook-hwrp5]
 class Chef
   class Provider
-    class MyCoolAppKnowHost < Chef::Provider
+    class MyCoolAppKnownHost < Chef::Provider
 
       # We MUST override this method in our custom provider
       def load_current_resource
         # Here we keep the existing version of the resource
         # if none exists we create a new one from the resource we defined earlier
-        @current_resource ||= Chef::Resource::MyCoolAppKnowHost.new(new_resource.name)
+        @current_resource ||= Chef::Resource::MyCoolAppKnownHost.new(new_resource.name)
 
         # New resource represents the chef DSL block that is being run (from a recipe for example)
         @current_resource.port(new_resource.port)
@@ -186,16 +186,39 @@ class Chef
       end
 
       def action_create
-        # Some ruby code
+        Chef::Log.info("#{@current_resource} called create action")
       end
 
       def action_delete
-        # More ruby code
+        Chef::Log.info("#{@current_resource} called create delete")
       end
 
     end
   end
 end
+\end{lstlisting}
+
+Now we can test it.
+
+\begin{lstlisting}[label=lst:cookbook-hwrp6]
+...
+my_cool_app_known_host 'bitbucket.org'
+\end{lstlisting}
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-hwrp7]
+$ knife cookbook upload my_cool_app
+Uploading my_cool_app    [0.1.0]
+Uploaded 1 cookbook.
+
+$ vagrant provision chef_second_client
+[chef_second_client] Running provisioner: chef_client...
+Creating folder to hold client key...
+Uploading chef client validation key...
+...
+INFO: ruby_block[add github.com to /etc/ssh/ssh_known_hosts] called
+INFO: action_create triggered for my_cool_app_known_host[bitbucket.org]
+INFO: Chef Run complete in 15.491575653 seconds
+...
 \end{lstlisting}
 
 https://github.com/opscode-cookbooks/database

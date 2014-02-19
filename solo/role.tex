@@ -52,16 +52,16 @@ $ NODE=web2.example.com.json vagrant provision
 Generating chef JSON and uploading...
 Running chef-solo...
 stdin: is not a tty
-[2013-12-30T20:21:44+00:00] INFO: Forking chef instance to converge...
-[2013-12-30T20:21:44+00:00] INFO: *** Chef 11.8.2 ***
-[2013-12-30T20:21:44+00:00] INFO: Chef-client pid: 1224
-[2013-12-30T20:21:46+00:00] INFO: Setting the run_list to ["role[web]"] from JSON
-[2013-12-30T20:21:46+00:00] INFO: Run List is [role[web]]
-[2013-12-30T20:21:46+00:00] INFO: Run List expands to [apache2]
+INFO: Forking chef instance to converge...
+INFO: *** Chef 11.8.2 ***
+INFO: Chef-client pid: 1224
+INFO: Setting the run_list to ["role[web]"] from JSON
+INFO: Run List is [role[web]]
+INFO: Run List expands to [apache2]
 ...
-[2013-12-30T20:23:18+00:00] INFO: Chef Run complete in 1.437157496 seconds
-[2013-12-30T20:23:18+00:00] INFO: Running report handlers
-[2013-12-30T20:23:18+00:00] INFO: Report handlers complete
+INFO: Chef Run complete in 1.437157496 seconds
+INFO: Running report handlers
+INFO: Report handlers complete
 \end{lstlisting}
 
 As you can see, role defined in \inline{run_list} by command \inline{role} and role command replaced to run list of this role by chef client. This allow for use use several roles with recipes in the same node. For example, if web and database role must be on the same server for staging environment, you can define in node:

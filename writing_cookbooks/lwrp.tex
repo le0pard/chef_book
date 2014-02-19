@@ -415,12 +415,12 @@ $ knife cookbook upload my_cool_app
 
 $ vagrant provision chef_second_client
 ...
-[2014-02-13T13:05:02+00:00] INFO: Found chef-client in /usr/bin/chef-client
-[2014-02-13T13:05:12+00:00] INFO: runit_service[nginx] configured
-[2014-02-13T13:05:13+00:00] INFO: ruby_block[add github.com to /etc/ssh/ssh_known_hosts] called
-[2014-02-13T13:05:13+00:00] INFO: Chef Run complete in 11.920336698 seconds
-[2014-02-13T13:05:13+00:00] INFO: Running report handlers
-[2014-02-13T13:05:13+00:00] INFO: Report handlers complete
+INFO: Found chef-client in /usr/bin/chef-client
+INFO: runit_service[nginx] configured
+INFO: ruby_block[add github.com to /etc/ssh/ssh_known_hosts] called
+INFO: Chef Run complete in 11.920336698 seconds
+INFO: Running report handlers
+INFO: Report handlers complete
 
 $ vagrant ssh chef_second_client
 
@@ -447,12 +447,12 @@ $ knife cookbook upload my_cool_app
 
 $ vagrant provision chef_second_client
 ...
-[2014-02-13T13:05:02+00:00] INFO: Found chef-client in /usr/bin/chef-client
-[2014-02-13T13:05:12+00:00] INFO: runit_service[nginx] configured
-[2014-02-13T13:11:35+00:00] INFO: ruby_block[del github.com from /etc/ssh/ssh_known_hosts] called
-[2014-02-13T13:11:35+00:00] INFO: Chef Run complete in 17.109379291 seconds
-[2014-02-13T13:05:13+00:00] INFO: Running report handlers
-[2014-02-13T13:05:13+00:00] INFO: Report handlers complete
+INFO: Found chef-client in /usr/bin/chef-client
+INFO: runit_service[nginx] configured
+INFO: ruby_block[del github.com from /etc/ssh/ssh_known_hosts] called
+INFO: Chef Run complete in 17.109379291 seconds
+INFO: Running report handlers
+INFO: Report handlers complete
 
 $ vagrant ssh chef_second_client
 

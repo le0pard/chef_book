@@ -48,8 +48,8 @@ $ knife node from file nodes/second.example.com.json
 Updated Node second.example.com!
 // on real environment you will execute "knife ssh 'name:second.example.com' 'sudo chef-client' -i ../keys/production.pem -x ubuntu"
 $ vagrant provision chef_second_client
-[2014-01-21T18:21:55+00:00] INFO: Chef Run complete in 26.935610739 seconds
-[2014-01-21T18:21:55+00:00] INFO: Running report handler
+INFO: Chef Run complete in 26.935610739 seconds
+INFO: Running report handler
 \end{lstlisting}
 
 Let's install also \href{http://en.wikipedia.org/wiki/Network\_Time\_Protocol}{ntp} package in the same recipe. Because we have in recipe Ruby syntax, we can little \href{http://ru.wikipedia.org/wiki/Dont\_repeat\_yourself}{DRY} our code:
@@ -68,8 +68,8 @@ Uploading my_cool_app    [0.1.0]
 Uploaded 1 cookbook.
 // on real environment you will execute "knife ssh 'name:second.example.com' 'sudo chef-client' -i ../keys/production.pem -x ubuntu"
 $ vagrant provision chef_second_client
-[2014-01-21T18:21:55+00:00] INFO: Chef Run complete in 26.935610739 seconds
-[2014-01-21T18:21:55+00:00] INFO: Running report handler
+INFO: Chef Run complete in 26.935610739 seconds
+INFO: Running report handler
 $ vagrant ssh chef_second_client
 ...
 vagrant@precise64:~$ ps ax | grep ntp

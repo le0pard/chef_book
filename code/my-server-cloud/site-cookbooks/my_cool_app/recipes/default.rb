@@ -42,3 +42,5 @@ my_cool_app_know_host 'github.com'
 #my_cool_app_know_host 'github.com' do
 #  action :delete
 #end
+
+my_cool_app_known_host 'bitbucket.org'

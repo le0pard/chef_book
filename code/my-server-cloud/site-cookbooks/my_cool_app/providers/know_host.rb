@@ -3,8 +3,6 @@ def whyrun_supported?
   true
 end
 
-use_inline_resoures
-
 action :create do
   key, comment = insure_for_file(new_resource)
   # Use a Ruby block to edit the file
