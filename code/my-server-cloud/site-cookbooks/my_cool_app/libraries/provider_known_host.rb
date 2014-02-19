@@ -1,3 +1,5 @@
+require 'chef/provider'
+
 class Chef
   class Provider
     class MyCoolAppKnownHost < Chef::Provider

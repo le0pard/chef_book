@@ -125,6 +125,8 @@ end
 Very similar to resources, here is the basic class structure for a provider.
 
 \begin{lstlisting}[label=lst:cookbook-hwrp4]
+require 'chef/provider'
+
 class Chef
   class Provider
     class MyCoolAppKnownHost < Chef::Provider
@@ -139,6 +141,8 @@ end
 While we don’t need to write an initialize method (we can), we do need to override \inline{load_current_resource}.
 
 \begin{lstlisting}[label=lst:cookbook-hwrp4]
+require 'chef/provider'
+
 class Chef
   class Provider
     class MyCoolAppKnownHost < Chef::Provider
@@ -166,6 +170,8 @@ end
 Now it is time to define what we do in our actions, with our HWRP we need to define methods like \inline{action_create} to define a \inline{:create} action. Chef will do some introspection to find these methods and hook them up.
 
 \begin{lstlisting}[label=lst:cookbook-hwrp5]
+require 'chef/provider'
+
 class Chef
   class Provider
     class MyCoolAppKnownHost < Chef::Provider
