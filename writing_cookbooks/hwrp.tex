@@ -101,6 +101,10 @@ class Chef
       end
 
       # Define the attributes we set defaults for
+      def key(arg=nil)
+        set_or_return(:key, arg, :kind_of => String)
+      end
+
       def host(arg=nil)
         set_or_return(:host, arg, :kind_of => String)
       end
@@ -152,6 +156,7 @@ class Chef
         @current_resource ||= Chef::Resource::MyCoolAppKnownHost.new(new_resource.name)
 
         # New resource represents the chef DSL block that is being run (from a recipe for example)
+        @current_resource.key(new_resource.key)
         @current_resource.port(new_resource.port)
         @current_resource.known_hosts_file(new_resource.known_hosts_file)
         # Although you can reference @new_resource throughout the provider it is best to
@@ -181,6 +186,7 @@ class Chef
         @current_resource ||= Chef::Resource::MyCoolAppKnownHost.new(new_resource.name)
 
         # New resource represents the chef DSL block that is being run (from a recipe for example)
+        @current_resource.key(new_resource.key)
         @current_resource.port(new_resource.port)
         @current_resource.known_hosts_file(new_resource.known_hosts_file)
         # Although you can reference @new_resource throughout the provider it is best to
@@ -211,7 +217,7 @@ my_cool_app_known_host 'bitbucket.org'
 
 To run chef-client in debug mode you should use \inline{-l} attribute with settings \inline{debug}. In vagrant you need set \inline{log_level} for node in Vagrantfile:
 
-\begin{lstlisting}[language=Bash,label=lst:cookbook-hwrp7]
+\begin{lstlisting}[label=lst:cookbook-hwrp7]
 chef_client.vm.provision :chef_client do |chef|
 
   chef.log_level = :debug
@@ -238,7 +244,98 @@ INFO: Chef Run complete in 15.491575653 seconds
 ...
 \end{lstlisting}
 
+Now let's add code for actions \inline{:create} and \inline{:delete}:
 
+\begin{lstlisting}[label=lst:cookbook-hwrp9]
+require 'chef/provider'
 
-https://github.com/opscode-cookbooks/database
-https://github.com/sethvargo-cookbooks/swap
+class Chef
+  class Provider
+    class MyCoolAppKnownHost < Chef::Provider
+
+      ...
+
+      def action_create
+        Chef::Log.debug("#{@new_resource}: Create #{new_resource.host}")
+
+        key, comment = insure_for_file(new_resource)
+        # Use a Ruby block to edit the file
+        ruby_block "add #{new_resource.host} to #{new_resource.known_hosts_file}" do
+          block do
+            file = ::Chef::Util::FileEdit.new(new_resource.known_hosts_file)
+            file.insert_line_if_no_match(/#{Regexp.escape(comment)}|#{Regexp.escape(key)}/, key)
+            file.write_file
+          end
+        end
+        new_resource.updated_by_last_action(true)
+      end
+
+      def action_delete
+        Chef::Log.debug("#{@new_resource}: Delete #{new_resource.host}")
+
+        key, comment = insure_for_file(new_resource)
+        # Use a Ruby block to edit the file
+        ruby_block "del #{new_resource.host} from #{new_resource.known_hosts_file}" do
+          block do
+            file = ::Chef::Util::FileEdit.new(new_resource.known_hosts_file)
+            file.search_file_delete_line(/#{Regexp.escape(comment)}|#{Regexp.escape(key)}/)
+            file.write_file
+          end
+        end
+        new_resource.updated_by_last_action(true)
+      end
+
+      private
+
+      def insure_for_file(new_resource)
+        key = (new_resource.key || `ssh-keyscan -H -p #{new_resource.port} #{new_resource.host} 2>&1`)
+        comment = key.split("\n").first || ""
+
+        Chef::Application.fatal! "Could not resolve #{new_resource.host}" if key =~ /getaddrinfo/
+
+        # Ensure that the file exists and has minimal content (required by Chef::Util::FileEdit)
+        file new_resource.known_hosts_file do
+          action        :create
+          backup        false
+          content       '# This file must contain at least one line. This is that line.'
+          only_if do
+            !::File.exists?(new_resource.known_hosts_file) || ::File.new(new_resource.known_hosts_file).readlines.length == 0
+          end
+        end
+        [key, comment]
+      end
+
+    end
+  end
+end
+\end{lstlisting}
+
+And check how it works:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-hwrp10]
+$ knife cookbook upload my_cool_app
+Uploading my_cool_app    [0.1.0]
+Uploaded 1 cookbook.
+
+$ vagrant provision chef_second_client
+[chef_second_client] Running provisioner: chef_client...
+Creating folder to hold client key...
+Uploading chef client validation key...
+...
+WARN: Cloning resource attributes for file[/etc/ssh/ssh_known_hosts] from prior resource (CHEF-3694)
+WARN: Previous file[/etc/ssh/ssh_known_hosts]: /var/chef/cache/cookbooks/my_cool_app/providers/know_host.rb:39:in `insure_for_file'
+WARN: Current  file[/etc/ssh/ssh_known_hosts]: /var/chef/cache/cookbooks/my_cool_app/libraries/provider_known_host.rb:62:in `insure_for_file'
+INFO: ruby_block[add bitbucket.org to /etc/ssh/ssh_known_hosts] called
+...
+
+$ vagrant ssh chef_second_client
+
+vagrant@precise64:~$ cat /etc/ssh/ssh_known_hosts
+# This file must contain at least one line. This is that line.
+# github.com SSH-2.0-OpenSSH_6.2p2 Ubuntu-6ubuntu0.1+github2
+|1|Daaa5BVIzI52zRmJ2ifMfOkkLJE=|Y611mqhJbVkdJ1onVkaqfV+3iks= ...
+# bitbucket.org SSH-2.0-OpenSSH_5.3
+|1|jycCFcglLajRKYIlyAJaD+zmOjw=|51hFV+x1XIZNdiMGG6K0Xz+Nkds= ...
+\end{lstlisting}
+
+So it works.

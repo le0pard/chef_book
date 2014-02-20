@@ -21,6 +21,10 @@ class Chef
       end
 
       # Define the attributes we set defaults for
+      def key(arg=nil)
+        set_or_return(:key, arg, :kind_of => String)
+      end
+
       def host(arg=nil)
         set_or_return(:host, arg, :kind_of => String)
       end
