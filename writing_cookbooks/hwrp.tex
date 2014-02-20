@@ -190,11 +190,11 @@ class Chef
       end
 
       def action_create
-        Chef::Log.info("#{@current_resource} called create action")
+        Chef::Log.debug("#{@new_resource}: Create #{new_resource.host}")
       end
 
       def action_delete
-        Chef::Log.info("#{@current_resource} called create delete")
+        Chef::Log.debug("#{@new_resource}: Delete #{new_resource.host}")
       end
 
     end
@@ -209,7 +209,20 @@ Now we can test it.
 my_cool_app_known_host 'bitbucket.org'
 \end{lstlisting}
 
+To run chef-client in debug mode you should use \inline{-l} attribute with settings \inline{debug}. In vagrant you need set \inline{log_level} for node in Vagrantfile:
+
 \begin{lstlisting}[language=Bash,label=lst:cookbook-hwrp7]
+chef_client.vm.provision :chef_client do |chef|
+
+  chef.log_level = :debug
+
+  ...
+end
+\end{lstlisting}
+
+And see our HWRP execution:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-hwrp8]
 $ knife cookbook upload my_cool_app
 Uploading my_cool_app    [0.1.0]
 Uploaded 1 cookbook.
@@ -219,11 +232,13 @@ $ vagrant provision chef_second_client
 Creating folder to hold client key...
 Uploading chef client validation key...
 ...
-INFO: ruby_block[add github.com to /etc/ssh/ssh_known_hosts] called
-INFO: action_create triggered for my_cool_app_known_host[bitbucket.org]
+DEBUG: my_cool_app_known_host[bitbucket.org]: Create bitbucket.org
+DEBUG: Saving the current state of node second.example.com
 INFO: Chef Run complete in 15.491575653 seconds
 ...
 \end{lstlisting}
+
+
 
 https://github.com/opscode-cookbooks/database
 https://github.com/sethvargo-cookbooks/swap

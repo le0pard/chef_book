@@ -20,11 +20,11 @@ class Chef
       end
 
       def action_create
-        Chef::Log.info("#{@current_resource} called create action")
+        Chef::Log.debug("#{@new_resource}: Create #{new_resource.host}")
       end
 
       def action_delete
-        Chef::Log.info("#{@current_resource} called create delete")
+        Chef::Log.debug("#{@new_resource}: Delete #{new_resource.host}")
       end
 
     end
