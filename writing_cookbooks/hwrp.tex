@@ -4,7 +4,7 @@ When Chef first came out, there was no Light Weight Resource Provider (LWRP) syn
 
 While writing a LWRP is meant to be simple and elegant, writing a HWRP is meant to be flexible. It gives you the full power of ruby in exchange for elegance.
 
-\subsection{HWRPs and LWRPS are interchangeable}
+\subsection{HWRPs and LWRPS}
 
 With LWRP you are taught to create a Resource and a Provider together. This is the simplest way. However, just because you need to convert a resource definition or a provider into a HWRP you do not need to convert both.
 
@@ -21,13 +21,11 @@ recipes/
 metadata.rb
 \end{lstlisting}
 
-\subsection{HWRPs live in library files}
-
 Anything you put in <<resources/>> or <<providers/>> Chef will attempt to parse at runtime. We don't want Chef trying to read our HWRP as the Chef DSL, we want it to interpret it as code. Luckily, anything stored in the <<libraries/>> folder Chef will try to import at runtime. A good example of this can be seen in the runit cookbook.
 
 \subsection{Example}
 
-Let's go through an example. We are going to create a HWRP that is very simple, it already written as a LWRP.
+Let's go through an example. We are going to create a HWRP that is very simple, it already written as a LWRP. Our HWRP will called \inline{my_cool_app_known_host}, to not conflict with already existed in cookbook LWRP \inline{my_cool_app_know_host}.
 
 \subsubsection{Resource}
 
