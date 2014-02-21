@@ -1,2 +1,17 @@
 \section{Ohai}
 
+Ohai detects data about your operating system. It can be used standalone, but its primary purpose is to provide node data to Chef.
+
+When invoked, it collects detailed, extensible information about the machine it's running on, including Chef configuration, hostname, FQDN, networking, memory, CPU, platform, and kernel data.
+
+When Chef configures the node object during each Chef run, these attributes are used by the chef-client to ensure that certain properties remain unchanged. These properties are also referred to as automatic attributes. In our case (in Chef Solo), this attributes available in node object. For example:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-ohai1]
+node['platform'] # The platform on which a node is running. This attribute helps determine which providers will be used.
+node['platform_version']  # The version of the platform. This attribute helps determine which providers will be used.
+node['hostname']  # The host name for the node.
+\end{lstlisting}
+
+\subsection{Ohai plugin}
+
+TODO
