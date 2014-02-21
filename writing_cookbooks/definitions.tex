@@ -1,6 +1,6 @@
 \section{Definitions}
 
-A definition is used to declare resources so they can be added to the resource collection. A definition is not a resource or a lightweight resource. A definition does not have an associated provider. A definition groups two (or more) resource declarations. There is no limit to the number of resources that can be part of a definition. All definitions within a cookbook must be located in the \inline{definitions/} folder. A definition is never declared into a cookbook. A definition is best-used when:
+A definition is used to declare resources so they can be added to the resource collection. A definition is not a resource or a lightweight resource. A definition does not have an associated provider. A definition groups two (or more) resource declarations. There is no limit to the number of resources that can be part of a definition. All definitions within a cookbook must be located in the <<definitions/>> folder. A definition is never declared into a cookbook. A definition is best-used when:
 
 \begin{itemize}
   \item Data needs to be passed from one (or more) recipes into a single definition
@@ -8,5 +8,70 @@ A definition is used to declare resources so they can be added to the resource c
   \item An action does not need to be sent directly to a resource (when it does, it should be sent to a provider)
 \end{itemize}
 
-TODO
+In our \inline{my_cool_app} cookbook we are using \inline{nginx_site} definition from nginx cookbook.
 
+\subsection{Example}
+
+Let's create definition in our \inline{my_cool_app} cookbook. We will move our nginx conf creation into definition.
+
+\begin{lstlisting}[label=lst:cookbook-definitions1]
+# create nginx config from temlate nginx.conf.erb
+nginx_config = "#{node['nginx']['dir']}/sites-available/#{node['my_cool_app']['name']}.conf"
+template nginx_config do
+  source "nginx.conf.erb"
+  mode "0644"
+  template "nginx.conf.erb"
+end
+
+# activate nginx.conf in nginx
+nginx_site "#{node['my_cool_app']['name']}.conf"
+\end{lstlisting}
+
+To definition \inline{enable_web_site}:
+
+\begin{lstlisting}[label=lst:cookbook-definitions2]
+define :enable_web_site, :enable => true, :template => "site.conf.erb" do
+  if params[:enable]
+    # create nginx config from temlate nginx.conf.erb
+    nginx_config = "#{node['nginx']['dir']}/sites-available/#{params[:name]}.conf"
+    template nginx_config do
+      source params[:template]
+      mode "0644"
+    end
+    # activate conf in nginx
+    nginx_site "#{params[:name]}.conf"
+  else
+    # deactivateconf in nginx
+    nginx_site "#{params[:name]}.conf" do
+      enable    false
+    end
+  end
+end
+\end{lstlisting}
+
+And now we can replace code in~\ref{lst:cookbook-definitions1} by this code:
+
+\begin{lstlisting}[label=lst:cookbook-definitions3]
+# enable website
+enable_web_site node['my_cool_app']['name'] do
+  template "nginx.conf.erb"
+end
+\end{lstlisting}
+
+And check how it works:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-definitions4]
+$ knife cookbook upload my_cool_app
+Uploading my_cool_app    [0.1.0]
+Uploaded 1 cookbook.
+
+$ vagrant provision chef_second_client
+...
+INFO: template[/etc/nginx/sites-available/my_cool_app.conf] created file /etc/nginx/sites-available/my_cool_app.conf
+INFO: template[/etc/nginx/sites-available/my_cool_app.conf] updated file contents /etc/nginx/sites-available/my_cool_app.conf
+INFO: template[/etc/nginx/sites-available/my_cool_app.conf] mode changed to 644
+INFO: execute[nxensite my_cool_app.conf] ran successfully
+...
+\end{lstlisting}
+
+As you can see our definition is works as expected.

@@ -39,6 +39,9 @@
 
 \graphicspath{{images/}{cover/}}
 
+\renewcommand{\lstlistingname}{Code}% Listing -> Algorithm
+\renewcommand{\lstlistlistingname}{Codes}
+
 \sloppy
 
 \definecolor{lineno}{rgb}{0.5,0.5,0.5}
@@ -119,14 +122,6 @@
         \fi
     \fi
     \global\advance\lst@skipnumbers\@ne}%
-\def\lst@maketitle#1{
-   \vskip\abovecaptionskip
-   \colorbox{titlebox}{
-       %\scriptsize
-       \small
-       \color{download}\ttfamily\href{http://chef.leopard.in.ua/code/#1}{Download}
-       \color{title}\sffamily\bfseries#1}
-   \vskip\belowcaptionskip}
 \def\lst@makecaption#1#2{
   \vskip\abovecaptionskip
   \colorbox{titlebox}{
@@ -135,6 +130,14 @@
       \color{code_title}\ttfamily#1
       \color{title}\sffamily\bfseries#2}
   \vskip\belowcaptionskip}
+\def\lst@maketitle#1{
+   \vskip\abovecaptionskip
+   \colorbox{titlebox}{
+       %\scriptsize
+       \small
+       \color{download}\ttfamily\href{http://chef.leopard.in.ua/code/#1}{Download}
+       \color{title}\sffamily\bfseries#1}
+   \vskip\belowcaptionskip}
 \makeatother
 
 \let\olditemize=\itemize

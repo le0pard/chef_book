@@ -26,15 +26,10 @@ cookbook_file "#{node['my_cool_app']['web_dir']}/index.html" do
   mode 0755
 end
 
-# create nginx config from temlate nginx.conf.erb
-nginx_config = "#{node['nginx']['dir']}/sites-available/#{node['my_cool_app']['name']}.conf"
-template nginx_config do
-  source "nginx.conf.erb"
-  mode "0644"
+# enable website
+enable_web_site node['my_cool_app']['name'] do
+  template "nginx.conf.erb"
 end
-
-# activate nginx.conf in nginx
-nginx_site "#{node['my_cool_app']['name']}.conf"
 
 # known hosts for github.com
 my_cool_app_know_host 'github.com'
