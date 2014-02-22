@@ -53,7 +53,8 @@ class Chef
       private
 
       def insure_for_file(new_resource)
-        key = (new_resource.key || `ssh-keyscan -H -p #{new_resource.port} #{new_resource.host} 2>&1`)
+        cmd = Mixlib::ShellOut.new("ssh-keyscan -H -p #{new_resource.port} #{new_resource.host} 2>&1")
+        key = (new_resource.key || cmd.run_command.stdout)
         comment = key.split("\n").first || ""
 
         Chef::Application.fatal! "Could not resolve #{new_resource.host}" if key =~ /getaddrinfo/

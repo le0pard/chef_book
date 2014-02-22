@@ -30,13 +30,15 @@ action :delete do
 end
 
 def insure_for_file(new_resource)
-  key = (new_resource.key || `ssh-keyscan -H -p #{new_resource.port} #{new_resource.host} 2>&1`)
+  cmd = Mixlib::ShellOut.new("ssh-keyscan -H -p #{new_resource.port} #{new_resource.host} 2>&1")
+  key = (new_resource.key || cmd.run_command.stdout)
   comment = key.split("\n").first || ""
 
   Chef::Application.fatal! "Could not resolve #{new_resource.host}" if key =~ /getaddrinfo/
 
   # Ensure that the file exists and has minimal content (required by Chef::Util::FileEdit)
-  file new_resource.known_hosts_file do
+  file "Check what file #{new_resource.known_hosts_file} exists for #{new_resource.name}" do
+    path          new_resource.known_hosts_file
     action        :create
     backup        false
     content       '# This file must contain at least one line. This is that line.'

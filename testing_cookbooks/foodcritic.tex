@@ -1,0 +1,211 @@
+\section{Foodcritic}
+
+\href{http://www.foodcritic.io/}{Foodcritic} is a lint tool for your Opscode Chef cookbooks. Foodcritic has two goals:
+
+\begin{itemize}
+  \item To make it easier to flag problems in your Chef cookbooks that will cause Chef to blow up when you attempt to converge. This is about faster feedback. If you automate checks for common problems you can save a lot of time.
+  \item To encourage discussion within the Chef community on the more subjective stuff - what does a good cookbook look like? Opscode have avoided being overly prescriptive which by and large I think is a good thing. Having a set of rules to base discussion on helps drive out what we as a community think is good style.
+\end{itemize}
+
+On main site you can find \href{http://www.foodcritic.io/}{list of rules}. Also you can define own list of rules (if you need this). Foodcritic is like jslint for cookbooks. At the bare minimum, you should run foodcritic against all your cookbooks.
+
+\subsection{Example}
+
+We need to add foodcritic gems in Gemfile inside our \inline{my_cool_app} cookbook:
+
+\begin{lstlisting}[label=lst:testing-foodcritic1]
+source 'https://rubygems.org'
+
+gem 'berkshelf'
+gem 'foodcritic'
+\end{lstlisting}
+
+And you should to execute \inline{bundle} command to install this gem. Next we can to check \inline{my_cool_app} cookbook by foodcritic:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-foodcritic2]
+$ foodcritic .
+FC015: Consider converting definition to a LWRP: ./definitions/enable_web_site.rb:1
+FC021: Resource condition in provider may not behave as expected: ./providers/know_host.rb:39
+FC048: Prefer Mixlib::ShellOut: ./libraries/provider_known_host.rb:56
+FC048: Prefer Mixlib::ShellOut: ./providers/know_host.rb:33
+\end{lstlisting}
+
+We have a few warnings in the code. Let's fix them:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-foodcritic3]
+my_cool_app/libraries/provider_known_host.rb
+@@ -53,7 +53,8 @@ class Chef
+       private
+
+       def insure_for_file(new_resource)
+-        key = (new_resource.key || `ssh-keyscan -H -p #{new_resource.port} #{new_resource.host} 2>&1`)
++        cmd = Mixlib::ShellOut.new("ssh-keyscan -H -p #{new_resource.port} #{new_resource.host} 2>&1")
++        key = (new_resource.key || cmd.run_command.stdout)
+         comment = key.split("\n").first || ""
+
+my_cool_app/providers/know_host.rb
+@@ -30,13 +30,15 @@ action :delete do
+ end
+
+ def insure_for_file(new_resource)
+-  key = (new_resource.key || `ssh-keyscan -H -p #{new_resource.port} #{new_resource.host} 2>&1`)
++  cmd = Mixlib::ShellOut.new("ssh-keyscan -H -p #{new_resource.port} #{new_resource.host} 2>&1")
++  key = (new_resource.key || cmd.run_command.stdout)
+   comment = key.split("\n").first || ""
+
+   Chef::Application.fatal! "Could not resolve #{new_resource.host}" if key =~ /getaddrinfo/
+
+   # Ensure that the file exists and has minimal content (required by Chef::Util::FileEdit)
+-  file new_resource.known_hosts_file do
++  file "Check what file #{new_resource.known_hosts_file} exists for #{new_resource.name}" do
++    path          new_resource.known_hosts_file
+     action        :create
+     backup        false
+     content       '# This file must contain at least one line. This is that line.'
+\end{lstlisting}
+
+And run again \inline{foodcritic}:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-foodcritic2]
+$  foodcritic .
+FC015: Consider converting definition to a LWRP: ./definitions/enable_web_site.rb:1
+\end{lstlisting}
+
+As you can see almoust all warnings fixed.
+
+\subsection{Integration}
+
+As an alternative to invoking foodcritic directly as a command-line program, you can also choose to run foodcritic from a build using Rake or Thor.
+
+\subsubsection{Rake}
+
+Foodcritic has unreleased experimental support for Rake included. With foodcritic and rake in your Gemfile your Rakefile would look like this:
+
+\begin{lstlisting}[label=lst:testing-rake1]
+require 'foodcritic'
+task :default => [:foodcritic]
+FoodCritic::Rake::LintTask.new
+\end{lstlisting}
+
+You can also pass a block when instantiating to configure the lint options:
+
+\begin{lstlisting}[label=lst:testing-rake2]
+require 'foodcritic'
+task :default => [:foodcritic]
+FoodCritic::Rake::LintTask.new do |t|
+  t.options = {:fail_tags => ['correctness']}
+end
+\end{lstlisting}
+
+\subsubsection{Thor}
+
+While Rake is the old grand-daddy of Ruby build tools, a number of people prefer to use Thor.
+
+We need to add \href{https://github.com/reset/thor-foodcritic}{thor-foodcritic} gem in Gemfile inside our \inline{my_cool_app} cookbook:
+
+\begin{lstlisting}[label=lst:testing-thor1]
+source 'https://rubygems.org'
+
+gem 'berkshelf'
+gem 'foodcritic'
+gem 'thor-foodcritic'
+\end{lstlisting}
+
+And you should to execute \inline{bundle} command to install this gem. Add the FoodCritic tasks to Thorfile:
+
+\begin{lstlisting}[label=lst:testing-thor2]
+# encoding: utf-8
+
+require 'bundler'
+require 'bundler/setup'
+require 'berkshelf/thor'
+require 'thor/foodcritic'
+\end{lstlisting}
+
+And then get a list of your thor tasks:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-thor3]
+$ thor list
+...
+foodcritic
+----------
+thor foodcritic:lint  # Run a lint test against the specified Cookbook and Role paths or otherwise your current working directory.
+
+...
+\end{lstlisting}
+
+Run the lint task to get a review:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-thor4]
+$ thor foodcritic:lint
+FC015: Consider converting definition to a LWRP: /Users/leo/Documents/chef_book/code/my-server-cloud/site-cookbooks/my_cool_app/definitions/enable_web_site.rb:1
+\end{lstlisting}
+
+Get info about options:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-thor5]
+$ thor help foodcritic:lint
+Usage:
+  thor foodcritic:lint
+
+Options:
+  -B, [--cookbook-path=one two three]  # Cookbook path(s) to check.
+                                       # Default: /Users/leo/Documents/chef_book/code/my-server-cloud/site-cookbooks/my_cool_app
+  -R, [--role-path=one two three]      # Role path(s) to check.
+  -t, [--tags=one two three]           # Only check against rules with the specified tags.
+  -I, [--include=one two three]        # Additional rule file path(s) to load.
+  -f, [--epic-fail=one two three]      # Fail the build if any of the specified tags are matched.
+  -e, [--exclude-paths=one two three]  # Paths to exclude when running tests.
+                                       # Default: ["test/**/*", "spec/**/*", "features/**/*"]
+
+Run a lint test against the specified Cookbook and Role paths or otherwise your current working directory.
+\end{lstlisting}
+
+We can ignore some rules by using tags. For example, to ignore \inline{FC015} warning, we can run command:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-thor6]
+$ thor foodcritic:lint -t ~FC015
+
+$
+\end{lstlisting}
+
+Or we can use \inline{.foodcritic} file inside our cookbook folder and add tags inside it:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-thor7]
+$ cat .foodcritic
+~FC015
+
+$ thor foodcritic:lint
+
+$
+\end{lstlisting}
+
+For example, if we need check only rules, which have tags \inline{services} and \inline{style}, we use directly by foodcritic command:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-thor8]
+$ foodcritic -t style,services .
+
+$
+\end{lstlisting}
+
+Or with Thor:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-thor9]
+$ thor foodcritic:lint -t style,services
+
+$
+\end{lstlisting}
+
+As you can see, in this case you can add this command in your Continuous integration (CI) and check your cookbook by foodcritic.
+
+\subsection{Extra Rules}
+
+Except standart rules exists additional rules that you can use with foodcritic:
+
+\begin{itemize}
+  \item \href{https://github.com/customink-webops/foodcritic-rules}{CustomInk Foodcritic Rules}
+  \item \href{https://github.com/etsy/foodcritic-rules}{Etsy Foodcritic Rules}
+  \item \href{https://github.com/lookout/lookout-foodcritic-rules}{Lookout Foodcritic Rules}
+\end{itemize}
+
+And, of course, you can write own number of rules for your cookbooks.
