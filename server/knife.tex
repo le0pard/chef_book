@@ -11,7 +11,7 @@ vagrant@precise64:~$ sudo cp /etc/chef-server/*.pem /vagrant/.chef/
 
 On real (production) Chef Server you can use \inline{scp} command.
 
-Next we should create for knife configuration file. As you remember from chapter <<\ref{sec:solo-chef-folder}~.Chef folder>>, we already have <<.chef>> folder with \inline{knife.rb} config. But for Chef server we should define additional params. We can use for this \inline{configure} command of knife:
+Next we should create for knife configuration file. As you remember from chapter <<\ref{sec:solo-chef-folder}~\nameref{sec:solo-chef-folder}>>, we already have <<.chef>> folder with \inline{knife.rb} config. But for Chef server we should define additional params. We can use for this \inline{configure} command of knife:
 
 \begin{lstlisting}[language=Bash,label=lst:my-server-cloud-knife2]
 $ knife configure -i
@@ -65,7 +65,7 @@ environment_path          "#{current_dir}/../environments"
 knife[:berkshelf_path] = "cookbooks"
 \end{lstlisting}
 
-Let's consider an options (part of this options already considered in chapter <<\ref{sec:solo-chef-folder}~.Chef folder>>):
+Let's consider an options (part of this options already considered in chapter <<\ref{sec:solo-chef-folder}~~\nameref{sec:solo-chef-folder}>>):
 
 \begin{itemize}
   \item \inline{chef_server_url} - the URL for the Chef Server

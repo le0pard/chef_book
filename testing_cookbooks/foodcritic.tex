@@ -1,4 +1,5 @@
 \section{Foodcritic}
+\label{sec:foodcritic}
 
 \href{http://www.foodcritic.io/}{Foodcritic} is a lint tool for your Opscode Chef cookbooks. Foodcritic has two goals:
 
@@ -180,6 +181,7 @@ $ thor foodcritic:lint
 $
 \end{lstlisting}
 
+Here we use the tilde \inline{~} to exclude \inline{FC015}.
 For example, if we need check only rules, which have tags \inline{services} and \inline{style}, we use directly by foodcritic command:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-thor8]

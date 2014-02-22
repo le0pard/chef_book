@@ -10,6 +10,8 @@ A definition is used to declare resources so they can be added to the resource c
 
 In our \inline{my_cool_app} cookbook we are using \inline{nginx_site} definition from nginx cookbook.
 
+Right now definitions continue working in Chef, but better to use LWRP (or LWRP) instead definition (in chapter <<\ref{sec:foodcritic}~\nameref{sec:foodcritic}>> you will see warning about this).
+
 \subsection{Example}
 
 Let's create definition in our \inline{my_cool_app} cookbook. We will move our nginx conf creation into definition.

@@ -41,7 +41,7 @@ $ berks install --path cookbooks
 Using chef-server (2.0.1)
 \end{lstlisting}
 
-Now we should configure a Chef Solo node for our Chef Server. From chapter~\ref{sec:solo-node} you should know how to define node.
+Now we should configure a Chef Solo node for our Chef Server. From chapter <<\ref{sec:solo-node}~\nameref{sec:solo-node}>> you should know how to define node.
 
 \begin{lstlisting}[language=JSON,label=lst:my-server-cloud-installation4,title=my-server-cloud/nodes/chef-server.example.com.json]
 {
@@ -110,7 +110,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 end
 \end{lstlisting}
 
-You should have installed chef gem inside vagrant, as we did in chapter <<\ref{sec:solo-vagrant}~Vagrant>> and install/update Chef Client inside server by command <<knife solo prepare>>.
+You should have installed chef gem inside vagrant, as we did in chapter <<\ref{sec:solo-vagrant}~\nameref{sec:solo-vagrant}>> and install/update Chef Client inside server by command <<knife solo prepare>>.
 
 \begin{lstlisting}[language=Bash,label=lst:my-server-cloud-installation7]
 $ vagrant provision
