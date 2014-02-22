@@ -11,6 +11,6 @@
   "run_list": [
     "role[chef-client]",
     "role[nginx]",
-    "my_cool_app"
+    "recipe[my_cool_app]"
   ]
 }

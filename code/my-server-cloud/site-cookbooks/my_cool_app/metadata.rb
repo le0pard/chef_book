@@ -9,3 +9,5 @@ version          '0.1.0'
 recipe 'my_cool_app',   'Configure my cool app'
 
 depends 'nginx',           '~> 2.2.0'
+depends 'build-essential'
+depends 'ohai'

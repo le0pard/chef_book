@@ -12,6 +12,139 @@ node['platform_version']  # The version of the platform. This attribute helps de
 node['hostname']  # The host name for the node.
 \end{lstlisting}
 
-\subsection{Ohai plugin}
+\subsection{Example}
 
-TODO
+\subsubsection{Recipe node}
+
+Let's create new recipe <<node>>, which will install \href{http://nodejs.org/}{Node.js} on nodes in our \inline{my_cool_app} cookbook.
+
+New default attributes:
+
+\lstinputlisting[label=lst:cookbook-ohai-attributes,title=my-server-cloud/site-cookbooks/my\_cool\_app/attributes/node.rb]{code/book/cookbook/ohai/attributes.rb}
+
+And recipe:
+
+\lstinputlisting[label=lst:cookbook-ohai-recipe-before,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/node.rb]{code/book/cookbook/ohai/node_before.rb}
+
+As you can see, we using \inline{node['platform_family']} Ohai variable, which help for us understand type of OS on node and install needed package.
+
+Also we used cookbook \inline{build-essential}, because we will install node.js from source. In this case we should add it as dependency in our metadata.rb file:
+
+\begin{lstlisting}[label=lst:cookbook-ohai-meta]
+depends 'nginx',           '~> 2.2.0'
+depends 'build-essential'
+\end{lstlisting}
+
+To use this recipe we should add it in \inline{run_list}:
+
+\begin{lstlisting}[language=JSON,label=lst:cookbook-ohai2]
+{
+  "run_list": [
+    "recipe[my_cool_app]",
+    "recipe[my_cool_app::node]"
+  ]
+}
+\end{lstlisting}
+
+But I want run this recipe with default recipe, so I will leave \inline{run_list} as is and add node recipe in default:
+
+\begin{lstlisting}[label=lst:cookbook-ohai3]
+...
+include_recipe 'my_cool_app::node'
+\end{lstlisting}
+
+And check how it works:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-ohai4]
+$ knife cookbook upload my_cool_app
+Uploading my_cool_app    [0.1.0]
+Uploaded 1 cookbook.
+
+$ vagrant provision chef_second_client
+INFO: remote_file[/usr/local/src/node-v0.10.26.tar.gz] created file /usr/local/src/node-v0.10.26.tar.gz
+INFO: remote_file[/usr/local/src/node-v0.10.26.tar.gz] updated file contents /usr/local/src/node-v0.10.26.tar.gz
+INFO: remote_file[/usr/local/src/node-v0.10.26.tar.gz] mode changed to 644
+INFO: execute[tar --no-same-owner -zxf node-v0.10.26.tar.gz] ran successfully
+INFO: bash[compile node.js] ran successfully
+INFO: execute[nodejs make install] ran successfully
+
+$ vagrant ssh chef_second_client
+
+vagrant@precise64:~$ node -v
+v0.10.26
+\end{lstlisting}
+
+As you can see it works.
+
+\subsubsection{Ohai plugin}
+
+In our node recipe we used maybe not best way to check node version, which already installed on node (if version mistmatch - we should install needed). Let's create Ohai plugin, which will give for use node.js version from server. First of all create in \inline{my_cool_app} new recipe \inline{ohai_plugin.rb} with content:
+
+\lstinputlisting[label=lst:cookbook-ohai-recipe1,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipe/ohai\_plugin.rb]{code/book/cookbook/ohai/ohai_plugin.rb}
+
+This recipe will generate ohai plugin from \inline{system_node_js.rb.erb} template. Next we should create this template in folder <<templates/default/plugins>>:
+
+\lstinputlisting[label=lst:cookbook-ohai-template1,title=my-server-cloud/site-cookbooks/my\_cool\_app/templates/default/plugin/system\_node\_js.rb.erb]{code/book/cookbook/ohai/system_node_js.rb.erb}
+
+In first two lines we set by method \inline{provides} automatic attributes, which will provide for us this plugin.
+Most of the information we want to lookup would be nested in some way, and ohai tends to do this by storing the data in a Mash. This can be done by creating a new mash and setting the attribute to it. We did this with \inline{system_node_js}. In the end of code, plugin set the version of node.js, if node.js installed on node. That's it!
+
+Also we should add new dependency for our cookbook - ohai cookbook:
+
+\begin{lstlisting}[label=lst:cookbook-ohai5]
+depends 'nginx',           '~> 2.2.0'
+depends 'build-essential'
+depends 'ohai'
+\end{lstlisting}
+
+Next, let's try this plugin by adding node.rb recipe this content:
+
+\begin{lstlisting}[label=lst:cookbook-ohai6]
+include_recipe "build-essential"
+
+include_recipe "my_cool_app::ohai_plugin"
+Chef::Log.info "Installed Node version: #{node['system_node_js']['version']}" if node['system_node_js']
+
+case node['platform_family']
+  when 'rhel','fedora'
+    package "openssl-devel"
+  when 'debian'
+    package "libssl-dev"
+end
+\end{lstlisting}
+
+In this case we can little change our node.js recipe:
+
+\begin{lstlisting}[label=lst:cookbook-ohai7]
+execute "nodejs make install" do
+  environment({"PATH" => "/usr/local/bin:/usr/bin:/bin:$PATH"})
+  command "make install"
+  cwd "/usr/local/src/node-v#{node['my_cool_app']['nodejs']['version']}"
+  not_if {node['system_node_js'] && node['system_node_js']['version'] == node['my_cool_app']['nodejs']['version'] }
+end
+\end{lstlisting}
+
+Now we can check how it works:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-ohai8]
+$ knife cookbook upload my_cool_app
+Uploading my_cool_app    [0.1.0]
+Uploaded 1 cookbook.
+
+$ vagrant provision chef_second_client
+...
+INFO: template[/etc/chef/ohai_plugins/system_node_js.rb] created file /etc/chef/ohai_plugins/system_node_js.rb
+INFO: template[/etc/chef/ohai_plugins/system_node_js.rb] updated file contents /etc/chef/ohai_plugins/system_node_js.rb
+INFO: template[/etc/chef/ohai_plugins/system_node_js.rb] owner changed to 0
+INFO: template[/etc/chef/ohai_plugins/system_node_js.rb] group changed to 0
+INFO: template[/etc/chef/ohai_plugins/system_node_js.rb] mode changed to 755
+...
+$ vagrant provision chef_second_client
+...
+WARN: Current  service[nginx]: /var/chef/cache/cookbooks/nginx/recipes/source.rb:123:in `from_file'
+INFO: Installed Node version: 0.10.26
+WARN: Cloning resource attributes for package[libssl-dev] from prior resource (CHEF-3694)
+...
+\end{lstlisting}
+
+As you can see, after first \inline{provision} (\inline{knife cook}, \inline{knife ssh 'sudo chef-client'}) execution Ohai plugin will be installed, but not executed. Only on second execution chef-client will use Ohai plugin (because Ohai plugins load before kitchen).
