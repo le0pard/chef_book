@@ -14,15 +14,48 @@ In our \inline{my_cool_app} cookbook we are using \inline{nginx_site} definition
 
 Let's create definition in our \inline{my_cool_app} cookbook. We will move our nginx conf creation into definition.
 
-\lstinputlisting[label=lst:cookbook-definitions-default1,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]{code/book/cookbook/definitions/default_before.rb}
+\begin{lstlisting}[label=lst:cookbook-definitions-default1,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
+# create nginx config from temlate nginx.conf.erb
+nginx_config = "#{node['nginx']['dir']}/sites-available/#{node['my_cool_app']['name']}.conf"
+template nginx_config do
+  source "nginx.conf.erb"
+  mode "0644"
+end
+
+# activate conf in nginx
+nginx_site "#{node['my_cool_app']['name']}.conf"
+\end{lstlisting}
 
 To definition \inline{enable_web_site}:
 
-\lstinputlisting[label=lst:cookbook-definitions-enable-site,title=my-server-cloud/site-cookbooks/my\_cool\_app/definitions/enable\_web\_site.rb]{code/book/cookbook/definitions/enable_web_site.rb}
+\begin{lstlisting}[label=lst:cookbook-definitions-enable-site,title=my-server-cloud/site-cookbooks/my\_cool\_app/definitions/enable\_web\_site.rb]
+define :enable_web_site, :enable => true, :template => "site.conf.erb" do
+  if params[:enable]
+    # create nginx config from temlate nginx.conf.erb
+    nginx_config = "#{node['nginx']['dir']}/sites-available/#{params[:name]}.conf"
+    template nginx_config do
+      source params[:template]
+      mode "0644"
+    end
+    # activate conf in nginx
+    nginx_site "#{params[:name]}.conf"
+  else
+    # deactivateconf in nginx
+    nginx_site "#{params[:name]}.conf" do
+      enable    false
+    end
+  end
+end
+\end{lstlisting}
 
 And now we can replace code in~\ref{lst:cookbook-definitions1} by this code:
 
-\lstinputlisting[label=lst:cookbook-definitions-default2,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]{code/book/cookbook/definitions/default_after.rb}
+\begin{lstlisting}[label=lst:cookbook-definitions-default2,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
+# enable website
+enable_web_site node['my_cool_app']['name'] do
+  template "nginx.conf.erb"
+end
+\end{lstlisting}
 
 And check how it works:
 

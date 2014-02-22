@@ -20,11 +20,67 @@ Let's create new recipe <<node>>, which will install \href{http://nodejs.org/}{N
 
 New default attributes:
 
-\lstinputlisting[label=lst:cookbook-ohai-attributes,title=my-server-cloud/site-cookbooks/my\_cool\_app/attributes/node.rb]{code/book/cookbook/ohai/attributes.rb}
+\begin{lstlisting}[label=lst:cookbook-ohai-attributes,title=my-server-cloud/site-cookbooks/my\_cool\_app/attributes/node.rb]
+default['my_cool_app']['nodejs']['version'] = '0.10.26'
+default['my_cool_app']['nodejs']['checksum'] = '2340ec2dce1794f1ca1c685b56840dd515a271b2'
+default['my_cool_app']['nodejs']['dir'] = '/usr/local'
+default['my_cool_app']['nodejs']['src_url'] = "http://nodejs.org/dist"
+\end{lstlisting}
 
 And recipe:
 
-\lstinputlisting[label=lst:cookbook-ohai-recipe-before,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/node.rb]{code/book/cookbook/ohai/node_before.rb}
+\begin{lstlisting}[label=lst:cookbook-ohai-recipe-before,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/node.rb]
+include_recipe "build-essential"
+
+case node['platform_family']
+  when 'rhel','fedora'
+    package "openssl-devel"
+  when 'debian'
+    package "libssl-dev"
+end
+
+nodejs_tar = "node-v#{node['my_cool_app']['nodejs']['version']}.tar.gz"
+nodejs_tar_path = nodejs_tar
+if node['my_cool_app']['nodejs']['version'].split('.')[1].to_i >= 5
+  nodejs_tar_path = "v#{node['my_cool_app']['nodejs']['version']}/#{nodejs_tar_path}"
+end
+# Let the user override the source url in the attributes
+nodejs_src_url = "#{node['my_cool_app']['nodejs']['src_url']}/#{nodejs_tar_path}"
+
+remote_file "/usr/local/src/#{nodejs_tar}" do
+  source nodejs_src_url
+  checksum node['my_cool_app']['nodejs']['checksum']
+  mode 0644
+  action :create_if_missing
+end
+
+# --no-same-owner required overcome "Cannot change ownership" bug
+# on NFS-mounted filesystem
+execute "tar --no-same-owner -zxf #{nodejs_tar}" do
+  cwd "/usr/local/src"
+  creates "/usr/local/src/node-v#{node['my_cool_app']['nodejs']['version']}"
+end
+
+bash "compile node.js" do
+  cwd "/usr/local/src/node-v#{node['my_cool_app']['nodejs']['version']}"
+  code <<-EOH
+    PATH="/usr/local/bin:$PATH"
+    ./configure --prefix=#{node['my_cool_app']['nodejs']['dir']} && \
+    make
+  EOH
+  creates "/usr/local/src/node-v#{node['my_cool_app']['nodejs']['version']}/node"
+end
+
+execute "nodejs make install" do
+  environment({"PATH" => "/usr/local/bin:/usr/bin:/bin:$PATH"})
+  command "make install"
+  cwd "/usr/local/src/node-v#{node['my_cool_app']['nodejs']['version']}"
+  not_if do
+    File.exists?("#{node['my_cool_app']['nodejs']['dir']}/bin/node") &&
+    `#{node['my_cool_app']['nodejs']['dir']}/bin/node --version`.chomp == "v#{node['my_cool_app']['nodejs']['version']}"
+  end
+end
+\end{lstlisting}
 
 As you can see, we using \inline{node['platform_family']} Ohai variable, which help for us understand type of OS on node and install needed package.
 
@@ -80,11 +136,33 @@ As you can see it works.
 
 In our node recipe we used maybe not best way to check node version, which already installed on node (if version mistmatch - we should install needed). Let's create Ohai plugin, which will give for use node.js version from server. First of all create in \inline{my_cool_app} new recipe \inline{ohai_plugin.rb} with content:
 
-\lstinputlisting[label=lst:cookbook-ohai-recipe1,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipe/ohai\_plugin.rb]{code/book/cookbook/ohai/ohai_plugin.rb}
+\begin{lstlisting}[label=lst:cookbook-ohai-recipe1,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipe/ohai\_plugin.rb]
+template "#{node['ohai']['plugin_path']}/system_node_js.rb" do
+  source "plugins/system_node_js.rb.erb"
+  owner "root"
+  group "root"
+  mode 00755
+  variables(
+    :node_js_bin => "#{node['my_cool_app']['nodejs']['dir']}/bin/node"
+  )
+end
+
+include_recipe "ohai"
+\end{lstlisting}
 
 This recipe will generate ohai plugin from \inline{system_node_js.rb.erb} template. Next we should create this template in folder <<templates/default/plugins>>:
 
-\lstinputlisting[label=lst:cookbook-ohai-template1,title=my-server-cloud/site-cookbooks/my\_cool\_app/templates/default/plugin/system\_node\_js.rb.erb]{code/book/cookbook/ohai/system_node_js.rb.erb}
+\begin{lstlisting}[label=lst:cookbook-ohai-template1,title=my-server-cloud/site-cookbooks/my\_cool\_app/templates/default/plugin/system\_node\_js.rb.erb]
+provides "system_node_js"
+provides "system_node_js/version"
+
+system_node_js Mash.new unless system_node_js
+system_node_js[:version] = nil unless system_node_js[:version]
+
+status, stdout, stderr = run_command(:no_status_check => true, :command => "<%= @node_js_bin %> --version")
+
+system_node_js[:version] = stdout[1..-1] if 0 == status
+\end{lstlisting}
 
 In first two lines we set by method \inline{provides} automatic attributes, which will provide for us this plugin.
 Most of the information we want to lookup would be nested in some way, and ohai tends to do this by storing the data in a Mash. This can be done by creating a new mash and setting the attribute to it. We did this with \inline{system_node_js}. In the end of code, plugin set the version of node.js, if node.js installed on node. That's it!
