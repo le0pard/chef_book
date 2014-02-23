@@ -1,4 +1,5 @@
 \section{Definitions}
+\label{sec:cookbook-definitions}
 
 A definition is used to declare resources so they can be added to the resource collection. A definition is not a resource or a lightweight resource. A definition does not have an associated provider. A definition groups two (or more) resource declarations. There is no limit to the number of resources that can be part of a definition. All definitions within a cookbook must be located in the <<definitions/>> folder. A definition is never declared into a cookbook. A definition is best-used when:
 
@@ -10,7 +11,7 @@ A definition is used to declare resources so they can be added to the resource c
 
 In our \inline{my_cool_app} cookbook we are using \inline{nginx_site} definition from nginx cookbook.
 
-Right now definitions continue working in Chef, but better to use LWRP (or LWRP) instead definition (in chapter <<\ref{sec:foodcritic}~\nameref{sec:foodcritic}>> you will see warning about this).
+Right now definitions continue working in Chef, but better to use LWRP (or HWRP) instead definition (in chapter <<\ref{sec:testing-foodcritic}~\nameref{sec:testing-foodcritic}>> you will see warning about this).
 
 \subsection{Example}
 

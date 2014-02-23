@@ -1,4 +1,5 @@
 \section{Bootstrap first node}
+\label{sec:server-node}
 
 Once the Chef Server workstation is configured, it can be used to install Chef on one (or more) nodes across the organization using a Knife bootstrap operation. The \inline{knife bootstrap} command is used to SSH into the target machine, and then do what is needed to allow the chef-client to run on the node. It will install the chef-client executable (if necessary), generate keys, and register the node with the Chef Server. The bootstrap operation requires the IP address or FQDN of the target system, the SSH credentials (username, password or identity file) for an account that has root access to the node, and (if the operating system is not Ubuntu, which is the default distribution used by knife bootstrap) the operating system running on the target system.
 
