@@ -26,6 +26,9 @@ cookbook_file "#{node['my_cool_app']['web_dir']}/index.html" do
   mode 0755
 end
 
+# nginx recipe
+include_recipe 'nginx'
+
 # enable website
 enable_web_site node['my_cool_app']['name'] do
   template "nginx.conf.erb"

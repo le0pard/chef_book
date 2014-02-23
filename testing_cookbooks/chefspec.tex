@@ -1,2 +1,108 @@
 \section{ChefSpec}
 \label{sec:testing-chefspec}
+
+\href{http://code.sethvargo.com/chefspec/}{ChefSpec} is a unit testing framework for testing Chef cookbooks. ChefSpec makes it easy to write examples and get fast feedback on cookbook changes without the need for virtual machines or cloud servers.
+
+\subsection{Example}
+
+Let's cover our cookbook by chefspec tests. First we should add this gem in Gemfile:
+
+\begin{lstlisting}[label=lst:testing-chefspec1]
+source 'https://rubygems.org'
+
+gem 'berkshelf'
+gem 'foodcritic'
+gem 'thor-foodcritic'
+gem 'chefspec'
+\end{lstlisting}
+
+And you should to execute \inline{bundle} command to install this gem. Next we should create config for chefspec:
+
+\begin{lstlisting}[label=lst:testing-chefspec2,title=my-server-cloud/site-cookbooks/my\_cool\_app/spec/spec\_helper.rb]
+require 'chefspec'
+require 'chefspec/berkshelf' # if you are using librarian, when you should require 'chefspec/librarian'
+
+RSpec.configure do |config|
+  # Specify the Chef log_level (default: :warn)
+  config.log_level = :warn
+
+  # Specify the operating platform to mock Ohai data from (default: nil)
+  config.platform = 'ubuntu'
+
+  # Specify the operating version to mock Ohai data from (default: nil)
+  config.version = '12.04'
+end
+\end{lstlisting}
+
+And add some unit tests for default recipe:
+
+\begin{lstlisting}[label=lst:testing-chefspec3,title=my-server-cloud/site-cookbooks/my\_cool\_app/spec/unit/recipes/default\_spec.rb]
+require 'spec_helper'
+
+describe 'my_cool_app::default' do
+  let(:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
+
+  %w(git ntp).each do |pack|
+    it "install #{pack} package" do
+      expect(chef_run).to install_package(pack)
+    end
+  end
+
+  it 'create direcory for web app' do
+    expect(chef_run).to create_directory('/var/www/my_cool_app').with(
+      user:   'vagrant',
+      mode:  "0755"
+    )
+  end
+
+  it 'create web app nginx config' do
+    expect(chef_run).to create_template('/etc/nginx/sites-available/my_cool_app.conf')
+  end
+
+  it 'enable nginx service' do
+    expect(chef_run).to enable_service('nginx')
+  end
+
+end
+\end{lstlisting}
+
+And check our tests:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-chefspec5]
+$ rspec
+FFFFF
+
+...
+
+Finished in 1.6 seconds
+5 examples, 5 failures
+\end{lstlisting}
+
+Our tests faild, because we used \inline{nginx_site} definition, but dont have nginx service inside our recipe. We can fix this by adding nginx default recipe inside our default recipe (nginx recipe contain \inline{service}). You can ask me: <<Wait, we already have role \inline{nginx} inside our node, which install nginx. Does in this case we will call nginx recipe twice?>>. Yes, your are right. But as you remember, main idea of Chef is idempotence, so on second call of nginx recipe it will do nothing (if recipe written in this way). So we shouldn't worry about this:
+
+\begin{lstlisting}[label=lst:testing-chefspec6,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
+...
+
+# nginx recipe
+include_recipe 'nginx'
+
+# enable website
+enable_web_site node['my_cool_app']['name'] do
+  template "nginx.conf.erb"
+end
+
+...
+\end{lstlisting}
+
+And check tests again:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-chefspec7]
+$ rspec
+
+...
+
+Finished in 1.85 seconds
+5 examples, 0 failures
+\end{lstlisting}
+
+As you can see all tests pass.

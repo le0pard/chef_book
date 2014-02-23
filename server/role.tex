@@ -21,6 +21,7 @@ After command \inline{berks install} we will create <<nginx>> role:
   "json_class": "Chef::Role",
   "default_attributes": {
     "nginx": {
+      "install_method": "source",
       "version": "1.4.4",
       "default_site_enabled": true,
       "source": {
@@ -31,7 +32,7 @@ After command \inline{berks install} we will create <<nginx>> role:
     }
   },
   "run_list": [
-    "recipe[nginx::source]"
+    "recipe[nginx]"
   ]
 }
 \end{lstlisting}
