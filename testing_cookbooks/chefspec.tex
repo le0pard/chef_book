@@ -78,7 +78,18 @@ Finished in 1.6 seconds
 5 examples, 5 failures
 \end{lstlisting}
 
-Our tests faild, because we used \inline{nginx_site} definition, but dont have nginx service inside our recipe. We can fix this by adding nginx default recipe inside our default recipe (nginx recipe contain \inline{service} resource). You can ask me: <<Wait, we already have role \inline{nginx} inside our node, which install nginx. Does in this case we will call nginx recipe twice?>>. Yes, your are right. But as you remember, main idea of Chef is idempotence, so on second call of nginx recipe it will do nothing (if recipe written in this way). So we shouldn't worry about this:
+Our tests faild, because we used \inline{nginx_site} definition, but dont have nginx service inside our recipe. We can fix this by adding nginx default recipe inside our default recipe (nginx default recipe contain \inline{service} resource).
+
+\begin{lstlisting}[label=lst:testing-chefspec-nginx]
+...
+
+service 'nginx' do
+  supports :status => true, :restart => true, :reload => true
+  action   :start
+end
+\end{lstlisting}
+
+You can ask me: <<Wait, we already have role \inline{nginx} inside our node, which install nginx. Does in this case we will call nginx recipe twice?>>. Yes, your are right. But as you remember, main idea of Chef is idempotence, so on second call of nginx recipe it will do nothing (if recipe written in this way). So we shouldn't worry about this:
 
 \begin{lstlisting}[label=lst:testing-chefspec6,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
 ...
