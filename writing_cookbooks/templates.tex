@@ -127,7 +127,7 @@ end
 
 This resource would be matched in the same order as the /templates directory structure. For a node named <<host-node-desktop>> that is running Windows 7, the second item would be the matching item and the location:
 
-\begin{lstlisting}[language=Bash,label=lst:cookbook-templates8]
+\begin{lstlisting}[language=Bash,label=lst:cookbook-templates9]
 /templates
   windows-6.2/text_file.txt
   windows-6.1/text_file.txt
@@ -147,7 +147,7 @@ A template can be built in a way that allows it to contain references to one (or
 
 Use the render method in a template to reference a partial template file with the following syntax:
 
-\begin{lstlisting}[language=Bash,label=lst:cookbook-templates9]
+\begin{lstlisting}[language=Bash,label=lst:cookbook-templates10]
 <%= render "partial_name.txt.erb", :option => {} %>
 \end{lstlisting}
 
@@ -162,7 +162,7 @@ where \inline{partial_name.txt.erb} is the name of the partial template file and
 
 For example:
 
-\begin{lstlisting}[language=Bash,label=lst:cookbook-templates10]
+\begin{lstlisting}[language=Bash,label=lst:cookbook-templates11]
 <%= render "simple.txt.erb", :variables => {:user => @user }, :local => true %>
 \end{lstlisting}
 

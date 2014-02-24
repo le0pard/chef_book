@@ -78,7 +78,7 @@ end
 
 Now lets set up some attribute methods in our HWRP. Make sure to read the code comments for an explanation of what is going on.
 
-\begin{lstlisting}[label=lst:cookbook-hwrp3]
+\begin{lstlisting}[label=lst:cookbook-hwrp4]
 require 'chef/resource'
 
 class Chef
@@ -127,7 +127,7 @@ end
 
 Very similar to resources, here is the basic class structure for a provider.
 
-\begin{lstlisting}[label=lst:cookbook-hwrp4]
+\begin{lstlisting}[label=lst:cookbook-hwrp5]
 require 'chef/provider'
 
 class Chef
@@ -143,7 +143,7 @@ end
 
 While we don’t need to write an initialize method (we can), we do need to override \inline{load_current_resource}.
 
-\begin{lstlisting}[label=lst:cookbook-hwrp4]
+\begin{lstlisting}[label=lst:cookbook-hwrp6]
 require 'chef/provider'
 
 class Chef
@@ -173,7 +173,7 @@ end
 
 Now it is time to define what we do in our actions, with our HWRP we need to define methods like \inline{action_create} to define a \inline{:create} action. Chef will do some introspection to find these methods and hook them up.
 
-\begin{lstlisting}[label=lst:cookbook-hwrp5]
+\begin{lstlisting}[label=lst:cookbook-hwrp7]
 require 'chef/provider'
 
 class Chef
@@ -211,14 +211,14 @@ end
 
 Now we can test it.
 
-\begin{lstlisting}[label=lst:cookbook-hwrp6]
+\begin{lstlisting}[label=lst:cookbook-hwrp8]
 ...
 my_cool_app_known_host 'bitbucket.org'
 \end{lstlisting}
 
 To run chef-client in debug mode you should use \inline{-l} attribute with settings \inline{debug}. In vagrant you need set \inline{log_level} for node in Vagrantfile:
 
-\begin{lstlisting}[label=lst:cookbook-hwrp7]
+\begin{lstlisting}[label=lst:cookbook-hwrp9]
 chef_client.vm.provision :chef_client do |chef|
 
   chef.log_level = :debug
@@ -229,7 +229,7 @@ end
 
 And see our HWRP execution:
 
-\begin{lstlisting}[language=Bash,label=lst:cookbook-hwrp8]
+\begin{lstlisting}[language=Bash,label=lst:cookbook-hwrp10]
 $ knife cookbook upload my_cool_app
 Uploading my_cool_app    [0.1.0]
 Uploaded 1 cookbook.
@@ -247,7 +247,7 @@ INFO: Chef Run complete in 15.491575653 seconds
 
 Now let's add code for actions \inline{:create} and \inline{:delete}:
 
-\begin{lstlisting}[label=lst:cookbook-hwrp9]
+\begin{lstlisting}[label=lst:cookbook-hwrp11]
 require 'chef/provider'
 
 class Chef
@@ -313,7 +313,7 @@ end
 
 And check how it works:
 
-\begin{lstlisting}[language=Bash,label=lst:cookbook-hwrp10]
+\begin{lstlisting}[language=Bash,label=lst:cookbook-hwrp12]
 $ knife cookbook upload my_cool_app
 Uploading my_cool_app    [0.1.0]
 Uploaded 1 cookbook.

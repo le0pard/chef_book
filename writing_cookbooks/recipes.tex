@@ -103,13 +103,13 @@ depends "apache2"
 
 A recipe can write events to a log file and can cause exceptions using \inline{Chef::Log}. The levels include debug, info, warn, error, and fatal. For example, to just capture information:
 
-\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes7]
+\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes8]
 Chef::Log.info('some useful information')
 \end{lstlisting}
 
 Or to trigger a fatal exception:
 
-\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes8]
+\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes9]
 Chef::Log.fatal!('something bad')
 \end{lstlisting}
 
@@ -117,13 +117,13 @@ Chef::Log.fatal!('something bad')
 
 A recipe can include one (or more) recipes located in external cookbooks by using the \inline{include_recipe} method. When a recipe is included, the resources found in that recipe will be inserted (in the same exact order) at the point where the \inline{include_recipe} keyword is located. The syntax for including a recipe is like this:
 
-\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes9]
+\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes10]
 include_recipe "recipe"
 \end{lstlisting}
 
 For example:
 
-\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes10]
+\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes11]
 include_recipe "apache2::mod_ssl"
 \end{lstlisting}
 
@@ -133,7 +133,7 @@ If the \inline{include_recipe} method is used more than once to include a recipe
 
 Attributes sometimes depend on actions taken from within recipes, so it may be necessary to reload a given attribute from within a recipe. For example:
 
-\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes11]
+\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes12]
 ruby_block 'some_code' do
   block do
     node.from_file(run_context.resolve_attribute("COOKBOOK_NAME", "ATTR_FILE"))
@@ -146,7 +146,7 @@ end
 
 Attribute accessor methods are automatically created and the method invocation can be used interchangeably with the keys. For example:
 
-\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes12]
+\begin{lstlisting}[language=Bash,label=lst:cookbook-recipes13]
 default.apache.dir          = "/etc/apache2"
 default.apache.listen_ports = [ "80","443" ]
 ion :nothing

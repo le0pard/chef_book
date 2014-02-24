@@ -130,7 +130,7 @@ where
 
 Now we need to create file \inline{know_host.rb} in <<providers>> directory:
 
-\begin{lstlisting}[label=lst:cookbook-lwrp3,title=my-server-cloud/site-cookbooks/my\_cool\_app/providers/know\_host.rb]
+\begin{lstlisting}[label=lst:cookbook-lwrp4,title=my-server-cloud/site-cookbooks/my\_cool\_app/providers/know\_host.rb]
 # Support whyrun
 def whyrun_supported?
   true
@@ -386,7 +386,7 @@ end
 
 Use the \inline{rescue} clause to make sure that a log message is always provided. For example:
 
-\begin{lstlisting}[label=lst:cookbook-lwrp-logs3]
+\begin{lstlisting}[label=lst:cookbook-lwrp-logs4]
 def load_current_resource
   ...
   begin
@@ -402,14 +402,14 @@ end
 
 We finished with our LWRP. Let's test it. Just add to <<default.rb>> you new LWRP, which will add to known hosts <<github.com>>:
 
-\begin{lstlisting}[label=lst:cookbook-lwrp4,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
+\begin{lstlisting}[label=lst:cookbook-lwrp5,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
 # known hosts for github.com
 my_cool_app_know_host 'github.com'
 \end{lstlisting}
 
 Upload cookbook on server and run chef-client on node:
 
-\begin{lstlisting}[language=Bash,label=lst:cookbook-lwrp5]
+\begin{lstlisting}[language=Bash,label=lst:cookbook-lwrp6]
 $ knife cookbook upload my_cool_app
   Uploading my_cool_app    [0.1.0]
   Uploaded 1 cookbook.
@@ -433,7 +433,7 @@ $ cat /etc/ssh/ssh_known_hosts
 
 Let's check how it will delete this hosts:
 
-\begin{lstlisting}[label=lst:cookbook-lwrp6,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
+\begin{lstlisting}[label=lst:cookbook-lwrp7,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
 my_cool_app_know_host 'github.com' do
   action :delete
 end
@@ -441,7 +441,7 @@ end
 
 Again upload on server and run chef-client:
 
-\begin{lstlisting}[language=Bash,label=lst:cookbook-lwrp7]
+\begin{lstlisting}[language=Bash,label=lst:cookbook-lwrp8]
 $ knife cookbook upload my_cool_app
   Uploading my_cool_app    [0.1.0]
   Uploaded 1 cookbook.
