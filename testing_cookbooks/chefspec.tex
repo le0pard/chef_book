@@ -63,6 +63,10 @@ describe 'my_cool_app::default' do
     expect(chef_run).to enable_service('nginx')
   end
 
+  it 'include node recipe' do
+    expect(chef_run).to include_recipe('my_cool_app::node')
+  end
+
 end
 \end{lstlisting}
 
@@ -70,12 +74,11 @@ And check our tests:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-chefspec5]
 $ rspec
-FFFFF
 
-...
+FFFFFF
 
-Finished in 1.6 seconds
-5 examples, 5 failures
+Finished in 2.25 seconds
+6 examples, 0 failures
 \end{lstlisting}
 
 Our tests faild, because we used \inline{nginx_site} definition, but dont have nginx service inside our recipe. We can fix this by adding nginx default recipe inside our default recipe (nginx default recipe contain \inline{service} resource).
@@ -105,15 +108,15 @@ end
 ...
 \end{lstlisting}
 
-And check tests again:
+Add test for this \inline{include_recipe} and check tests again:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-chefspec7]
 $ rspec
 
-...
+.......
 
-Finished in 1.85 seconds
-5 examples, 0 failures
+Finished in 2.25 seconds
+7 examples, 0 failures
 \end{lstlisting}
 
 As you can see all tests pass.
@@ -164,8 +167,8 @@ $ rspec
 
 ..........
 
-Finished in 3.05 seconds
-10 examples, 0 failures
+Finished in 3.19 seconds
+12 examples, 0 failures
 \end{lstlisting}
 
 As you can see, we cover cookbook by unit tests using chefspec.

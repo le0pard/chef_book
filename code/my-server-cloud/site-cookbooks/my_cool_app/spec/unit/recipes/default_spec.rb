@@ -16,12 +16,20 @@ describe 'my_cool_app::default' do
     )
   end
 
+  it 'include nginx recipe' do
+    expect(chef_run).to include_recipe('nginx')
+  end
+
   it 'create web app nginx config' do
     expect(chef_run).to create_template('/etc/nginx/sites-available/my_cool_app.conf')
   end
 
   it 'enable nginx service' do
     expect(chef_run).to enable_service('nginx')
+  end
+
+  it 'include node recipe' do
+    expect(chef_run).to include_recipe('my_cool_app::node')
   end
 
 end

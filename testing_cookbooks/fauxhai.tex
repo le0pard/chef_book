@@ -1,2 +1,78 @@
 \section{Fauxhai}
 \label{sec:testing-fauxhai}
+
+Ohai is a tool that is used to detect attributes on a node, and then provide these attributes to the chef-client at the start of every chef-client run. Ohai is required by the chef-client and must be present on a node. It's awesome, but this can be problem for testing. What is why exist Fauxhai. \href{http://technology.customink.com/fauxhai/}{Fauxhai} is a gem for mocking out ohai data in your chef testing.
+
+\subsection{Example}
+
+As you can see from our node specs, we can set \inline{platform} and \inline{version}, but we can stub additional Ohai attribute - \inline{system_node_js}. Let's cover it by ChefSpec and Fauxhai (ChefSpec have Fauxhai as dependency):
+
+\begin{lstlisting}[label=lst:testing-fauxhai1]
+require 'chefspec'
+
+describe 'my_cool_app::default' do
+  ['12.04', '11.06', '10.04'].each do |version|
+    context "on Ubuntu #{version}" do
+      let(:chef_run) { ChefSpec::ChefRunner.new.converge(described_recipe) }
+
+      before do
+        Fauxhai.mock(platform: 'ubuntu', version: version)
+      end
+
+      it 'install htop' do
+        expect(chef_run).to install_package('htop')
+      end
+    end
+  end
+end
+\end{lstlisting}
+
+Also we can set node attributes by \inline{ChefSpec::Runner}:
+
+\begin{lstlisting}[label=lst:testing-fauxhai2,title=my-server-cloud/site-cookbooks/my\_cool\_app/spec/unit/recipes/node\_spec.rb]
+...
+
+  context 'node versions' do
+    let(:system_node_version) { nil }
+    let(:chef_run) do
+      ChefSpec::Runner.new(platform: platfom, version: platfom_version) do |node|
+        node.automatic['system_node_js'] = { 'version' => system_node_version } if system_node_version
+      end.converge(described_recipe)
+    end
+
+    it 'install node if version not specified' do
+      expect(chef_run).to run_execute('make install').with(cwd: "/usr/local/src/node-v#{nodejs_version}")
+    end
+
+    context 'installed different version' do
+      let(:system_node_version) { '0.8.0' }
+
+      it 'install node if version not specified' do
+        expect(chef_run).to run_execute('make install').with(cwd: "/usr/local/src/node-v#{nodejs_version}")
+      end
+    end
+
+    context 'installed same version' do
+      let(:system_node_version) { nodejs_version }
+
+      it 'install node if version not specified' do
+        expect(chef_run).not_to run_execute('make install').with(cwd: "/usr/local/src/node-v#{nodejs_version}")
+      end
+    end
+  end
+
+...
+\end{lstlisting}
+
+And check what this new tests is pass:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-fauxhai2]
+$ rspec
+
+...............
+
+Finished in 3.76 seconds
+15 examples, 0 failures
+\end{lstlisting}
+
+All works.
