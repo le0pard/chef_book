@@ -1,7 +1,7 @@
 \section{ChefSpec}
 \label{sec:testing-chefspec}
 
-\href{http://code.sethvargo.com/chefspec/}{ChefSpec} is a unit testing framework for testing Chef cookbooks. ChefSpec makes it easy to write examples and get fast feedback on cookbook changes without the need for virtual machines or cloud servers.
+\href{http://code.sethvargo.com/chefspec/}{ChefSpec} is a unit testing framework for testing Chef cookbooks. ChefSpec makes it easy to write examples and get fast feedback on cookbook changes without the need for virtual machines or cloud servers. ChefSpec using \href{http://rspec.info/}{RSpec} for writting tests, what is why you should know Rspec at least basic stuff.
 
 \subsection{Example}
 
@@ -117,3 +117,55 @@ Finished in 1.85 seconds
 \end{lstlisting}
 
 As you can see all tests pass.
+
+Now let's cover our node recipe:
+
+\begin{lstlisting}[label=lst:testing-chefspec8,title=my-server-cloud/site-cookbooks/my\_cool\_app/spec/unit/recipes/node\_spec.rb]
+require 'spec_helper'
+
+describe 'my_cool_app::node' do
+  let(:platfom) { 'ubuntu' }
+  let(:platfom_version) { '12.04' }
+  let(:chef_run) { ChefSpec::Runner.new(platform: platfom, version: platfom_version).converge(described_recipe) }
+  let(:nodejs_version) { '0.10.26' }
+  let(:nodejs_tar) { "node-v#{nodejs_version}.tar.gz" }
+
+  it "install libssl-dev package" do
+    expect(chef_run).to install_package('libssl-dev')
+  end
+
+  context 'rhel or fedora' do
+    let(:platfom) { 'redhat' }
+    let(:platfom_version) { '6.5' }
+
+    it "install openssl-devel package" do
+      expect(chef_run).to install_package('openssl-devel')
+    end
+  end
+
+  it 'download node if missing' do
+    expect(chef_run).to create_remote_file_if_missing("/usr/local/src/#{nodejs_tar}")
+  end
+
+  it 'unpack node' do
+    expect(chef_run).to run_execute("tar --no-same-owner -zxf #{nodejs_tar}")
+  end
+
+  it 'install node' do
+    expect(chef_run).to run_execute('make install').with(cwd: "/usr/local/src/node-v#{nodejs_version}")
+  end
+end
+\end{lstlisting}
+
+As you can see, you can pass \inline{platfom} and \inline{version}, which will be used as Ohai attribute values. This used to check, what depend on \inline{platfom} recipe will install different dependencies. Our results:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-chefspec9]
+$ rspec
+
+..........
+
+Finished in 3.05 seconds
+10 examples, 0 failures
+\end{lstlisting}
+
+As you can see, we cover cookbook by unit tests using chefspec.
