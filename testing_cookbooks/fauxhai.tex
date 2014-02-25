@@ -5,27 +5,33 @@ Ohai is a tool that is used to detect attributes on a node, and then provide the
 
 \subsection{Example}
 
-As you can see from our node specs, we can set \inline{platform} and \inline{version}, but we can stub additional Ohai attribute - \inline{system_node_js}. Let's cover it by ChefSpec and Fauxhai (ChefSpec have Fauxhai as dependency):
+As you can see from our node specs, we can set \inline{platform} and \inline{version}, but we can stub additional Ohai attribute by using Fauxhai. Let's look at example:
 
 \begin{lstlisting}[label=lst:testing-fauxhai1]
 require 'chefspec'
 
 describe 'my_cool_app::default' do
-  ['12.04', '11.06', '10.04'].each do |version|
-    context "on Ubuntu #{version}" do
+  [1, 2, 4].each do |kernels|
+    context "on Ubuntu with #{kernels} kernels" do
       let(:chef_run) { ChefSpec::ChefRunner.new.converge(described_recipe) }
 
       before do
-        Fauxhai.mock(platform: 'ubuntu', version: version)
+        Fauxhai.mock(platform: 'ubuntu', version: '12.04, fqdn: 'example.com', cpu: { 'real' => kernels, 'total' => kernels })
       end
 
       it 'install htop' do
         expect(chef_run).to install_package('htop')
       end
+
+      it 'create file /tmp/cpu_count' do
+        expect(chef_run).to render_file('/tmp/cpu_count').with_content(kernels.to_s)
+      end
     end
   end
 end
 \end{lstlisting}
+
+As you can see from example, we mock platform, fqdn and cpu numbers from Ohai attributes. And in our recipe we create \inline{/tmp/cpu_count} file, which contain number of cpu on node. By tests we check what this works on different values of Ohai attributes.
 
 Also we can set node attributes by \inline{ChefSpec::Runner}:
 
