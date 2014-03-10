@@ -7,14 +7,35 @@
 # MIT
 #
 
-# update apt
-execute "apt-get-update-periodic" do
-  command "apt-get update"
-  ignore_failure true
+case node['platform_family']
+when "debian"
+  # update apt
+  execute "apt-get-update" do
+    command "apt-get update"
+    action :run
+    ignore_failure true
+    # tip: to suppress this running every time, just use the apt cookbook
+    not_if do
+      ::File.exists?('/var/lib/apt/periodic/update-success-stamp') &&
+      ::File.mtime('/var/lib/apt/periodic/update-success-stamp') > Time.now - 86400*2
+    end
+  end
+when "rhel", "fedora"
+  # skip
+else
+  Chef::Application.fatal! "Doesn't support this platform: #{node['platform_family']}"
 end
 
 # install needed package
-%w(git ntp).each do |pack|
+packages = %w(ntp)
+
+if "ubuntu" == node['platform'] && node['platform_version'].to_f <= 10.04
+  packages << "git-core"
+else
+  packages << "git"
+end
+
+packages.each do |pack|
   package pack
 end
 
@@ -49,4 +70,5 @@ my_cool_app_know_host 'github.com'
 
 my_cool_app_known_host 'bitbucket.org'
 
-include_recipe 'my_cool_app::node'
+# disable for test kitchen
+#include_recipe 'my_cool_app::node'

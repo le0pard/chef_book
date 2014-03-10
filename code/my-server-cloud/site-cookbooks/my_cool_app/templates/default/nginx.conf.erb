@@ -1,5 +1,6 @@
 server {
-    listen 80 default;
+    listen 80;
+    server_name example.org;
     charset utf-8;
     root <%= node['my_cool_app']['web_dir'] %>;
 }

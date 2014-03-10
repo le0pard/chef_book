@@ -5,6 +5,8 @@
 
 \subsection{Example}
 
+\subsubsection{Installing Test Kitchen}
+
 Let's cover our cookbook by test kitchen tests. First we should add this gem in Gemfile:
 
 \begin{lstlisting}[label=lst:testing-test-kitchen1]
@@ -154,6 +156,12 @@ Instance             Driver   Provisioner  Last Action
 default-ubuntu-1204  Vagrant  ChefSolo     Created
 \end{lstlisting}
 
+
+
+
+
+\subsubsection{Running Kitchen Converge}
+
 Now let's let Test Kitchen run it for us on our Ubuntu 12.04 instance:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen9]
@@ -210,6 +218,12 @@ default-ubuntu-1204  Vagrant  ChefSolo     Converged
 
 A clean converge run, success!
 
+
+
+
+
+\subsubsection{Manually Verifying}
+
 Test Kitchen has a \inline{login} subcommand for just these kinds of situations:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen12]
@@ -225,6 +239,11 @@ vagrant@default-ubuntu-1204:~$ ps ax | grep nginx
 \end{lstlisting}
 
 As you can see by the prompt above we are now in the <<default-ubuntu-1204>> instance and nginx installed inside it.
+
+
+
+
+\subsubsection{Writing a Test}
 
 Now if you are interested in writing some tests, Test Kitchen has several options available to you. The component that helps facilitate testing on your instances is called Busser. Just like Test Kitchen it is a RubyGem library and it provides a plugin system so that you can wire in whatever testing framework your heart desires. A quick \href{https://rubygems.org/search?utf8=%E2%9C%93&amp;query=busser-}{search} on the RubyGems website returns several testing frameworks currently available to you.
 
@@ -290,4 +309,354 @@ $ kitchen list
 Instance             Driver   Provisioner  Last Action
 default-ubuntu-1204  Vagrant  ChefSolo     Verified
 \end{lstlisting}
+
+Let's add more tests:
+
+\begin{lstlisting}[label=lst:testing-test-kitchen17]
+@test "nginx config is valid" {
+  run nginx -t
+  [ "$status" -eq 0 ]
+}
+
+@test "nginx is running" {
+  run service nginx status
+  [ "$status" -eq 0 ]
+  [ "$output" == " * nginx is running" ]
+}
+\end{lstlisting}
+
+
+
+
+
+\subsubsection{Running Kitchen Test}
+
+Now it's time to introduce to the \inline{test} meta-action which helps you automate all the previous actions so far into one command. Recall that we currently have our instance in a <<verified>> state. With this in mind, let's run kitchen test:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen18]
+$ kitchen test default-ubuntu-1204
+-----> Starting Kitchen (v1.2.1)
+-----> Cleaning up any prior instances of <default-ubuntu-1204>
+-----> Destroying <default-ubuntu-1204>...
+       Finished destroying <default-ubuntu-1204> (0m0.00s).
+-----> Testing <default-ubuntu-1204>
+...
+Uploading /tmp/busser/suites/bats/nginx_installed.bats (mode=0755)
+-----> Running bats test suite
+  nginx binary is found in PATH
+
+       1 test, 0 failures
+       Finished verifying <default-ubuntu-1204> (0m1.39s).
+-----> Kitchen is finished. (0m16.51s)
+\end{lstlisting}
+
+There's only one remaining action left that needs a mention: the Destroy Action which destroys the instance. With this in mind, here's what Test Kitchen is doing in the Test Action:
+
+\begin{itemize}
+  \item Destroys the instance if it exists (\inline{Cleaning up any prior instances of <default-ubuntu-1204>})
+  \item Creates the instance (\inline{Creating <default-ubuntu-1204>})
+  \item Converges the instance (\inline{Converging <default-ubuntu-1204>})
+  \item Sets up Busser and runner plugins on the instance (\inline{Setting up <default-ubuntu-1204>})
+  \item Verifies the instance by running Busser tests (\inline{Verifying <default-ubuntu-1204>})
+  \item Destroys the instance (\inline{Destroying <default-ubuntu-1204>})
+\end{itemize}
+
+A few details with regards to test:
+
+\begin{itemize}
+  \item Test Kitchen will abort the run on the instance at the first sign of trouble. This means that if your Chef run fails then Busser won't be installed and the instance won't be destroyed. This gives you a chance to inspect the state of the instance and fix any issues.
+  \item The behavior of the final destroy action can be overridden if desired. Check out the documentation for the \inline{--destroy} flag using \inline{kitchen help test}.
+  \item The primary use case in mind for this meta-action is in a Continuous Integration environment or a command for developers to run before check in or after a fresh clone. If you're using this in your test-code-verify development cycle it's going to quickly become very slow and frustrating. You're better off running the \inline{converge} and \inline{verify} subcommands in development and save the test subcommand when you need to verify the end-to-end run of your code.
+\end{itemize}
+
+Finally, let's check the status of the instance:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen19]
+$ kitchen list
+Instance             Driver   Provisioner  Last Action
+default-ubuntu-1204  Vagrant  ChefSolo     <Not Created>
+\end{lstlisting}
+
+
+
+
+\subsubsection{Adding a Platform}
+
+Now that we are masters of the Ubuntu platform, let's add support for CentOS to our cookbook. This shouldn't be too bad. Open \inline{.kitchen.yml} in your editor and the \inline{centos-6.4} line to your platforms list so that it resembles:
+
+\begin{lstlisting}[label=lst:testing-test-kitchen20]
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: ubuntu-12.04
+  - name: centos-6.4
+
+suites:
+  - name: default
+    run_list:
+      - recipe[my_cool_app::default]
+    attributes:
+\end{lstlisting}
+
+Now let's check the status of our instances:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen21]
+$ kitchen list
+Instance             Driver   Provisioner  Last Action
+default-ubuntu-1204  Vagrant  Chef Solo    <Not Created>
+default-centos-64    Vagrant  Chef Solo    <Not Created>
+\end{lstlisting}
+
+We're going to use two shortcuts here in the next command:
+
+\begin{itemize}
+  \item Each Test Kitchen instance has a simple state machine that tracks where it is in its lifecyle. Given its current state and the desired state, the instance is smart enough to run all actions in between current and desired. In our next example we will take an instance from not created to verified in one command.
+  \item Any \inline{kitchen} subcommand that takes an instance name as an argument can take a Ruby regular expression that will be used to glob a list of instances together. This means that \inline{kitchen test ubuntu} would run the test action only the ubuntu instance. Note that the list subcommand also takes the regex-globbing argument so feel free to experiment there. In our next example we'll select the \inline{default-centos-64} instance with simply \inline{64}.
+\end{itemize}
+
+Let's see how CentOS runs our cookbook:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen22]
+$ kitchen verify 64
+-----> Starting Kitchen (v1.2.1)
+-----> Creating <default-centos-64>...
+...
+-----> Running bats test suite
+   nginx binary is found in PATH
+   nginx config is valid                                                    2/3
+   nginx config is valid
+   nginx is running                                                         3/3
+   nginx is running
+          (in test file /tmp/busser/suites/bats/nginx_installed.bats, line 16)
+
+       3 tests, 1 failure
+\end{lstlisting}
+
+We must fix last test:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen23]
+@test "nginx is running" {
+   run service nginx status
+   [ "$status" -eq 0 ]
+-  [ "$output" == " * nginx is running" ]
++  [ $(expr "$output" : ".*nginx.*running") -ne 0 ]
+}
+\end{lstlisting}
+
+And check again on all instances:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen24]
+$ kitchen verify
+-----> Starting Kitchen (v1.2.1)
+-----> Creating <default-centos-64>...
+...
+-----> Verifying <default-ubuntu-1204>...
+       Suite path directory /tmp/busser/suites does not exist, skipping.
+Uploading /tmp/busser/suites/bats/nginx_installed.bats (mode=0755)
+-----> Running bats test suite
+   nginx binary is found in PATH
+   nginx config is valid
+   nginx is running
+
+3 tests, 0 failures
+       Finished verifying <default-ubuntu-1204> (0m1.46s).
+-----> Verifying <default-centos-64>...
+       Removing /tmp/busser/suites/bats
+       Uploading /tmp/busser/suites/bats/nginx_installed.bats (mode=0755)
+-----> Running bats test suite
+   nginx binary is found in PATH
+   nginx config is valid                                                    2/3
+   nginx config is valid
+   nginx is running                                                         3/3
+   nginx is running
+
+       3 tests, 0 failures
+       Finished verifying <default-centos-64> (0m1.81s).
+\end{lstlisting}
+
+Nice! We've verified that our cookbook works on Ubuntu 12.04 and CentOS 6.4. Since the CentOS instance will hang out for no good reason, let's kill it for now:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen25]
+$ kitchen destroy
+-----> Starting Kitchen (v1.2.1)
+-----> Destroying <default-ubuntu-1204>...
+       ...
+       Finished destroying <default-ubuntu-1204> (0m5.82s).
+-----> Destroying <default-centos-64>...
+       ...
+       Finished destroying <default-centos-64> (0m5.41s).
+-----> Kitchen is finished. (0m12.95s)
+\end{lstlisting}
+
+Any \inline{kitchen} subcommand without an instance argument will apply to all instances.
+
+
+
+\subsubsection{Fixing Converge}
+
+Now a colleague has expressed interest in running the cookbook on a fleet of older Ubuntu 10.04 systems. Open \inline{.kitchen.yml} in your editor and add a \inline{ubuntu-10.04} entry to the platforms list:
+
+\begin{lstlisting}[label=lst:testing-test-kitchen26]
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: ubuntu-12.04
+  - name: ubuntu-10.04
+  - name: centos-6.4
+
+suites:
+  - name: default
+    run_list:
+      - recipe[my_cool_app::default]
+    attributes:
+\end{lstlisting}
+
+And run \inline{kitchen list} to confirm the introduction of our latest instance:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen27]
+$ kitchen list
+Instance             Driver   Provisioner  Last Action
+default-ubuntu-1204  Vagrant  ChefSolo     <Not Created>
+default-ubuntu-1004  Vagrant  ChefSolo     <Not Created>
+default-centos-64    Vagrant  ChefSolo     <Not Created>
+\end{lstlisting}
+
+Now we'll run the \inline{test} subcommand and go grab a coffee:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen28]
+$ kitchen test 10
+-----> Starting Kitchen (v1.2.1)
+-----> Cleaning up any prior instances of <default-ubuntu-1004>
+-----> Destroying <default-ubuntu-1004>...
+       Finished destroying <default-ubuntu-1004> (0m0.00s).
+-----> Testing <default-ubuntu-1004>
+...
+Chef::Exceptions::Package
+       -------------------------
+       git has no candidate in the apt-cache
+\end{lstlisting}
+
+Oh noes! Argh, why!? Let's login to the instance and see if we can figure out what the correct package is:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen29]
+$  kitchen login 10
+
+vagrant@default-ubuntu-1004:~$ sudo apt-cache search git | grep ^git
+git-buildpackage - Suite to help with Debian packages in Git repositories
+git-cola - highly caffeinated git gui
+git-load-dirs - Import upstream archives into git
+gitg - git repository viewer for gtk+/GNOME
+gitmagic - guide about Git version control system
+gitosis - git repository hosting application
+gitpkg - tools for maintaining Debian packages with git
+gitstats - statistics generator for git repositories
+git-core - fast, scalable, distributed revision control system
+git-doc - fast, scalable, distributed revision control system (documentation)
+gitk - fast, scalable, distributed revision control system (revision tree visualizer)
+git-arch - fast, scalable, distributed revision control system (arch interoperability)
+git-cvs - fast, scalable, distributed revision control system (cvs interoperability)
+git-daemon-run - fast, scalable, distributed revision control system (git-daemon service)
+git-email - fast, scalable, distributed revision control system (email add-on)
+git-gui - fast, scalable, distributed revision control system (GUI)
+git-svn - fast, scalable, distributed revision control system (svn interoperability)
+gitweb - fast, scalable, distributed revision control system (web interface)
+\end{lstlisting}
+
+Okay, it looks like we want to install the \inline{git-core} package for this release of Ubuntu. Let's fix this up back in the default recipe. Open up \inline{recipes/default.rb} and edit to something like:
+
+\begin{lstlisting}[language=Ruby,label=lst:testing-test-kitchen30]
+# install needed package
+packages = %w(git)
+
+if "ubuntu" == node['platform'] && node['platform_version'].to_f <= 10.04
+  packages << "git-core"
+else
+  packages << "git"
+end
+
+packages.each do |pack|
+  package pack
+end
+\end{lstlisting}
+
+This may not be pretty but let's verify that it works first on Ubuntu 10.04:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen31]
+$ kitchen verify 10
+...
+-----> Running bats test suite
+   nginx binary is found in PATH
+   nginx config is valid                                                    2/3
+   nginx config is valid
+   nginx is running                                                         3/3
+   nginx is running
+
+       3 tests, 0 failures
+       Finished verifying <default-ubuntu-1004> (0m2.51s).
+-----> Kitchen is finished. (0m53.48s)
+\end{lstlisting}
+
+Back to green, good. Let's verify that the all instances are still good.
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen32]
+$ kitchen verify -c 3
+-----> Starting Kitchen (v1.2.1)
+-----> Verifying <default-centos-64>...
+-----> Verifying <default-ubuntu-1004>...
+-----> Verifying <default-ubuntu-1204>...
+       Removing /tmp/busser/suites/bats
+       Removing /tmp/busser/suites/bats
+       Uploading /tmp/busser/suites/bats/nginx_installed.bats (mode=0755)
+Uploading /tmp/busser/suites/bats/nginx_installed.bats (mode=0755)
+       Removing /tmp/busser/suites/bats
+       Uploading /tmp/busser/suites/bats/nginx_installed.bats (mode=0755)
+-----> Running bats test suite
+ -----> Running bats test suite                                             1/3
+   nginx binary is found in PATH
+   nginx config is valid                                                    2/3
+   nginx config is valid
+   nginx is running                                                         3/3
+   nginx is running
+
+       3 tests, 0 failures
+        Finished verifying <default-ubuntu-1004> (0m2.94s).                 1/3
+   nginx binary is found in PATH
+   nginx config is valid
+   nginx is running
+
+       3 tests, 0 failures
+       Finished verifying <default-ubuntu-1204> (0m3.09s).
+-----> Running bats test suite
+   nginx binary is found in PATH
+   nginx config is valid                                                    2/3
+   nginx config is valid
+   nginx is running                                                         3/3
+   nginx is running
+
+       3 tests, 0 failures
+       Finished verifying <default-centos-64> (0m3.86s).
+-----> Kitchen is finished. (0m6.12s)
+\end{lstlisting}
+
+We used \inline{-c} to run a test against all matching instances concurrently, where next argument mean number of instances run at the same time.
+
+We've successfully verified all three instances, so let's shut them down.
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen33]
+$ kitchen destroy
+-----> Starting Kitchen (v1.2.1)
+...
+-----> Kitchen is finished. (0m19.86s)
+\end{lstlisting}
+
 

@@ -11,3 +11,7 @@ recipe 'my_cool_app',   'Configure my cool app'
 depends 'nginx',           '~> 2.2.0'
 depends 'build-essential'
 depends 'ohai'
+
+%w{ fedora redhat centos ubuntu debian }.each do |os|
+  supports os
+end
