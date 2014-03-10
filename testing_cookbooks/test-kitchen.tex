@@ -660,3 +660,236 @@ $ kitchen destroy
 \end{lstlisting}
 
 
+
+\subsubsection{Adding a Suite}
+
+We're going to call our new Test Kitchen Suite <<node>> by opening \inline{.kitchen.yml} in your editor of choice so that it looks similar to:
+
+\begin{lstlisting}[label=lst:testing-test-kitchen34]
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: ubuntu-12.04
+  - name: ubuntu-10.04
+  - name: centos-6.4
+
+suites:
+  - name: default
+    run_list:
+      - recipe[my_cool_app::default]
+    attributes:
+  - name: node
+    run_list:
+      - recipe[my_cool_app::default]
+      - recipe[my_cool_app::node]
+    attributes:
+\end{lstlisting}
+
+Now run \inline{kitchen list} to see our new suite in action:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen35]
+$ kitchen list
+Instance             Driver   Provisioner  Last Action
+default-ubuntu-1204  Vagrant  ChefSolo     <Not Created>
+default-ubuntu-1004  Vagrant  ChefSolo     <Not Created>
+default-centos-64    Vagrant  ChefSolo     <Not Created>
+node-ubuntu-1204     Vagrant  ChefSolo     <Not Created>
+node-ubuntu-1004     Vagrant  ChefSolo     <Not Created>
+node-centos-64       Vagrant  ChefSolo     <Not Created>
+\end{lstlisting}
+
+
+
+\subsubsection{Writing a Server Test}
+
+Now to write a test or two. Previously we've seen the bats testing framework in action but this isn't always a viable option. For example if you needed to verify that a package was installed and you needed to test that on Ubuntu and CentOS platforms, then what would you do? You need to bust out some platform detection in order to run a Debian or RPM-based command. Feels like Chef would help us here since it's good at that sort of thing. On the other hand there are advantages to treating our Chef run as a black box - a configuration-management implementation detail, if you will. So what to do?
+
+A nice solution to the platform-agnostic test issue exists called \href{http://serverspec.org/}{ServerSpec}. It is a set of RSpec matchers that can assert things about servers like packages installed, services enabled, ports listening, etc. Let's see what this looks like for our Git Daemon tests.
+
+First we're going to create a directory for our test file:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen36]
+$ mkdir -p test/integration/node/serverspec
+\end{lstlisting}
+
+Next, create a file called \inline{test/integration/server/serverspec/nginx_daemon_spec.rb} with the following:
+
+\begin{lstlisting}[label=lst:testing-test-kitchen37]
+require 'serverspec'
+
+include Serverspec::Helper::Exec
+include Serverspec::Helper::DetectOS
+
+RSpec.configure do |c|
+  c.before :all do
+    c.path = '/sbin:/usr/sbin'
+  end
+end
+
+describe "Nginx Daemon" do
+
+  it "is listening on port 80" do
+    expect(port(80)).to be_listening
+  end
+
+  it "has a running service of git-daemon" do
+    expect(service("nginx")).to be_running
+  end
+
+end
+\end{lstlisting}
+
+And \inline{test/integration/server/serverspec/node_spec.rb} with the following:
+
+\begin{lstlisting}[label=lst:testing-test-kitchen39]
+require 'serverspec'
+
+include Serverspec::Helper::Exec
+include Serverspec::Helper::DetectOS
+
+RSpec.configure do |c|
+  c.before :all do
+    c.path = '/sbin:/usr/sbin:/usr/local/bin'
+  end
+end
+
+describe "Node" do
+
+  describe command('node -v') do
+    it { should return_stdout 'v0.10.26' }
+  end
+
+end
+\end{lstlisting}
+
+As our primary target platform was Ubuntu 12.04, we'll target this one first for development. Now, in Test-Driven style we'll run \inline{kitchen verify} to watch our tests fail spectacularly:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen40]
+$ kitchen verify node-ubuntu-1204
+-----> Starting Kitchen (v1.2.1)
+-----> Creating <node-ubuntu-1204>...
+...
+
+Nginx Daemon
+  is listening on port 80
+  has a running service of git-daemon
+
+       Node
+         Command "node -v"
+
+    should return stdout "v0.10.26"
+
+Finished in 0.22341 seconds
+3 examples, 0 failures
+       Finished verifying <node-ubuntu-1204> (0m2.78s).
+-----> Kitchen is finished. (13m29.49s)
+
+\end{lstlisting}
+
+One quick check of \inline{kitchen list} tells us that our instance was created by not successfully converged:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen41]
+$ kitchen list
+Instance             Driver   Provisioner  Last Action
+default-ubuntu-1204  Vagrant  ChefSolo     <Not Created>
+default-ubuntu-1004  Vagrant  ChefSolo     <Not Created>
+default-centos-64    Vagrant  ChefSolo     <Not Created>
+node-ubuntu-1204     Vagrant  ChefSolo     Verified
+node-ubuntu-1004     Vagrant  ChefSolo     <Not Created>
+node-centos-64       Vagrant  ChefSolo     <Not Created>
+\end{lstlisting}
+
+Yes, you can specify one or more instances with the same Ruby regular expression globbing as any other kitchen subcommands. Let's see if our server recipe works on the all platforms (Ubuntu 10.04 and CentOS 6.4). Fingers crossed, here we go:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen42]
+$ kitchen verify node
+-----> Starting Kitchen (v1.2.1)
+-----> Verifying <node-ubuntu-1204>...
+...
+
+Nginx Daemon
+  is listening on port 80
+  has a running service of git-daemon
+
+Node
+  Command "node -v"
+    should return stdout "v0.10.26"
+
+Finished in 0.09353 seconds
+3 examples, 0 failures
+       Finished verifying <node-ubuntu-1204> (0m2.41s).
+-----> Verifying <node-ubuntu-1004>...
+...
+
+       Nginx Daemon
+         is listening on port 80
+         has a running service of git-daemon
+
+       Node
+         Command "node -v"
+           should return stdout "v0.10.26"
+
+       Finished in 0.08732 seconds
+       3 examples, 0 failures
+       Finished verifying <node-ubuntu-1004> (0m2.34s).
+-----> Verifying <node-centos-64>...
+...
+       Nginx Daemon
+         is listening on port 80
+         has a running service of git-daemon
+
+       Node
+         Command "node -v"
+           should return stdout "v0.10.26"
+
+       Finished in 0.12761 seconds
+       3 examples, 0 failures
+       Finished verifying <node-centos-64> (0m3.11s).
+-----> Kitchen is finished. (0m9.27s)
+\end{lstlisting}
+
+If for example, you don't want support some platform, you can use \inline{excludes} key in \inline{.kitchen.yml} file:
+
+\begin{lstlisting}[label=lst:testing-test-kitchen43]
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: ubuntu-12.04
+  - name: ubuntu-10.04
+  - name: centos-6.4
+
+suites:
+  - name: default
+    run_list:
+      - recipe[my_cool_app::default]
+    attributes:
+  - name: node
+    run_list:
+      - recipe[my_cool_app::default]
+      - recipe[my_cool_app::node]
+    attributes:
+    excludes:
+      - centos-6.4
+\end{lstlisting}
+
+Now let's run kitchen list to ensure the instance is gone:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen44]
+$ kitchen list
+Instance             Driver   Provisioner  Last Action
+default-ubuntu-1204  Vagrant  ChefSolo     <Not Created>
+default-ubuntu-1004  Vagrant  ChefSolo     <Not Created>
+default-centos-64    Vagrant  ChefSolo     <Not Created>
+node-ubuntu-1204     Vagrant  ChefSolo     Verified
+node-ubuntu-1004     Vagrant  ChefSolo     Verified
+\end{lstlisting}

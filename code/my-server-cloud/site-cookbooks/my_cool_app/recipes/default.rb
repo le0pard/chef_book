@@ -69,6 +69,3 @@ my_cool_app_know_host 'github.com'
 #end
 
 my_cool_app_known_host 'bitbucket.org'
-
-# disable for test kitchen
-#include_recipe 'my_cool_app::node'

@@ -15,3 +15,8 @@ suites:
     run_list:
       - recipe[my_cool_app::default]
     attributes:
+  - name: node
+    run_list:
+      - recipe[my_cool_app::default]
+      - recipe[my_cool_app::node]
+    attributes:
