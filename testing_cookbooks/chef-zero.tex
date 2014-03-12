@@ -4,3 +4,62 @@
 Chef Zero is a simple, easy-install, in-memory Chef server that can be useful for Chef Client testing and chef-solo-like tasks that require a full Chef Server. It IS intended to be simple, Chef 11 compliant, easy to run and fast to start. It is NOT intended to be secure, scalable, performant or persistent. It does NO input validation, authentication or authorization (it will not throw a 400, 401 or 403). It does not save data, and will start up empty each time you start it.
 
 Because Chef Zero runs in memory, it's super fast and lightweight. This makes it perfect for testing against a <<real>> Chef Server without mocking the entire Internet.
+
+\subsection{Example}
+
+\subsubsection{Installing Chef Zero}
+
+Let's cover our cookbook by using Chef Zero. First we should add this gem in Gemfile:
+
+\begin{lstlisting}[label=lst:testing-chef-zero1]
+source 'https://rubygems.org'
+
+gem 'berkshelf'
+gem 'foodcritic'
+gem 'thor-foodcritic'
+gem 'chefspec'
+gem 'test-kitchen'
+gem 'kitchen-vagrant'
+gem 'chef-zero'
+\end{lstlisting}
+
+And you should to execute \inline{bundle} command to install this gem. We can check what Chef Zero installed:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-chef-zero2]
+$ chef-zero
+>> Starting Chef Zero (v1.7.3)...
+>> Puma (v1.6.3) is listening at http://127.0.0.1:8889
+>> Press CTRL+C to stop
+^C
+>> Stopping Chef Zero ...
+\end{lstlisting}
+
+Command \inline{chef-zero} start Chef Zero server in foreground. This is fully functional (empty) Chef Server. To use it in your own repository, create a \inline{knife.rb} like so:
+
+\begin{lstlisting}[label=lst:testing-chef-zero3]
+chef_server_url   'http://127.0.0.1:8889'
+node_name         'stickywicket'
+client_key        'path_to_any_pem_file.pem'
+\end{lstlisting}
+
+And use knife like you normally would.
+
+Since Chef Zero does no authentication, any \inline{.pem} file will do. The client just needs something to sign requests with (which will be ignored on the server). Even though it's ignored, the \inline{.pem} must still be a valid format.
+
+If you will stop the Chef Zero server than all the data is gone.
+
+Run \inline{chef-zero --help} to see a list of the supported flags and options:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-chef-zero4]
+$ chef-zero --help
+Usage: chef-zero [ARGS]
+    -H, --host HOST                  Host to bind to (default: 127.0.0.1)
+    -p, --port PORT                  Port to listen on
+        --socket PATH                Unix socket path to listen on
+        --[no-]generate-keys         Whether to generate actual keys or fake it (faster).  Default: false.
+    -d, --daemon                     Run as a daemon process
+    -l, --log-level LEVEL            Set the output log level
+    -h, --help                       Show this message
+        --version                    Show version
+\end{lstlisting}
+
