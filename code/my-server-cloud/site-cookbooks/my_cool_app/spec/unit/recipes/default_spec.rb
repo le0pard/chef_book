@@ -28,8 +28,9 @@ describe 'my_cool_app::default' do
     expect(chef_run).to enable_service('nginx')
   end
 
-  it 'include node recipe' do
-    expect(chef_run).to include_recipe('my_cool_app::node')
-  end
+  # comment for test-kitchen
+  #it 'include node recipe' do
+  #  expect(chef_run).to include_recipe('my_cool_app::node')
+  #end
 
 end

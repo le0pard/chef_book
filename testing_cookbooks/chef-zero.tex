@@ -84,4 +84,54 @@ Create a client:
 ChefSpec::Server.create_client('my_client', { admin: true })
 \end{lstlisting}
 
+Create a data bag (and items):
+
+\begin{lstlisting}[label=lst:testing-chef-zero7]
+ChefSpec::Server.create_data_bag('my_data_bag', {
+  'item_1' => {
+    'password' => 'abc123'
+  },
+  'item_2' => {
+    'password' => 'def456'
+  }
+})
+\end{lstlisting}
+
+Create an environment:
+
+\begin{lstlisting}[label=lst:testing-chef-zero8]
+ChefSpec::Server.create_environment('my_environment', { description: '...' })
+\end{lstlisting}
+
+Create a node:
+
+\begin{lstlisting}[label=lst:testing-chef-zero9]
+ChefSpec::Server.create_node('my_node', { run_list: ['...'] })
+\end{lstlisting}
+
+You may also be interested in the \inline{stub_node} macro, which will create a new \inline{Chef::Node} object and accepts the same parameters as the Chef Runner and a Fauxhai object:
+
+\begin{lstlisting}[label=lst:testing-chef-zero10]
+www = stub_node(platform: 'ubuntu', version: '12.04') do |node|
+  node.set['attribute'] = 'value'
+end
+
+# `www` is now a local Chef::Node object you can use in your test. To push this
+# node to the server, call `create_node`:
+
+ChefSpec::Server.create_node(www)
+\end{lstlisting}
+
+Create a role:
+
+\begin{lstlisting}[label=lst:testing-chef-zero11]
+ChefSpec::Server.create_role('my_role', { default_attributes: {} })
+
+# The role now exists on the Chef Server, you can add it to a node's run_list
+# by adding it to the `converge` block:
+let(:chef_run) { ChefSpec::Runner.new.converge(described_recipe, 'role[my_role]') }
+\end{lstlisting}
+
+
+
 \subsection{Using with Test Kitchen}
