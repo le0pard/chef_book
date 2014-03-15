@@ -132,6 +132,9 @@ ChefSpec::Server.create_role('my_role', { default_attributes: {} })
 let(:chef_run) { ChefSpec::Runner.new.converge(described_recipe, 'role[my_role]') }
 \end{lstlisting}
 
+Let's create recipe \inline{tests} in our cookbook:
+
+
 
 
 \subsection{Using with Test Kitchen}
