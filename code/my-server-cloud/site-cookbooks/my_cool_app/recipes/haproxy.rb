@@ -3,7 +3,7 @@
 package "haproxy"
 
 # get nodes of some roles
-pool_members = search("node", "role:#{node['my_cool_app']['tests']['app_server_role']} AND chef_environment:#{node.chef_environment}") || []
+pool_members = search("node", "role:#{node['my_cool_app']['haproxy']['app_server_role']} AND chef_environment:#{node.chef_environment}") || []
 
 pool_members.map! do |member|
   {:ipaddress => member['ipaddress'], :hostname => member['hostname']}

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'my_cool_app::tests' do
+describe 'my_cool_app::haproxy' do
   let(:platfom) { 'ubuntu' }
   let(:platfom_version) { '12.04' }
   let(:chef_run) { ChefSpec::Runner.new(platform: platfom, version: platfom_version).converge(described_recipe) }
