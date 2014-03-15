@@ -14,7 +14,7 @@ describe 'my_cool_app::tests' do
   end
 
   it 'create config /etc/haproxy/haproxy.cfg with empty backends' do
-    expect(chef_run).to render_file('/etc/haproxy/haproxy.cfg').with_content(/backend bk_http\nbackend bk_https\n/)
+    expect(chef_run).to render_file('/etc/haproxy/haproxy.cfg').with_content(/#{Regexp.quote("backend bk_http\nbackend bk_https\n")}/)
   end
 
   context 'with env, role and one node' do
