@@ -14,12 +14,12 @@ if pool_members.length > 0
   http_clients = pool_members.uniq.map do |s|
     "server #{s[:hostname]} #{s[:ipaddress]}:80 weight 1 maxconn 1024 check"
   end
-  http_clients = ["mode http"] + http_clients + ["option httpchk GET /"]
+  http_clients = ["mode http"] + http_clients + ["option httpchk GET /healthcheck"]
 
   https_clients = pool_members.uniq.map do |s|
     "server #{s[:hostname]} #{s[:ipaddress]}:443 weight 1 maxconn 1024 check"
   end
-  https_clients = ["mode tcp"] + https_clients + ["option httpchk GET /"]
+  https_clients = ["mode http"] + https_clients + ["option httpchk GET /ssl-healthcheck"]
 
 else
 
@@ -56,6 +56,14 @@ template "/etc/haproxy/haproxy.cfg" do
   variables(
     :listeners => listeners
   )
+end
+
+cookbook_file '/etc/default/haproxy' do
+  source 'haproxy-default'
+  owner 'root'
+  group 'root'
+  mode 00644
+  notifies :restart, 'service[haproxy]'
 end
 
 service "haproxy" do

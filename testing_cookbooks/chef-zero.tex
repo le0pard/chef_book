@@ -136,7 +136,386 @@ let(:chef_run) { ChefSpec::Runner.new.converge(described_recipe, 'role[my_role]'
 
 Let's create recipe \inline{haproxy} in our cookbook:
 
+\begin{lstlisting}[label=lst:testing-chef-zero12]
+# install and setup haproxy
 
+package "haproxy"
 
+# get nodes of some roles
+pool_members = search("node", "role:#{node['my_cool_app']['haproxy']['app_server_role']} AND chef_environment:#{node.chef_environment}") || []
+
+pool_members.map! do |member|
+  {:ipaddress => member['ipaddress'], :hostname => member['hostname']}
+end
+
+if pool_members.length > 0
+
+  http_clients = pool_members.uniq.map do |s|
+    "server #{s[:hostname]} #{s[:ipaddress]}:80 weight 1 maxconn 1024 check"
+  end
+  http_clients = ["mode http"] + http_clients + ["option httpchk GET /healthcheck"]
+
+  https_clients = pool_members.uniq.map do |s|
+    "server #{s[:hostname]} #{s[:ipaddress]}:443 weight 1 maxconn 1024 check"
+  end
+  https_clients = ["mode http"] + https_clients + ["option httpchk GET /ssl-healthcheck"]
+
+else
+
+  http_clients = https_clients = []
+
+end
+
+listeners = {
+  "listen" => {},
+  "frontend" => {
+    "ft_http" => [
+      "bind *:80",
+      "mode tcp",
+      "default_backend bk_http"
+    ],
+    "ft_https" => [
+      "bind *:443",
+      "mode tcp",
+      "default_backend bk_https"
+    ]
+  },
+  "backend" => {
+    "bk_http" => http_clients,
+    "bk_https" => https_clients
+  }
+}
+
+template "/etc/haproxy/haproxy.cfg" do
+  source "haproxy.cfg.erb"
+  owner "root"
+  group "root"
+  mode 00644
+  notifies :reload, "service[haproxy]"
+  variables(
+    :listeners => listeners
+  )
+end
+
+cookbook_file '/etc/default/haproxy' do
+  source 'haproxy-default'
+  owner 'root'
+  group 'root'
+  mode 00644
+  notifies :restart, 'service[haproxy]'
+end
+
+service "haproxy" do
+  supports :restart => true, :status => true, :reload => true
+  action [:enable, :start]
+end
+\end{lstlisting}
+
+And default attributes for it:
+
+\begin{lstlisting}[label=lst:testing-chef-zero13]
+default['my_cool_app']['haproxy']['app_server_role']       = 'web'
+\end{lstlisting}
+
+In our recipe used template \inline{haproxy.cfg.erb}:
+
+\begin{lstlisting}[label=lst:testing-chef-zero14]
+global
+  log 127.0.0.1   local0
+  log 127.0.0.1   local1 notice
+  maxconn 5000
+  user haproxy
+  group haproxy
+
+defaults
+  log     global
+  mode    http
+  retries 3
+  timeout client 60000
+  timeout server 50000
+  timeout connect 25000
+  balance roundrobin
+
+<% @listeners.each do |type, listeners | %>
+<% listeners.each do |name, listen| %>
+<%= type %> <%= name %>
+<% listen.each do |option| %>
+  <%= option %>
+<% end %>
+<% end %>
+<% end %>
+\end{lstlisting}
+
+As you can see, this recipe install and configure haproxy. It using \inline{search} command to get all nodes with role \inline{web} (by default attributes) and chef environment. After this it collect from all selected nodes hostname and ip address. This data is used to create config for haproxy. This is very usefull way, because if you will add or remove node with role \inline{web} from Chef server, it will automatically update haproxy config. But because we using \inline{search} command, we need test our cookbook with Chef Zero. Here how it look our tests:
+
+\begin{lstlisting}[label=lst:testing-chef-zero15]
+require 'spec_helper'
+
+describe 'my_cool_app::haproxy' do
+  let(:platfom) { 'ubuntu' }
+  let(:platfom_version) { '12.04' }
+  let(:chef_run) { ChefSpec::Runner.new(platform: platfom, version: platfom_version).converge(described_recipe) }
+
+  it "install haproxy package" do
+    expect(chef_run).to install_package('haproxy')
+  end
+
+  it 'enable haproxy service' do
+    expect(chef_run).to enable_service('haproxy')
+  end
+
+  it 'create config /etc/haproxy/haproxy.cfg with empty backends' do
+    expect(chef_run).to render_file('/etc/haproxy/haproxy.cfg').with_content(/#{Regexp.quote("backend bk_http\nbackend bk_https\n")}/)
+  end
+
+  context 'with env, role and one node' do
+    let(:node_env) { 'test' }
+    let(:chef_run) do
+      ChefSpec::Runner.new(platform: platfom, version: platfom_version) do |node|
+        # Create a new environment (you could also use a different :let block or :before block)
+        env = Chef::Environment.new
+        env.name node_env
+
+        # Stub the node to return this environment
+        node.stub(:chef_environment).and_return(env.name)
+
+        # Stub any calls to Environment.load to return this environment
+        Chef::Environment.stub(:load).and_return(env)
+      end.converge(described_recipe)
+    end
+
+    before do
+      ChefSpec::Server.create_environment(node_env, { description: 'Test env' })
+      ChefSpec::Server.create_role('web', { default_attributes: {} })
+      ChefSpec::Server.create_node('first-node', {
+        run_list: ['role[web]'],
+        chef_environment: node_env,
+        normal: { fqdn: '127.0.0.1', hostname: 'test.org', ipaddress: '127.0.0.1' }
+      })
+    end
+
+    it 'create config /etc/haproxy/haproxy.cfg with first-node on 80 port' do
+      expect(chef_run).to render_file('/etc/haproxy/haproxy.cfg').with_content(/#{Regexp.quote('server test.org 127.0.0.1:80 weight 1 maxconn 1024 check')}/)
+    end
+
+    it 'create config /etc/haproxy/haproxy.cfg with first-node on 443 port' do
+      expect(chef_run).to render_file('/etc/haproxy/haproxy.cfg').with_content(/#{Regexp.quote('server test.org 127.0.0.1:443 weight 1 maxconn 1024 check')}/)
+    end
+
+    context 'with two nodes' do
+      before do
+        ChefSpec::Server.create_node('second-node', {
+          run_list: ['role[web]'],
+          chef_environment: node_env,
+          normal: { fqdn: '192.168.1.2', hostname: 'test2.org', ipaddress: '192.168.1.2' }
+        })
+      end
+
+      it 'create config /etc/haproxy/haproxy.cfg with first-node on 80 port' do
+        expect(chef_run).to render_file('/etc/haproxy/haproxy.cfg').with_content(/#{Regexp.quote('server test.org 127.0.0.1:80 weight 1 maxconn 1024 check')}/)
+      end
+
+      it 'create config /etc/haproxy/haproxy.cfg with first-node on 443 port' do
+        expect(chef_run).to render_file('/etc/haproxy/haproxy.cfg').with_content(/#{Regexp.quote('server test.org 127.0.0.1:443 weight 1 maxconn 1024 check')}/)
+      end
+
+      it 'create config /etc/haproxy/haproxy.cfg with second-node on 80 port' do
+        expect(chef_run).to render_file('/etc/haproxy/haproxy.cfg').with_content(/#{Regexp.quote('server test2.org 192.168.1.2:80 weight 1 maxconn 1024 check')}/)
+      end
+
+      it 'create config /etc/haproxy/haproxy.cfg with second-node on 443 port' do
+        expect(chef_run).to render_file('/etc/haproxy/haproxy.cfg').with_content(/#{Regexp.quote('server test2.org 192.168.1.2:443 weight 1 maxconn 1024 check')}/)
+      end
+
+    end
+  end
+
+end
+\end{lstlisting}
+
+And we can check our tests:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-chef-zero16]
+$ rspec spec/unit/recipes/haproxy_spec.rb
+.........
+
+Finished in 33.34 seconds
+9 examples, 0 failures
+\end{lstlisting}
+
+All works.
 
 \subsection{Using with Test Kitchen}
+
+To use Chef Zero with test kitchen, you should change \inline{provisioner} type in \inline{.kitchen.yml}:
+
+\begin{lstlisting}[label=lst:testing-chef-zero17]
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_zero
+  roles_path: "test/chef-zero/roles"
+  environments_path: "test/chef-zero/environments"
+  nodes_path: "test/chef-zero/nodes"
+  client_rb:
+    environment: test
+
+platforms:
+  - name: ubuntu-12.04
+  - name: ubuntu-10.04
+  - name: centos-6.4
+
+suites:
+  - name: default
+    run_list:
+      - recipe[my_cool_app::default]
+    attributes:
+  - name: node
+    run_list:
+      - recipe[my_cool_app::default]
+      - recipe[my_cool_app::node]
+    attributes:
+  - name: haproxy
+    run_list:
+      - recipe[my_cool_app::haproxy]
+    attributes:
+    excludes:
+      - centos-6.4
+\end{lstlisting}
+
+As you can see, we changed \inline{provisioner name} to \inline{chef_zero}. Also we set \inline{roles_path}, \inline{environments_path} and \inline{nodes_path}. This folders will used to upload to Chef Zero test data - roles, environments and nodes. And we set \inline{client_rb} attribute, which allow add attributes for chef client. Here we set environment as <<test>>.
+
+Next we create new test suite, called <<haproxy>>. Let's check it:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-chef-zero18]
+$ kitchen list
+Instance             Driver   Provisioner  Last Action
+default-ubuntu-1204  Vagrant  ChefZero     <Not Created>
+default-ubuntu-1004  Vagrant  ChefZero     <Not Created>
+default-centos-64    Vagrant  ChefZero     <Not Created>
+node-ubuntu-1204     Vagrant  ChefZero     <Not Created>
+node-ubuntu-1004     Vagrant  ChefZero     <Not Created>
+node-centos-64       Vagrant  ChefZero     <Not Created>
+haproxy-ubuntu-1204  Vagrant  ChefZero     <Not Created>
+haproxy-ubuntu-1004  Vagrant  ChefZero     <Not Created>
+\end{lstlisting}
+
+Now lets create folder <<integration/haproxy/serverspec>> and add to it tests for haproxy recipe:
+
+\begin{lstlisting}[label=lst:testing-chef-zero19]
+require 'serverspec'
+
+include Serverspec::Helper::Exec
+include Serverspec::Helper::DetectOS
+
+RSpec.configure do |c|
+  c.before :all do
+    c.path = '/sbin:/usr/sbin'
+  end
+end
+
+describe "Haproxy Daemon" do
+
+  describe package('haproxy') do
+    it { should be_installed }
+  end
+
+  describe service('haproxy') do
+    it { should be_enabled   }
+    it { should be_running   }
+  end
+
+  [80, 443].each do |port|
+    it "is listening on port #{port}" do
+      expect(port(port)).to be_listening
+    end
+  end
+
+  describe file('/etc/haproxy/haproxy.cfg') do
+    it { should be_file }
+    its(:content) { should match /#{Regexp.quote('server leopard.in.ua 127.0.0.1:80 weight 1 maxconn 1024 check')}/ }
+    its(:content) { should match /#{Regexp.quote('server leopard.in.ua 127.0.0.1:443 weight 1 maxconn 1024 check')}/ }
+  end
+
+end
+\end{lstlisting}
+
+Almoust ready. As you can see, we should generate by tests haproxy config with one node (hostname <<leopard.in.ua>> and ip address <<127.0.0.1>>). We should prepare this node for tests. In folder <<test/chef-zero/nodes>> we create node:
+
+\begin{lstlisting}[label=lst:testing-chef-zero20]
+{
+  "name": "first-node",
+  "json_class": "Chef::Node",
+  "chef_type": "node",
+  "chef_environment": "test",
+  "normal": {
+    "fqdn": "127.0.0.1",
+    "hostname": "leopard.in.ua",
+    "ipaddress": "127.0.0.1"
+  },
+  "run_list": ["role[web]"]
+}
+\end{lstlisting}
+
+It should have <<test>> environment and use <<web>> role, because only by this conditions we will select this node for haproxy config. Also we set <<hostname>> and <<ipaddress>>, because this is not real node and Ohai will not fill this attributes. After this we should create <<test>> environment and <<web>> role:
+
+\begin{lstlisting}[label=lst:testing-chef-zero21]
+{
+  "name": "test",
+  "description": "test environment",
+  "chef_type": "environment",
+  "json_class": "Chef::Environment",
+  "default_attributes": {}
+}
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:testing-chef-zero22]
+{
+  "name": "web",
+  "description": "The web role",
+  "chef_type": "role",
+  "json_class": "Chef::Role",
+  "default_attributes": {
+  },
+  "run_list": []
+}
+\end{lstlisting}
+
+All this data will load automatically into Chef Zero by test kitchen. And now we cat test our recipe by test kitchen:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-chef-zero23]
+$ kitchen test haproxy-ubuntu-1204
+-----> Starting Kitchen (v1.2.1)
+-----> Cleaning up any prior instances of <haproxy-ubuntu-1204>
+-----> Destroying <haproxy-ubuntu-1204>...
+...
+Uploading /tmp/busser/suites/serverspec/haproxy_spec.rb (mode=0644)
+-----> Running serverspec test suite
+/opt/chef/embedded/bin/ruby -I/tmp/busser/suites/serverspec -S /opt/chef/embedded/bin/rspec /tmp/busser/suites/serverspec/haproxy_spec.rb --color --format documentation
+
+       Haproxy Daemon
+  is listening on port 80
+  is listening on port 443
+  Package "haproxy"
+    should be installed
+  Service "haproxy"
+    should be enabled
+    should be running
+  File "/etc/haproxy/haproxy.cfg"
+    should be file
+    content
+      should match /server\ leopard\.in\.ua\ 127\.0\.0\.1:80\ weight\ 1\ maxconn\ 1024\ check/
+    content
+      should match /server\ leopard\.in\.ua\ 127\.0\.0\.1:443\ weight\ 1\ maxconn\ 1024\ check/
+
+Finished in 0.55591 seconds
+8 examples, 0 failures
+       Finished verifying <haproxy-ubuntu-1204> (0m2.20s).
+...
+       Finished testing <haproxy-ubuntu-1204> (3m26.69s).
+-----> Kitchen is finished. (3m28.05s)
+\end{lstlisting}
+
+As you can see, all works as expected.

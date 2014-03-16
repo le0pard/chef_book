@@ -1,0 +1,12 @@
+{
+  "name": "first-node",
+  "json_class": "Chef::Node",
+  "chef_type": "node",
+  "chef_environment": "test",
+  "normal": {
+    "fqdn": "127.0.0.1",
+    "hostname": "leopard.in.ua",
+    "ipaddress": "127.0.0.1"
+  },
+  "run_list": ["role[web]"]
+}

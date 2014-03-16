@@ -43,42 +43,12 @@ describe 'my_cool_app::haproxy' do
       })
     end
 
-    it 'create config /etc/haproxy/haproxy.cfg with first-node backend' do
-      config_output = <<EOF
-global
-  log 127.0.0.1   local0
-  log 127.0.0.1   local1 notice
-  maxconn 5000
-  user haproxy
-  group haproxy
+    it 'create config /etc/haproxy/haproxy.cfg with first-node on 80 port' do
+      expect(chef_run).to render_file('/etc/haproxy/haproxy.cfg').with_content(/#{Regexp.quote('server test.org 127.0.0.1:80 weight 1 maxconn 1024 check')}/)
+    end
 
-defaults
-  log     global
-  mode    http
-  retries 3
-  timeout client 60000
-  timeout server 50000
-  timeout connect 25000
-  balance roundrobin
-
-frontend ft_http
-  bind *:80
-  mode tcp
-  default_backend bk_http
-frontend ft_https
-  bind *:443
-  mode tcp
-  default_backend bk_https
-backend bk_http
-  mode http
-  server test.org 127.0.0.1:80 weight 1 maxconn 1024 check
-  option httpchk GET /
-backend bk_https
-  mode tcp
-  server test.org 127.0.0.1:443 weight 1 maxconn 1024 check
-  option httpchk GET /
-EOF
-      expect(chef_run).to render_file('/etc/haproxy/haproxy.cfg').with_content(config_output)
+    it 'create config /etc/haproxy/haproxy.cfg with first-node on 443 port' do
+      expect(chef_run).to render_file('/etc/haproxy/haproxy.cfg').with_content(/#{Regexp.quote('server test.org 127.0.0.1:443 weight 1 maxconn 1024 check')}/)
     end
 
     context 'with two nodes' do

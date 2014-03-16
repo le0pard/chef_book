@@ -1,0 +1,9 @@
+{
+  "name": "web",
+  "description": "The web role",
+  "chef_type": "role",
+  "json_class": "Chef::Role",
+  "default_attributes": {
+  },
+  "run_list": []
+}

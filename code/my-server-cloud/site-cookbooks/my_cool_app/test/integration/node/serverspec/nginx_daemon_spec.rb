@@ -15,7 +15,7 @@ describe "Nginx Daemon" do
     expect(port(80)).to be_listening
   end
 
-  it "has a running service of git-daemon" do
+  it "has a running service of nginx" do
     expect(service("nginx")).to be_running
   end
 

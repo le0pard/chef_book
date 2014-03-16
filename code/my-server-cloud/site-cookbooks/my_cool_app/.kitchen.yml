@@ -3,7 +3,12 @@ driver:
   name: vagrant
 
 provisioner:
-  name: chef_solo
+  name: chef_zero
+  roles_path: "test/chef-zero/roles"
+  environments_path: "test/chef-zero/environments"
+  nodes_path: "test/chef-zero/nodes"
+  client_rb:
+    environment: test
 
 platforms:
   - name: ubuntu-12.04
@@ -20,3 +25,10 @@ suites:
       - recipe[my_cool_app::default]
       - recipe[my_cool_app::node]
     attributes:
+  - name: haproxy
+    run_list:
+      - recipe[my_cool_app::haproxy]
+    attributes:
+    excludes:
+      - centos-6.4
+
