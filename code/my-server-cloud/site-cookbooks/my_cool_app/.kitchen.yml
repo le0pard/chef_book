@@ -1,6 +1,8 @@
 ---
 driver:
   name: vagrant
+  driver_config:
+    require_chef_omnibus: true
 
 provisioner:
   name: chef_zero
@@ -19,6 +21,7 @@ suites:
   - name: default
     run_list:
       - recipe[my_cool_app::default]
+      - recipe[minitest-handler]
     attributes:
   - name: node
     run_list:
