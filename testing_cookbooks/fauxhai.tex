@@ -16,7 +16,7 @@ describe 'my_cool_app::default' do
       let(:chef_run) { ChefSpec::ChefRunner.new.converge(described_recipe) }
 
       before do
-        Fauxhai.mock(platform: 'ubuntu', version: '12.04, fqdn: 'example.com', cpu: { 'real' => kernels, 'total' => kernels })
+        Fauxhai.mock(platform: 'ubuntu', version: '12.04', fqdn: 'example.com', cpu: { 'real' => kernels, 'total' => kernels })
       end
 
       it 'install htop' do
@@ -53,7 +53,7 @@ Also we can set node attributes by \inline{ChefSpec::Runner}:
     context 'installed different version' do
       let(:system_node_version) { '0.8.0' }
 
-      it 'install node if version not specified' do
+      it 'install node if version is not the same' do
         expect(chef_run).to run_execute('make install').with(cwd: "/usr/local/src/node-v#{nodejs_version}")
       end
     end
@@ -61,7 +61,7 @@ Also we can set node attributes by \inline{ChefSpec::Runner}:
     context 'installed same version' do
       let(:system_node_version) { nodejs_version }
 
-      it 'install node if version not specified' do
+      it 'do not install node' do
         expect(chef_run).not_to run_execute('make install').with(cwd: "/usr/local/src/node-v#{nodejs_version}")
       end
     end
