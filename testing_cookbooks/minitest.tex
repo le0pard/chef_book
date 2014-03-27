@@ -7,15 +7,121 @@ Exists two way of usage minitest:
 
 \begin{itemize}
   \item With Test Kitchen (like bats or serverspec)
-  \item Testing node after cooking by minitest-handler
+  \item Testing node after cooking by minitest-chef-handler
 \end{itemize}
 
 Let's conside each example.
 
-
-
 \subsection{Test Kitchen}
 
+As you remember, we used bats and serverspec with Test Kitchen. But inside it you can use any test framework, for which exists <<busser>>. Right now you can find:
 
+\begin{itemize}
+  \item busser-minitest
+  \item busser-bats
+  \item busser-bash
+  \item busser-serverspec
+  \item busser-rspec
+  \item busser-cucumber
+\end{itemize}
 
-\subsection{Minitest Handler}
+Let's add little test inside our cookbook:
+
+\begin{lstlisting}[label=lst:testing-minitest1]
+require 'minitest/autorun'
+
+describe "my_cool_app::default" do
+
+  it "has created /var/www/my_cool_app/index.html" do
+    assert File.exists?("/var/www/my_cool_app/index.html")
+  end
+
+end
+\end{lstlisting}
+
+And check how it works:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-minitest2]
+$ kitchen test default-ubuntu-1204
+-----> Starting Kitchen (v1.2.1)
+-----> Cleaning up any prior instances of <default-ubuntu-1204>
+-----> Destroying <default-ubuntu-1204>...
+...
+       Plugin minitest installed (version 0.2.0)
+-----> Running postinstall for minitest plugin
+...
+-----> Running minitest test suite
+/opt/chef/embedded/bin/ruby  -I"/opt/chef/embedded/lib/ruby/1.9.1" "/opt/chef/embedded/lib/ruby/1.9.1/rake/rake_test_loader.rb" "/tmp/busser/suites/minitest/test_default.rb"
+Run options: --seed 59554
+
+# Running tests:
+
+.
+
+Finished tests in 0.002407s, 415.5347 tests/s, 415.5347 assertions/s.
+
+1 tests, 1 assertions, 0 failures, 0 errors, 0 skips
+       Finished verifying <default-ubuntu-1204> (0m2.39s).
+-----> Kitchen is finished. (1m27.97s)
+\end{lstlisting}
+
+As you can see all works.
+
+\subsection{Minitest Chef Handler}
+
+Minitest-chef-handler run minitest suites after your Chef recipes to check the status of your system. It can be very usefull, because you testing inside your real environment. Exists 2 option to use it:
+
+Option 1: Add the report handler to your client.rb or solo.rb file:
+
+\begin{lstlisting}[label=lst:testing-minitest3]
+require 'minitest-chef-handler'
+
+report_handlers << MiniTest::Chef::Handler.new
+\end{lstlisting}
+
+Options 2: Using \href{https://github.com/btm/minitest-handler-cookbook}{minitest-handler} cookbook, which should be added in the end of \inline{run_list}:
+
+\begin{lstlisting}[label=lst:testing-minitest4]
+chef.run_list = [
+  "your-recipes",
+  "minitest-handler"
+]
+\end{lstlisting}
+
+I prefer second variant. Just add in \inline{Berksfile} cookbook \inline{minitest-handler}:
+
+\begin{lstlisting}[label=lst:testing-minitest5]
+site :opscode
+
+metadata
+
+cookbook "minitest-handler"
+\end{lstlisting}
+
+Add it in \inline{run_list}:
+
+\begin{lstlisting}[label=lst:testing-minitest6]
+suites:
+  - name: default
+    run_list:
+      - recipe[my_cool_app::default]
+      - recipe[minitest-handler]
+\end{lstlisting}
+
+And run our tests:
+
+\begin{lstlisting}[label=lst:testing-minitest6]
+$ kitchen converge default-ubuntu-1204
+...
+Running handlers:
+[2014-03-27T20:30:03+00:00] INFO: Running report handlers
+Run options: -v --seed 42106
+
+# Running tests:
+
+recipe::my_cool_app::default#test_0002_install git package = 0.14 s = .
+recipe::my_cool_app::default#test_0001_install ntp package = 0.08 s = .
+recipe::my_cool_app::default#test_0003_nginx must running = 0.09 s = .
+\end{lstlisting}
+
+As you can see, it is very simple.
