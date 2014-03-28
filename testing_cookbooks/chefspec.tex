@@ -3,7 +3,7 @@
 
 \href{http://code.sethvargo.com/chefspec/}{ChefSpec} is a unit testing framework for testing Chef cookbooks. ChefSpec makes it easy to write examples and get fast feedback on cookbook changes without the need for virtual machines or cloud servers. ChefSpec using \href{http://rspec.info/}{RSpec} for writting tests, what is why you should know Rspec at least basic stuff.
 
-\subsection{Example}
+\subsection{Installing}
 
 Let's cover our cookbook by chefspec tests. First we should add this gem in Gemfile:
 
@@ -16,7 +16,11 @@ gem 'thor-foodcritic'
 gem 'chefspec'
 \end{lstlisting}
 
-And you should to execute \inline{bundle} command to install this gem. Next we should create config for chefspec:
+And you should to execute \inline{bundle} command to install this gem.
+
+\subsection{Testing}
+
+Next we should create config for chefspec:
 
 \begin{lstlisting}[label=lst:testing-chefspec2,title=my-server-cloud/site-cookbooks/my\_cool\_app/spec/spec\_helper.rb]
 require 'chefspec'

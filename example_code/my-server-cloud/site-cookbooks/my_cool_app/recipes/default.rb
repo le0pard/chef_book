@@ -53,6 +53,12 @@ cookbook_file "#{node['my_cool_app']['web_dir']}/index.html" do
   mode 0755
 end
 
+# set host to local file
+hostsfile_entry '127.0.0.1' do
+  hostname  node['my_cool_app']['web_host']
+  unique    true
+end
+
 # nginx recipe
 include_recipe 'nginx'
 

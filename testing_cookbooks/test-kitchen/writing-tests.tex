@@ -1,0 +1,81 @@
+\subsection{Writing a Test}
+
+Now if you are interested in writing some tests, Test Kitchen has several options available to you. The component that helps facilitate testing on your instances is called Busser. Just like Test Kitchen it is a RubyGem library and it provides a plugin system so that you can wire in whatever testing framework your heart desires. A quick \href{https://rubygems.org/search?utf8=%E2%9C%93&amp;query=busser-}{search} on the RubyGems website returns several testing frameworks currently available to you.
+
+To keep things simple we're going to use the \inline{busser-bats} runner plugin which uses the \href{https://github.com/sstephenson/bats}{Bash Automated Testing System} also known as bats.
+
+We need to put our test files in a specifc location, so let's create the directory:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen13]
+$ mkdir -p test/integration/default/bats
+\end{lstlisting}
+
+It looks long and dense, but each directory has some meaning to Test Kitchen and the Busser helper:
+
+\begin{itemize}
+  \item \inline{test/integration}: Test Kitchen will look for tests to run under this directory. It allows you to put unit or other tests in test/unit, spec, acceptance, or wherever without mixing them up. This is configurable, if desired.
+  \item \inline{default}: This corresponds exactly to the Suite name we set up in the .kitchen.yml file. If we had a suite called <<server-only>>, then you would put tests for the server only suite under test/integration/server-only.
+  \item \inline{bats}: This tells Test Kitchen (and Busser) which Busser runner plugin needs to be installed on the remote instance. In other words the bats directory name will cause Busser to install busser-bats from RubyGems.
+\end{itemize}
+
+Let's write a test. Create a new file called \inline{test/integration/default/bats/nginx_installed.bats} with the following:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen14]
+#!/usr/bin/env bats
+
+@test "nginx binary is found in PATH" {
+  run which nginx
+  [ "$status" -eq 0 ]
+}
+\end{lstlisting}
+
+Now to put our test to the test. For this we'll use the verify subcommand:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen15]
+$ kitchen verify default-ubuntu-1204
+-----> Starting Kitchen (v1.2.1)
+-----> Setting up <default-ubuntu-1204>...
+Fetching: thor-0.18.1.gem (100%)
+Fetching: busser-0.6.0.gem (100%)
+...
+Uploading /tmp/busser/suites/bats/nginx_installed.bats (mode=0755)
+-----> Running bats test suite
+  nginx binary is found in PATH
+
+       1 test, 0 failures
+       Finished verifying <default-ubuntu-1204> (0m1.39s).
+-----> Kitchen is finished. (0m16.51s)
+\end{lstlisting}
+
+All right!
+
+A few things of note from the output above:
+
+\begin{itemize}
+  \item Notice the Setting up <<default-ubuntu-1204>> line? That's another action called the Setup Action. Usually not a big for most users but this action is responsible for installing the Busser RubyGem and any test runner plugins required. In our case the busser-bats RubyGem was installed which helped to install the bats testing framework.
+  \item The Verifying <<default-ubuntu-1204>> line corresponds to the start of the Verify Action and the nginx binary is found in PATH line is output from a bats test run.
+  \item The last command (\inline{echo \$?}) is a way to print the exit code of the last run shell command. This shows that the kitchen command exited cleanly.
+\end{itemize}
+
+Let's check the status of our instance again:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen16]
+$ kitchen list
+Instance             Driver   Provisioner  Last Action
+default-ubuntu-1204  Vagrant  ChefSolo     Verified
+\end{lstlisting}
+
+Let's add more tests:
+
+\begin{lstlisting}[label=lst:testing-test-kitchen17]
+@test "nginx config is valid" {
+  run nginx -t
+  [ "$status" -eq 0 ]
+}
+
+@test "nginx is running" {
+  run service nginx status
+  [ "$status" -eq 0 ]
+  [ "$output" == " * nginx is running" ]
+}
+\end{lstlisting}

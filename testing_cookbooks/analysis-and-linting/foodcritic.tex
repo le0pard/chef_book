@@ -1,5 +1,4 @@
-\section{Foodcritic}
-\label{sec:testing-foodcritic}
+\subsection{Foodcritic}
 
 \href{http://www.foodcritic.io/}{Foodcritic} is a lint tool for your Opscode Chef cookbooks. Foodcritic has two goals:
 
@@ -10,7 +9,7 @@
 
 On main site you can find \href{http://www.foodcritic.io/}{list of rules}. Also you can define own list of rules (if you need this). Foodcritic is like jslint for cookbooks. At the bare minimum, you should run foodcritic against all your cookbooks.
 
-\subsection{Example}
+\subsubsection{Example}
 
 We need to add foodcritic gems in Gemfile inside our \inline{my_cool_app} cookbook:
 
@@ -74,11 +73,7 @@ FC015: Consider converting definition to a LWRP: ./definitions/enable_web_site.r
 
 As you can see almoust all warnings fixed.
 
-\subsection{Integration}
-
-As an alternative to invoking foodcritic directly as a command-line program, you can also choose to run foodcritic from a build using Rake or Thor.
-
-\subsubsection{Rake}
+\subsubsection{Integration by Rake}
 
 Foodcritic has unreleased experimental support for Rake included. With foodcritic and rake in your Gemfile your Rakefile would look like this:
 
@@ -98,7 +93,7 @@ FoodCritic::Rake::LintTask.new do |t|
 end
 \end{lstlisting}
 
-\subsubsection{Thor}
+\subsubsection{Integration by Thor}
 
 While Rake is the old grand-daddy of Ruby build tools, a number of people prefer to use Thor.
 
@@ -200,7 +195,7 @@ $
 
 As you can see, in this case you can add this command in your Continuous integration (CI) and check your cookbook by foodcritic.
 
-\subsection{Extra Rules}
+\subsubsection{Extra Rules}
 
 Except standart rules exists additional rules that you can use with foodcritic:
 

@@ -3,7 +3,7 @@
 
 Ohai is a tool that is used to detect attributes on a node, and then provide these attributes to the chef-client at the start of every chef-client run. Ohai is required by the chef-client and must be present on a node. It's awesome, but this can be problem for testing. What is why exist Fauxhai. \href{http://technology.customink.com/fauxhai/}{Fauxhai} is a gem for mocking out ohai data in your chef testing.
 
-\subsection{Example}
+\subsection{Testing}
 
 As you can see from our node specs, we can set \inline{platform} and \inline{version}, but we can stub additional Ohai attribute by using Fauxhai. Let's look at example:
 

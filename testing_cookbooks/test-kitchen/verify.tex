@@ -1,0 +1,17 @@
+\subsection{Manually Verifying}
+
+Test Kitchen has a \inline{login} subcommand for just these kinds of situations:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen12]
+$ kitchen login default-ubuntu-1204
+Welcome to Ubuntu 12.04.3 LTS (GNU/Linux 3.8.0-29-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com/
+Last login: Thu Mar  6 22:01:08 2014 from 10.0.2.2
+vagrant@default-ubuntu-1204:~$ ps ax | grep nginx
+ 6151 ?        Ss     0:00 nginx: master process /usr/sbin/nginx
+26282 ?        S      0:00 nginx: worker process
+26758 pts/0    S+     0:00 grep --color=auto nginx
+\end{lstlisting}
+
+As you can see by the prompt above we are now in the <<default-ubuntu-1204>> instance and nginx installed inside it.

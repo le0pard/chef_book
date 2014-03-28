@@ -1,0 +1,57 @@
+\subsection{Running Kitchen Converge}
+
+Now let's let Test Kitchen run it for us on our Ubuntu 12.04 instance:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen9]
+$ kitchen converge default-ubuntu-1204
+-----> Starting Kitchen (v1.2.1)
+-----> Converging <default-ubuntu-1204>...
+       Preparing files for transfer
+       Resolving cookbook dependencies with Berkshelf 2.0.14...
+       Removing non-cookbook files before transfer
+       Transfering files to <default-ubuntu-1204>
+       ...
+       Finished converging <default-ubuntu-1204> (10m24.13s).
+-----> Kitchen is finished. (10m26.31s)
+\end{lstlisting}
+
+To quote our Chef run, that was too easy. If you are a Chef user then part of the output above should look familiar to you. Here's what happened at a high level:
+
+\begin{itemize}
+  \item Chef was installed on the instance by performing an \href{http://www.opscode.com/chef/install/}{Omnibus package installation}
+  \item Your Git cookbook files and a minimal Chef Solo configuration were built and uploaded to the instance
+  \item A Chef run was initiated using the run-list and node attributes specified in the \inline{.kitchen.yml} file
+\end{itemize}
+
+There's nothing to stop you from running this command again (or over-and-over for that matter) so, let's see what happens:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen10]
+$ kitchen converge default-ubuntu-1204
+-----> Starting Kitchen (v1.2.1)
+-----> Converging <default-ubuntu-1204>...
+       Preparing files for transfer
+       Resolving cookbook dependencies with Berkshelf 2.0.14...
+       Removing non-cookbook files before transfer
+       Transfering files to <default-ubuntu-1204>
+       ...
+       Finished converging <default-ubuntu-1204> (0m13.13s).
+-----> Kitchen is finished. (0m15.23s)
+\end{lstlisting}
+
+That ran a lot faster didn't it? Here's what happened this time:
+
+\begin{itemize}
+  \item Test Kitchen found that Chef was present and installed so skipped a re-installation.
+  \item The same Chef cookbook files and Chef Solo configuration was uploaded to the instance. Test Kitchen is optimizing for freshness of code and configuration over speed. Although we all like speed wherever possible.
+  \item A Chef run is initiated and runs very quickly as we are in the desired state.
+\end{itemize}
+
+Let's check the status of our instance:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen11]
+$ kitchen list
+Instance             Driver   Provisioner  Last Action
+default-ubuntu-1204  Vagrant  ChefSolo     Converged
+\end{lstlisting}
+
+A clean converge run, success!

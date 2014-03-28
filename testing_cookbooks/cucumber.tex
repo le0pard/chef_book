@@ -1,0 +1,88 @@
+\section{Cucumber}
+\label{sec:testing-cucumber-spec}
+
+\href{http://cukes.info/}{Cucumber} is a tool for running automated tests written in plain language. Because they're written in plain language, they can be read by anyone on your team. Because they can be read by anyone, you can use them to help improve communication, collaboration and trust on your team.
+
+\begin{lstlisting}[language=Bash,label=lst:testing-cucumber-spec1]
+$ cucumber
+Feature: Customer can use my cool web app
+
+  In order to get more payment customers
+  As a business owner
+  I want web users to be able use my cool web app
+
+  Background:                                              # features/working_web_page.feature:7
+    Given I have provisioned the following infrastructure: # features/working_web_page.feature:8
+      | Server Name | Operating System | Version | Chef Version | Run List             |
+      | localhost   | ubuntu           | 12.04   | 11.4.4       | my_cool_app::default |
+    And I have run Chef                                    # features/working_web_page.feature:12
+
+  Scenario: User visits home page                          # features/working_web_page.feature:14
+    Given a url http://leibniz-localhost                   # features/working_web_page.feature:15
+    When a web user browses to the URL                     # features/working_web_page.feature:16
+    Then the user should see "This is my cool web app"     # features/working_web_page.feature:17
+
+1 scenario (1 undefined)
+5 steps (5 undefined)
+0m0.012s
+
+You can implement step definitions for undefined steps with these snippets:
+
+Given(/^I have provisioned the following infrastructure:$/) do |table|
+  # table is a Cucumber::Ast::Table
+  pending # express the regexp above with the code you wish you had
+end
+
+Given(/^I have run Chef$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Given(/^a url http:\/\/leibniz-localhost$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+When(/^a web user browses to the URL$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Then(/^the user should see "(.*?)"$/) do |arg1|
+  pending # express the regexp above with the code you wish you had
+end
+
+If you want snippets in a different programming language,
+just make sure a file with the appropriate file extension
+exists where cucumber looks for step definitions.
+\end{lstlisting}
+
+
+
+\begin{lstlisting}[language=Bash,label=lst:testing-cucumber-spec1]
+$ cucumber
+Feature: Customer can use my cool web app
+
+  In order to get more payment customers
+  As a business owner
+  I want web users to be able use my cool web app
+
+  Background:                                              # features/working_web_page.feature:7
+    Given I have provisioned the following infrastructure: # features/step_definitions/working_web_page.rb:1
+      | Server Name | Operating System | Version | Chef Version | Run List             |
+      | localhost   | ubuntu           | 12.04   | 11.4.4       | my_cool_app::default |
+-----> Destroying <leibniz-localhost>...
+       ==> default: Forcing shutdown of VM...
+       ==> default: Destroying VM and associated drives...
+...
+
+Chef Client finished, 28 resources updated
+       Finished converging <leibniz-localhost> (1m27.14s).
+    And I have run Chef                                    # features/step_definitions/working_web_page.rb:5
+
+  Scenario: User visits home page                          # features/working_web_page.feature:14
+    Given a url "http://example.org"                       # features/step_definitions/working_web_page.rb:10
+    When a web user browses to the URL                     # features/step_definitions/working_web_page.rb:14
+    Then the user should see "This is my cool web app"     # features/step_definitions/working_web_page.rb:21
+
+1 scenario (1 passed)
+5 steps (5 passed)
+2m57.940s
+\end{lstlisting}

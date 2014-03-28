@@ -1,0 +1,41 @@
+\subsection{Adding a Suite}
+
+We're going to call our new Test Kitchen Suite <<node>> by opening \inline{.kitchen.yml} in your editor of choice so that it looks similar to:
+
+\begin{lstlisting}[label=lst:testing-test-kitchen34]
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: ubuntu-12.04
+  - name: ubuntu-10.04
+  - name: centos-6.4
+
+suites:
+  - name: default
+    run_list:
+      - recipe[my_cool_app::default]
+    attributes:
+  - name: node
+    run_list:
+      - recipe[my_cool_app::default]
+      - recipe[my_cool_app::node]
+    attributes:
+\end{lstlisting}
+
+Now run \inline{kitchen list} to see our new suite in action:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen35]
+$ kitchen list
+Instance             Driver   Provisioner  Last Action
+default-ubuntu-1204  Vagrant  ChefSolo     <Not Created>
+default-ubuntu-1004  Vagrant  ChefSolo     <Not Created>
+default-centos-64    Vagrant  ChefSolo     <Not Created>
+node-ubuntu-1204     Vagrant  ChefSolo     <Not Created>
+node-ubuntu-1004     Vagrant  ChefSolo     <Not Created>
+node-centos-64       Vagrant  ChefSolo     <Not Created>
+\end{lstlisting}
