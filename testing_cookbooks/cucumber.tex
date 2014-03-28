@@ -56,7 +56,7 @@ exists where cucumber looks for step definitions.
 
 
 
-\begin{lstlisting}[language=Bash,label=lst:testing-cucumber-spec1]
+\begin{lstlisting}[language=Bash,label=lst:testing-cucumber-spec2]
 $ cucumber
 Feature: Customer can use my cool web app
 
@@ -85,4 +85,41 @@ Chef Client finished, 28 resources updated
 1 scenario (1 passed)
 5 steps (5 passed)
 2m57.940s
+\end{lstlisting}
+
+\begin{lstlisting}[language=Bash,label=lst:testing-cucumber-spec3]
+$ cucumber
+Feature: Customer can use my cool web app
+
+  In order to get more payment customers
+  As a business owner
+  I want web users to be able use my cool web app
+
+  Background:                                              # features/working_web_page.feature:7
+    Given I have provisioned the following infrastructure: # features/step_definitions/working_web_page.rb:1
+      | Server Name | Operating System | Version | Chef Version | Run List             |
+      | localhost   | ubuntu           | 12.04   | 11.4.4       | my_cool_app::default |
+-----> Destroying <leibniz-localhost>...
+       ==> default: Forcing shutdown of VM...
+       ==> default: Destroying VM and associated drives...
+...
+
+Chef Client finished, 28 resources updated
+       Finished converging <leibniz-localhost> (1m6.98s).
+    And I have run Chef                                    # features/step_definitions/working_web_page.rb:5
+
+  Scenario: User visits home page                          # features/working_web_page.feature:14
+    Given a url "http://example.org"                       # features/step_definitions/working_web_page.rb:10
+    When a web user browses to the URL                     # features/step_definitions/working_web_page.rb:14
+    Then the user should see "This is my cool web app"     # features/step_definitions/working_web_page.rb:21
+-----> Destroying <leibniz-localhost>...
+       ==> default: Forcing shutdown of VM...
+       ==> default: Destroying VM and associated drives...
+       Vagrant instance <leibniz-localhost> destroyed.
+       Finished destroying <leibniz-localhost> (0m7.15s).
+    And cleanup test env                                   # features/step_definitions/working_web_page.rb:25
+
+1 scenario (1 passed)
+6 steps (6 passed)
+2m41.004s
 \end{lstlisting}
