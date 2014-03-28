@@ -13,3 +13,5 @@ group :integration do
   gem 'rspec-expectations'
   gem 'leibniz', '~> 0.2.1'
 end
+
+gem 'rubocop', require: false
