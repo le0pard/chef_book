@@ -1,0 +1,35 @@
+\subsection{Robocop}
+
+\href{https://github.com/bbatsov/rubocop}{RuboCop} is a Ruby static code analyzer. Out of the box it will enforce many of the guidelines outlined in the community \href{https://github.com/bbatsov/ruby-style-guide}{Ruby Style Guide}.
+
+\begin{lstlisting}[language=Bash,label=lst:testing-robocop1]
+$ rubocop
+Inspecting 24 files
+CCCCWCCCCCCCCCCCCCCCWWCC
+
+Offenses:
+
+attributes/default.rb:4:55: C: Source files should end with a newline (\n).
+default['my_cool_app']['web_host']      = 'example.org'
+                                                      ^
+
+
+
+test/integration/node/serverspec/nginx_daemon_spec.rb:18:6: C: Prefer single-quoted strings when you don't need string interpolation or special symbols.
+  it "has a running service of nginx" do
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test/integration/node/serverspec/nginx_daemon_spec.rb:19:20: C: Prefer single-quoted strings when you don't need string interpolation or special symbols.
+    expect(service("nginx")).to be_running
+                   ^^^^^^^
+test/integration/node/serverspec/nginx_daemon_spec.rb:22:3: C: Source files should end with a newline (\n).
+end
+  ^
+test/integration/node/serverspec/node_spec.rb:12:10: C: Prefer single-quoted strings when you don't need string interpolation or special symbols.
+describe "Node" do
+         ^^^^^^
+test/integration/node/serverspec/node_spec.rb:18:3: C: Source files should end with a newline (\n).
+end
+  ^
+24 files inspected, 229 offenses detected
+\end{lstlisting}
+
