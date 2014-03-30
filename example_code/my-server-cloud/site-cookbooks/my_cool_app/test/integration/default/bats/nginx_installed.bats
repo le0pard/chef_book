@@ -6,7 +6,7 @@
 }
 
 @test "nginx config is valid" {
-  run nginx -t
+  run sudo nginx -t
   [ "$status" -eq 0 ]
 }
 

@@ -1,3 +1,60 @@
 \subsection{Strainer}
 
-\href{https://github.com/customink/strainer}{Strainer} is a gem for isolating and testing individual chef cookbooks. It allows you to keep all your cookbooks in a single repository (saving you time and money), while having all the benefits of individual repositories.
+\href{https://github.com/customink/strainer}{Strainer} is a gem for isolating and testing individual chef cookbooks. It allows you to keep all your cookbooks in a single repository (saving you time and money), while having all the benefits of individual repositories. But also you can use Strainer in <<standalone>> mode. This allows you to use Strainer file from within a cookbook.
+
+First, add it in Gemfile:
+
+\begin{lstlisting}[label=lst:testing-strainer1]
+source 'https://rubygems.org'
+
+gem 'berkshelf'
+gem 'foodcritic'
+gem 'thor-foodcritic'
+gem 'chefspec'
+gem 'test-kitchen'
+gem 'chef-zero'
+
+group :integration do
+  gem 'kitchen-vagrant'
+  gem 'cucumber'
+  gem 'rspec-expectations'
+  gem 'leibniz', '~> 0.2.1'
+end
+
+gem 'rubocop', require: false
+gem 'strainer', require: false
+\end{lstlisting}
+
+And run <<bundle>> command to install it.
+
+Next you must create file Strainerfile with such content:
+
+\begin{lstlisting}[label=lst:testing-strainer2]
+chefspec:   bundle exec rspec --color
+kitchen:    bundle exec thor kitchen:default-ubuntu-1204
+\end{lstlisting}
+
+Strainer have similar functionality as \href{http://ddollar.github.io/foreman/}{Foreman}, but for running tests inside cookbook(s). Now we cat test our cookbook:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-strainer3]
+$ bundle exec strainer test
+# Straining 'my_cool_app (v0.1.0)'
+chefspec             | bundle exec rspec --color
+chefspec             | ..................
+chefspec             | Finished in 1 minute 22.43 seconds
+chefspec             | 23 examples, 0 failures
+chefspec             | SUCCESS!
+kitchen              | bundle exec thor kitchen:default-ubuntu-1204
+kitchen              | -----> Cleaning up any prior instances of <default-ubuntu-1204>
+kitchen              | -----> Destroying <default-ubuntu-1204>...
+
+...
+
+kitchen              |        Vagrant instance <default-ubuntu-1204> destroyed.
+kitchen              |        Finished destroying <default-ubuntu-1204> (0m6.87s).
+kitchen              |
+kitchen              | SUCCESS!
+Strainer marked build OK
+\end{lstlisting}
+
+Also you can use it with Rake or Thor. And integrate with CI.

@@ -4,6 +4,8 @@ require 'bundler'
 require 'bundler/setup'
 require 'berkshelf/thor'
 require 'thor/foodcritic'
+require 'strainer/thor'
+
 begin
   require 'kitchen/thor_tasks'
   Kitchen::ThorTasks.new
