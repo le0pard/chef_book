@@ -27,13 +27,14 @@ drwxr-xr-x  3 leo   102 Dec 14 00:36 site-cookbooks
 Let's consider a directory structure:
 
 \begin{itemize}
+  \item \inline{.chef} - a hidden directory that is used to store .pem files and the knife.rb file
   \item \inline{cookbooks} - directory for Chef cookbooks. This directory will be used for vendor cookbooks, that will be installed with the help of berkshelf
   \item \inline{data_bags} - directory for Chef Data Bags
   \item \inline{environments} - directory for Chef environments
   \item \inline{nodes} - directory for Chef nodes
   \item \inline{roles} - directory for Chef roles
   \item \inline{site-cookbooks} - directory for your custom Chef cookbooks
-  \item \inline{Berksfile} - file contains a list of sources identifying what cookbooks to retrieve and where to get them for berkshelf
+  \item \inline{Berksfile} - file contains a list of sources identifying what cookbooks to retrieve and where to get them for berkshelf (like Gemfile for rubygems)
 \end{itemize}
 
-Cookbooks directory added into <<.gitignore>>, because it contains only vendor cookbooks. Need to remember about it when using other version control system.
+<<Cookbooks>> directory added into <<.gitignore>>, because it contains only vendor cookbooks. Vendor cookbook data will not be modified, so there is no reason to keep them in VCS (git, mercurial, etc).

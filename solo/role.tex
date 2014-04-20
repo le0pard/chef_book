@@ -3,7 +3,7 @@
 
 Roles help classify the same server group. For example, in your project you can have web, queue and db servers. In this case you can create such type of roles, which will include the same attributes and \inline{run_list} for nodes. Let's look at an example.
 
-In our project we have a web application servers, load balancer server and database server. First we will create roles <<web>>:
+For example, in our project we have a web application servers, load balancer server and database server. First we will create roles <<web>>:
 
 \begin{lstlisting}[label=lst:my-cloud-role1,title=my-cloud/roles/web.json]
 {
@@ -22,20 +22,20 @@ In our project we have a web application servers, load balancer server and datab
 }
 \end{lstlisting}
 
-Let's consider a json structure:
+Let's consider current json structure:
 
 \begin{itemize}
   \item \inline{name} - a unique name of role. In most cases the same as name of file without extension
   \item \inline{description} - a description of the functionality that is covered by role
-  \item \inline{chef_type} - this should always be set to role
-  \item \inline{json_class} - this should always be set to Chef::Role
+  \item \inline{chef_type} - this should always be set to <<role>>
+  \item \inline{json_class} - this should always be set to <<Chef::Role>>
   \item \inline{default_attributes} - a set of attributes that should be applied to all nodes, assuming the node does not already have a value for the attribute. This is useful for setting global defaults that can then be overridden for specific nodes. If more than one role attempts to set a default value for the same attribute, the last role applied will be the role to set the attribute value. This attribute is optional
   \item \inline{override_attributes} - a set of attributes that should be applied to all nodes, even if the node already has a value for an attribute. This is useful for ensuring that certain attributes always have specific values. If more than one role attempts to set an override value for the same attribute, the last role applied will win. This attribute is optional
   \item \inline{run_list} - a list of recipes and/or roles that will be applied and the order in which those recipes and/or roles will be applied
-  \item \inline{env_run_lists} - a list of environments, each specifying a recipe or a role that will be applied to that environment. This setting must specify the \inline{_default} environment. If the \inline{_default} environment is set to [] or nil, then the run list will be empty. This attribute is optional
+  \item \inline{env_run_lists} - a list of environments, each specifying a recipe or a role that will be applied to that environment. This attribute is optional
 \end{itemize}
 
-To use this role, we can create new node <<web2.example.com>>:
+To use this role, we can create new node <<web2.example.com>> with content:
 
 \begin{lstlisting}[label=lst:my-cloud-role2,title=my-cloud/nodes/web2.example.com.json]
 {
@@ -65,7 +65,7 @@ INFO: Running report handlers
 INFO: Report handlers complete
 \end{lstlisting}
 
-As you can see, role defined in \inline{run_list} by command \inline{role} and role command replaced to run list of this role by chef client. This allow for use use several roles with recipes in the same node. For example, if web and database role must be on the same server for staging environment, you can define in node:
+As you can see, role defined in \inline{run_list} by command \inline{role} and role command replaced to run list of this role by chef client. This allow for use use several roles with recipes in the same node. For example, if web and database role should exists on the same node (example: staging environment), you can define \inline{run_list} in node in such way:
 
 \begin{lstlisting}[label=lst:my-cloud-role4,title=my-cloud/nodes/web2.example.com.json]
 {
@@ -76,7 +76,7 @@ As you can see, role defined in \inline{run_list} by command \inline{role} and r
 }
 \end{lstlisting}
 
-Role can contain in run list another roles. For example:
+BTW, role can contain in run list another roles. For example:
 
 \begin{lstlisting}[label=lst:my-cloud-role5,title=my-cloud/roles/test.json]
 {
@@ -91,4 +91,4 @@ Role can contain in run list another roles. For example:
 }
 \end{lstlisting}
 
-Role can contain attributes inside \inline{default_attributes} or \inline{override_attributes} keys. For example, for <<web>> role its can contain general settings for http listen ports, timeout of web server, etc. So let's look in more detail about the use of attributes.
+Role can contain attributes inside \inline{default_attributes} or \inline{override_attributes} keys. In our example, <<web>> role can contain general settings for http listen ports, timeout of web server, etc. So let's look in more detail about the use of attributes.

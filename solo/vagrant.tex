@@ -5,7 +5,7 @@ For testing our chef kitchen in most cases we are using Vagrant. So what is Vagr
 
 \href{http://www.vagrantup.com/}{Vagrant} is free and open-source software for creating and configuring virtual development environments. It can be considered a wrapper around VirtualBox and configuration management software such as Chef. Since version 1.1, Vagrant is no longer tied to VirtualBox and also works with other virtualization software such as VMware and Amazon EC2.
 
-Instead of building a virtual machine from scratch, which would be a slow and tedious process, Vagrant uses a base image to quickly clone a virtual machine. These base images are known as boxes in Vagrant, and specifying the box to use for your Vagrant environment is always the first step after creating a new Vagrantfile. For testing we will use precise64 (Ubuntu 12.04 LTS 64-bit) box.
+Instead of building a virtual machine from scratch, which would be a slow and tedious process, Vagrant uses a base image to quickly clone a virtual machine. These base images are known as boxes in Vagrant, and specifying the box to use for your Vagrant environment is always the first step after creating a new Vagrantfile. For testing will be used Ubuntu 12.04 LTS 64-bit (precise64 box).
 
 \begin{lstlisting}[language=Bash,label=lst:my-cloud-vagrant1]
 $ vagrant box add precise64 http://files.vagrantup.com/precise64.box
@@ -60,7 +60,7 @@ Bringing machine 'default' up with 'virtualbox' provider...
 
 After this you can use command \inline{vagrant ssh} to SSH into a running Vagrant machine and give you access to a shell. Command <<vagrant halt>> shuts down the running machine Vagrant is managing. \inline{vagrant destroy} command stops the running machine Vagrant is managing and destroys all resources that were created during the machine creation process.
 
-By default, in most cases, your mashine is not contain chef client and we should install it. As you remember, we have knife with command \inline{prepare}. Let use this command:
+In most cases, your mashine will not contain chef client. We should install it before using our kitchen. As you remember, we have knife with command \inline{prepare}. Let use this command:
 
 \begin{lstlisting}[label=lst:my-cloud-vagrant5]
 $ knife solo prepare vagrant@localhost -i ~/.vagrant.d/insecure_private_key -p 2222 -N web1.example.com
@@ -77,7 +77,23 @@ Setting up chef (11.8.2-1.ubuntu.12.04) ...
 Thank you for installing Chef!
 \end{lstlisting}
 
-As you can see, we use options \inline{-i} to set ssh key for mashine, \inline{-N} to set node name (if it different from host name) and \inline{-p} to set SSH port. In most cases, this port is 2222, but if you running several mashines from vagrant, it will be different. You can read what port is used for SSH by mashine from output of command \inline{vagrant up}.
+We used some options for the \inline{knife prepare} command. \inline{-i} option specify ssh key for mashin, \inline{-N} option specify node name (if it different from host name) and \inline{-p} option specify SSH port. In most cases, this port is 2222, but if you running several mashines from vagrant, it will be different. You can read what port is used for SSH by mashine from output of command \inline{vagrant up}. All this credentials used to login by ssh on the node and install chef client.
+
+Basically, to run our kitchen on node we are using \inline{knife solo cook} command:
+
+\begin{lstlisting}[label=lst:my-cloud-vagrant11]
+$ knife solo cook vagrant@localhost -i ~/.vagrant.d/insecure_private_key -p 2222 -N web1.example.com
+Running Chef on localhost...
+Checking Chef version...
+Installing Berkshelf cookbooks to 'cookbooks'...
+Using apache2 (1.7.0)
+Uploading the kitchen...
+...
+ * service[apache2] action start (up to date)
+Chef Client finished, 1 resources updated
+\end{lstlisting}
+
+But in Vagrant we can use build in command \inline{vagrant provision}. This command runs any configured provisioners against the running Vagrant managed machine.
 
 Vagrantfile inside use ruby syntax, so we can use Ruby to \href{http://en.wikipedia.org/wiki/Dont\_repeat\_yourself}{DRY} our config. We should install chef gem inside vagrant:
 
@@ -87,7 +103,7 @@ Installing the 'chef' plugin. This can take a few minutes...
 Installed the plugin 'chef (11.8.2)'!
 \end{lstlisting}
 
-Next, we should define chef solo in Vagrantfile:
+After this we can use chef gem inside Vagrantfile config:
 
 \begin{lstlisting}[language=Ruby,label=lst:my-cloud-vagrant7,title=my-cloud/nodes/Vagrantfile]
 # -*- mode: ruby -*-
@@ -121,23 +137,11 @@ end
 
 Now consider that we have added.
 
-On lines 4-5 required chef and json gem. JSON gem is as part of Vagrant, but chef gem we installed by previous command \inline{vagrant plugin install chef}. After this we load knife.rb in chef config and parse json from node file <<web1.example.com.json>>. After this we have \inline{Chef::Config} ruby hash with knife configuration and \inline{vagrant_json} ruby hash will attributes from node. On lines 16-26 defined chef solo configuration for vagrant (we commented \inline{environment}, because we don't have it right now, but we will use it later). More information about this you can find in \href{http://docs.vagrantup.com/v2/provisioning/chef\_solo.html}{vagrant website}.
+On lines 4-5 required chef and json gem. JSON gem is as part of Vagrant and chef gem was installed by previous command \inline{vagrant plugin install chef}. Further, we load knife.rb file in chef config and parse json from node file <<web1.example.com.json>>. After these manipulations we will have \inline{Chef::Config} ruby hash with knife configuration and \inline{vagrant_json} ruby hash will attributes from node.
 
-Basically, to run our kitchen on server we are using \inline{knife solo cook} command:
+On lines 16-26 defined Chef Solo configuration for Vagrant (\inline{environment} is commented, because we don't have it right now, but we will use it later). More information about this you can find in \href{http://docs.vagrantup.com/v2/provisioning/chef\_solo.html}{vagrant website}.
 
-\begin{lstlisting}[label=lst:my-cloud-vagrant11]
-$ knife solo cook vagrant@localhost -i ~/.vagrant.d/insecure_private_key -p 2222 -N web1.example.com
-Running Chef on localhost...
-Checking Chef version...
-Installing Berkshelf cookbooks to 'cookbooks'...
-Using apache2 (1.7.0)
-Uploading the kitchen...
-...
- * service[apache2] action start (up to date)
-Chef Client finished, 1 resources updated
-\end{lstlisting}
-
-But in Vagrant we can use build in command \inline{vagrant provision}. This command runs any configured provisioners against the running Vagrant managed machine (we changed Vagrantfile, what is why we run \inline{vagrant reload} before it):
+Because we changed the Vagrantfile configuration, we need to restart the test node by using \inline{vagrant reload} command:
 
 \begin{lstlisting}[label=lst:my-cloud-vagrant8]
 $ vagrant reload
@@ -163,7 +167,7 @@ INFO: Running report handlers
 INFO: Report handlers complete
 \end{lstlisting}
 
-To verify that the apache2 successfully installed into mashine, we can forward the 80 apache2 port. Modify <<Vagrantfile>>:
+To verify that the apache2 successfully installed into node, we can forward the 80 apache2 port to our mashine. To do this, we modify the Vagrantfile:
 
 \begin{lstlisting}[language=Ruby, label=lst:my-cloud-vagrant9,title=my-cloud/nodes/Vagrantfile]
 ...
@@ -175,7 +179,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 ...
 \end{lstlisting}
 
-And reload vagrant:
+And again reload node:
 
 \begin{lstlisting}[label=lst:my-cloud-vagrant10]
 $ vagrant reload
@@ -187,4 +191,4 @@ $ vagrant reload
 ...
 \end{lstlisting}
 
-Now in any of your browser you can open url \href{http://localhost:8085/}{http://localhost:8085/} and see page 404 from apache2 server.
+Now in any of your browser you can open url \href{http://localhost:8085/}{http://localhost:8085/} and see 404 page from apache2 server (because we only install it).

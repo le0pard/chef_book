@@ -10,7 +10,7 @@ To get started working with Chef, you need to install the required software:
   \item \href{https://www.ruby-lang.org}{Ruby} (since Chef runs on it). For simple installation of it you can use the \href{https://rvm.io/}{RVM} or \href{https://github.com/sstephenson/rbenv}{Rbenv}
 \end{itemize}
 
-Next, create a directory called <<my-cloud>> and inside it create file <<Gemfile>> with this content:
+To get started with Chef, we need to create chef-repo (kitchen), which will contain all the data for a chef client(s). For example, I'll create a directory <<my-cloud>>, which will contain a chef-repo (kitchen). In this directory I create a file <<Gemfile>> with such content:
 
 \begin{lstlisting}[label=lst:my-cloud-required1,title=my-cloud/Gemfile]
 source "https://rubygems.org"
@@ -19,22 +19,30 @@ gem 'knife-solo'
 gem 'berkshelf'
 \end{lstlisting}
 
-and run command \inline{bundle} in terminal. As a result, by using \href{http://bundler.io/}{bundler} we install a required rubygems. Why do we need these rubygems?
+and run command \inline{bundle} in terminal. As a result, by using \href{http://bundler.io/}{bundler} we install a required rubygems.
+
+\subsection{Rubygems and bundler}
+
+\href{http://rubygems.org/}{RubyGems} is a package manager for the Ruby programming language that provides a standard format for distributing Ruby programs and libraries (in a self-contained format called a <<gem>>), a tool designed to easily manage the installation of gems, and a server for distributing them. It is analogous to EasyInstall for the Python programming language.
+
+\href{http://bundler.io/}{Bundler} provides a consistent environment for Ruby projects by tracking and installing the exact gems and versions that are needed. Bundler is an exit from dependency hell, and ensures that the gems you need are present in development, staging, and production.
+
+But why do we need these rubygems?
 
 \subsection{Knife-solo}
 
-\href{http://matschaffer.github.io/knife-solo/}{Knife-solo} adds 5 subcommands to knife tool:
+Knife is a command-line tool that provides an interface between a local chef-repo and the Chef server. But for Chef Solo is better to install the \href{http://matschaffer.github.io/knife-solo/}{knife-solo} plugin. It will install knife as dependency and adds 5 subcommands to knife tool:
 
 \begin{itemize}
-  \item \inline{knife solo init} is used to create a new directory structure (i.e. kitchen) that fits with Chef's standard structure and can be used to build and store recipes.
-  \item \inline{knife solo prepare} installs Chef on a given host. It's structured to auto-detect the target OS and change the installation process accordingly.
-  \item \inline{knife solo cook} uploads the current kitchen to the target host and runs chef-solo on that host.
-  \item \inline{knife solo bootstrap} combines the two previous ones (prepare and cook).
-  \item \inline{knife solo clean} removes the uploaded kitchen from the target host.
+  \item \inline{knife solo init} is used to create a new directory structure (i.e. kitchen) that fits with Chef's standard structure and can be used to build and store recipes
+  \item \inline{knife solo prepare} installs Chef on a given host. It's structured to auto-detect the target OS and change the installation process accordingly
+  \item \inline{knife solo cook} uploads the current kitchen to the target host and runs chef-solo on that host
+  \item \inline{knife solo bootstrap} combines the two previous ones (prepare and cook)
+  \item \inline{knife solo clean} removes the uploaded kitchen from the target host
 \end{itemize}
 
-Knife-solo also integrates with Berkshelf and Librarian-Chef.
+Knife-solo also integrates with \href{http://berkshelf.com/}{Berkshelf} and \href{https://github.com/applicationsonline/librarian-chef}{Librarian-Chef}.
 
 \subsection{Berkshelf}
 
-\href{http://berkshelf.com/}{Berkshelf} used as well as the bundler for rubygems - it manage a cookbooks and its dependencies. Also, there is exists a \href{https://github.com/applicationsonline/librarian-chef}{librarian-chef}, which performs a similar functions. I prefer to use berkshelf (it have a bigger set of features and integrations).
+\href{http://berkshelf.com/}{Berkshelf} used as well as the bundler for rubygems - it manage a cookbooks and its dependencies. Also, there is exists a \href{https://github.com/applicationsonline/librarian-chef}{librarian-chef}, which performs a similar functions. I prefer to use berkshelf, because it have a bigger set of features and integrations.

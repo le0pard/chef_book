@@ -1,7 +1,7 @@
 \section{Idempotence}
 \label{sec:solo-idempotence}
 
-As you should read from previous chapter, one of the main idea of Chef is idempotence. It mean, what Chef can safely be run multiple times on the same mashine. Once you develop your configuration, your machines will apply the configuration and Chef will only make any changes to the system if the system state does not match the configured state.
+As you read from previous chapter, one of the main idea of Chef is idempotence. It mean, what Chef can safely be run multiple times on the same mashine. Once you develop your configuration, your machines will apply the configuration and Chef will only make any changes to the system if the system state does not match the configured state.
 
 For now we have mashine which contain apache2 running inside it. Let's run \inline{vagrant provision} again:
 
@@ -16,4 +16,4 @@ INFO: Chef Run complete in 1.092279021 seconds
 ...
 \end{lstlisting}
 
-As you can see it did nothing, because configuration of the server the same as in chef kitchen (what is why execution time also so small).
+As you can see, chef client did nothing, because configuration of the server the same as in chef kitchen (what is why execution time also so small).
