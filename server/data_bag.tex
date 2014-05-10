@@ -1,7 +1,7 @@
 \section{Data bags}
 \label{sec:server-data-bags}
 
-Role work similar as in Chef Solo (chapter <<\ref{sec:solo-data-bag}~\nameref{sec:solo-data-bag}>>). But in your recipe you can use \inline{search} command to search data bags on servers. Any search for a data bag (or a data bag item) must specify the name of the data bag and then provide the search query string that will be used during the search. For example, to use Knife to search within a data bag named <<admin\_data>> across all items, except for the <<admin\_users>> item, enter the following:
+Data bags work similar as in Chef Solo (chapter <<\ref{sec:solo-data-bag}~\nameref{sec:solo-data-bag}>>). But in your recipe you can use \inline{search} command to search data bags on servers. Any search for a data bag (or a data bag item) must specify the name of the data bag and then provide the search query string that will be used during the search. For example, to use Knife to search within a data bag named <<admin\_data>> across all items, except for the <<admin\_users>> item, enter the following:
 
 \begin{lstlisting}[language=Bash,label=lst:my-server-cloud-databag1]
 $ knife search admin_data "(NOT id:admin_users)"

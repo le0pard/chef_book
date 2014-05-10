@@ -6,10 +6,10 @@
   "default_attributes": {
     "nginx": {
       "install_method": "source",
-      "version": "1.4.4",
+      "version": "1.6.0",
       "default_site_enabled": true,
       "source": {
-        "url": "http://nginx.org/download/nginx-1.4.4.tar.gz"
+        "url": "http://nginx.org/download/nginx-1.6.0.tar.gz"
       },
       "worker_rlimit_nofile": 30000,
       "worker_connections": 4000

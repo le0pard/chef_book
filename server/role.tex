@@ -22,10 +22,10 @@ After command \inline{berks install} we will create <<nginx>> role:
   "default_attributes": {
     "nginx": {
       "install_method": "source",
-      "version": "1.4.4",
+      "version": "1.6.0",
       "default_site_enabled": true,
       "source": {
-        "url": "http://nginx.org/download/nginx-1.4.4.tar.gz"
+        "url": "http://nginx.org/download/nginx-1.6.0.tar.gz"
       },
       "worker_rlimit_nofile": 30000,
       "worker_connections": 4000
@@ -61,6 +61,8 @@ As you can see, node have different format, than Chef Solo. Keys \inline{normal}
 // upload all cookbooks from path 'cookbooks' and 'site-cookbooks' (use --force if cookbook frozen).
 // But for vendor cookbooks before you need execute 'berks install --path cookbooks'
 $ knife cookbook upload -a
+// upload selected cookbook
+$ knife cookbook upload nginx
 // or upload all cookbooks by berks
 $ berks upload
 // create/update role from file
@@ -69,7 +71,7 @@ $ knife role from file roles/nginx.json
 $ knife node from file nodes/first.example.com.json
 \end{lstlisting}
 
-Next we should can use \inline{knife ssh} command to do something on nodes. The \inline{knife ssh} subcommand is used to invoke SSH commands (in parallel) on a subset of nodes within an organization, based on the results of a search query. Example:
+Next we should use \inline{knife ssh} command to do something on nodes. The \inline{knife ssh} subcommand is used to invoke SSH commands (in parallel) on a subset of nodes within an organization, based on the results of a search query. Example:
 
 \begin{lstlisting}[language=Bash,label=lst:my-serer-cloud-role5]
 // execute on 'first.example.com' chef-client
