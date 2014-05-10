@@ -30,7 +30,7 @@ Let's consider a json structure:
   \item \inline{override_attributes} - a set of attributes that should be applied to all nodes, even if the node already has a value for an attribute. This is useful for ensuring that certain attributes always have specific values. This attribute is optional
 \end{itemize}
 
-As you can see environment doesn't have run-list, but it have attributes. Attributes in most cases contain information, which specific for environment: connection information to databases, cluster settings for database or queue, etc.
+As you can see environment doesn't have \inline{run_list}, but it have attributes. Attributes in most cases contain information, which specific for environment: connection information to databases (hostname, port, etc.), cluster settings for database or queue, etc.
 
 Now we can activate this development environment in Vagrantfile:
 
@@ -77,6 +77,6 @@ You can set environment for node by attribute \inline{environment}:
 
 and use commad \inline{knife solo cook} without \inline{-E} argument.
 
-Once an environment exists on the server, a node can be associated with that environment using the \inline{chef_environment} method of <<node>> object in Ruby.
+Once an environment exists on the server, a node can be associated with that environment using the \inline{chef_environment} method of <<node>> object in Ruby (I'll consider this in the next chapters).
 
 As you can see in Chef Solo environment can be used only for setting attributes. In Chef Server it have additional feature for locking cookbook versions, which we will consider in Chef Server chapter.

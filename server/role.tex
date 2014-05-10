@@ -4,7 +4,7 @@
 Role work in the same way, as in Chef Solo (chapter <<\ref{sec:solo-role}~\nameref{sec:solo-role}>>). For example, we will install on <<first.example.com>> \href{http://community.opscode.com/cookbooks/nginx}{nginx}. First of all, we need add nginx cookbook in Berksfile:
 
 \begin{lstlisting}[label=lst:my-serer-cloud-role1,title=my-server-cloud/Berksfile]
-site :opscode
+source "http://api.berkshelf.com"
 
 cookbook 'chef-server'
 cookbook 'nginx'

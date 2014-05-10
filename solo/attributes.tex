@@ -9,3 +9,82 @@ An attribute is a specific detail about a node. Attributes are used by the chef-
   \item What the state of the node should be at the end of the current chef-client run
 \end{itemize}
 
+In our example we install and configure by chef apache 2 web server. In vendor cookbook <<apache2>> exists default attributes.
+
+\begin{lstlisting}[label=lst:my-cloud-attributes1]
+# General settings
+default['apache']['listen_ports'] = ["80"]
+default['apache']['contact'] = "ops@example.com"
+default['apache']['timeout'] = 300
+default['apache']['keepalive'] = "On"
+default['apache']['keepaliverequests'] = 100
+default['apache']['keepalivetimeout'] = 5
+...
+\end{lstlisting}
+
+This attributes used, because we don't override its by environment, role or node. For example, we can add 443 port through our <<web>> role:
+
+\begin{lstlisting}[language=JSON,label=lst:my-cloud-attributes2]
+{
+  "name": "web",
+  "description": "The base role for systems that serve web server",
+  "chef_type": "role",
+  "json_class": "Chef::Role",
+  "default_attributes": {
+    "apache": {
+      "listen_ports": ["80", "443"]
+    }
+  },
+  "run_list": [
+    "recipe[apache2]"
+  ]
+}
+\end{lstlisting}
+
+Also we can set \inline{keepalivetimeout} for apache in node attributes:
+
+\begin{lstlisting}[language=JSON,label=lst:my-cloud-attributes3]
+{
+  "apache": {
+    "keepalivetimeout": 30
+  },
+  "run_list": [
+    "role[web]"
+  ]
+}
+\end{lstlisting}
+
+If we will set \inline{listen_ports} in node attribute, when this will override role \inline{listen_ports} attribute:
+
+\begin{lstlisting}[language=JSON,label=lst:my-cloud-attributes3]
+{
+  "apache": {
+    "keepalivetimeout": 30,
+    "listen_ports": ["80", "443", "8080"]
+  },
+  "run_list": [
+    "role[web]"
+  ]
+}
+\end{lstlisting}
+
+But role can override attributes, that should be applied to all nodes, even if the node already has a value for an attribute. This is useful for ensuring that certain attributes always have specific values. All this attributes should be written in \inline{override_attributes} key (instead of \inline{default_attributes}):
+
+\begin{lstlisting}[language=JSON,label=lst:my-cloud-attributes2]
+{
+  "name": "web",
+  "description": "The base role for systems that serve web server",
+  "chef_type": "role",
+  "json_class": "Chef::Role",
+  "override_attributes": {
+    "apache": {
+      "listen_ports": ["80", "443"]
+    }
+  },
+  "run_list": [
+    "recipe[apache2]"
+  ]
+}
+\end{lstlisting}
+
+More info about attributes you can find on \href{http://docs.opscode.com/chef_overview_attributes.html}{wiki page}.

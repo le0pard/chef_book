@@ -4,7 +4,7 @@
 Suppose, that our task to install Apache2 on node. For this purpose we can use vendor cookbook through berkshelf. Huge amount cookbooks you can find at \href{http://community.opscode.com/cookbooks}{Chef community website}. To install Apache2 cookbook we need add it to Berksfile:
 
 \begin{lstlisting}[label=lst:my-cloud-berkshelf1,title=my-cloud/Berksfile]
-site :opscode
+source "http://api.berkshelf.com"
 
 cookbook 'apache2'
 \end{lstlisting}

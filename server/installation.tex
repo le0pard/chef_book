@@ -28,7 +28,7 @@ $ git clone https://github.com/opscode/chef-repo.git .
 To install and configure Chef Server exists cookbook \href{http://community.opscode.com/cookbooks/chef-server}{chef-server}. Let's add this cookbook in Berkshelf:
 
 \begin{lstlisting}[label=lst:my-server-cloud-installation2,title=my-server-cloud/Berkshelf]
-site :opscode
+source "http://api.berkshelf.com"
 
 cookbook 'chef-server'
 \end{lstlisting}
