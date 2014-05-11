@@ -105,14 +105,14 @@ To use this recipe we should add it in \inline{run_list}:
 }
 \end{lstlisting}
 
-But I want run this recipe with default recipe, so I will leave \inline{run_list} as is and add node recipe in default:
+But I want run this recipe with default recipe, so I will leave \inline{run_list} as is and add node recipe in default recipe:
 
 \begin{lstlisting}[label=lst:cookbook-ohai3]
 ...
 include_recipe 'my_cool_app::node'
 \end{lstlisting}
 
-And check how it works:
+Now it remains to check how it works:
 
 \begin{lstlisting}[language=Bash,label=lst:cookbook-ohai4]
 $ knife cookbook upload my_cool_app
@@ -133,7 +133,7 @@ vagrant@precise64:~$ node -v
 v0.10.26
 \end{lstlisting}
 
-As you can see it works.
+As you can see node recipe installed Node.js on our node.
 
 \subsubsection{Ohai plugin}
 
@@ -168,7 +168,7 @@ system_node_js[:version] = stdout[1..-1] if 0 == status
 \end{lstlisting}
 
 In first two lines we set by method \inline{provides} automatic attributes, which will provide for us this plugin.
-Most of the information we want to lookup would be nested in some way, and ohai tends to do this by storing the data in a Mash. This can be done by creating a new mash and setting the attribute to it. We did this with \inline{system_node_js}. In the end of code, plugin set the version of node.js, if node.js installed on node. That's it!
+Most of the information we want to lookup would be nested in some way, and ohai tends to do this by storing the data in a Mash (similar to Ruby hash type). This can be done by creating a new mash and setting the attribute to it. We did this with \inline{system_node_js}. In the end of code, plugin set the version of node.js, if node.js installed on node. That's it!
 
 Also we should add new dependency for our cookbook - ohai cookbook:
 
@@ -228,4 +228,4 @@ WARN: Cloning resource attributes for package[libssl-dev] from prior resource (C
 ...
 \end{lstlisting}
 
-As you can see, after first \inline{provision} (\inline{knife cook}, \inline{knife ssh 'sudo chef-client'}) execution Ohai plugin will be installed, but not executed. Only on second execution chef-client will use Ohai plugin (because Ohai plugins load before kitchen).
+As you can see, after first \inline{provision} (\inline{knife cook}, \inline{knife ssh 'sudo chef-client'}) execution Ohai plugin will be installed, but not executed. Only on second execution chef-client will use Ohai plugin (because Ohai plugins load before running \inline{run_list}).

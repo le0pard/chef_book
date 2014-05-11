@@ -22,7 +22,7 @@ recipes/
 metadata.rb
 \end{lstlisting}
 
-Anything you put in <<resources/>> or <<providers/>> Chef will attempt to parse at runtime. We don't want Chef trying to read our HWRP as the Chef DSL, we want it to interpret it as code. Luckily, anything stored in the <<libraries/>> folder Chef will try to import at runtime. A good example of this can be seen in the runit cookbook.
+Anything you put in <<resources/>> or <<providers/>> Chef will attempt to parse at runtime. We don't want Chef trying to read our HWRP as the Chef DSL, we want it to interpret it as code. Luckily, anything stored in the <<libraries/>> folder Chef will try to import at runtime. A good example of this can be seen in the \href{https://github.com/hw-cookbooks/runit}{runit} cookbook.
 
 \subsection{Example}
 
@@ -30,7 +30,7 @@ Let's go through an example. We are going to create a HWRP that is very simple, 
 
 \subsubsection{Resource}
 
-We need to inherit from the appropriate Chef classes in our HWRP. Note the class hierarchy as well as the inheritance:
+First, we need to inherit from the appropriate Chef classes in our HWRP. Note the class hierarchy as well as the inheritance:
 
 \begin{lstlisting}[label=lst:cookbook-hwrp2]
 require 'chef/resource'
@@ -46,7 +46,7 @@ class Chef
 end
 \end{lstlisting}
 
-We need to override the initialize method to make sure we have some defaults. We aren't defining all of our resource attributes here, just the ones that need defaults.
+Next, we should to override the initialize method to make sure we have some defaults. We aren't defining all of our resource attributes here, just the ones that need defaults.
 
 \begin{lstlisting}[label=lst:cookbook-hwrp3]
 require 'chef/resource'
@@ -141,7 +141,7 @@ class Chef
 end
 \end{lstlisting}
 
-While we don’t need to write an initialize method (we can), we do need to override \inline{load_current_resource}.
+While we don't need to write an initialize method (we can), we do need to override \inline{load_current_resource}.
 
 \begin{lstlisting}[label=lst:cookbook-hwrp6]
 require 'chef/provider'
@@ -227,7 +227,7 @@ chef_client.vm.provision :chef_client do |chef|
 end
 \end{lstlisting}
 
-And see our HWRP execution:
+And see our HWRP execution in log:
 
 \begin{lstlisting}[language=Bash,label=lst:cookbook-hwrp10]
 $ knife cookbook upload my_cool_app
@@ -245,7 +245,7 @@ INFO: Chef Run complete in 15.491575653 seconds
 ...
 \end{lstlisting}
 
-Now let's add code for actions \inline{:create} and \inline{:delete}:
+Now let's add code for actions \inline{:create} and \inline{:delete} (this code similar to LWRP code):
 
 \begin{lstlisting}[label=lst:cookbook-hwrp11]
 require 'chef/provider'
@@ -339,4 +339,4 @@ vagrant@precise64:~$ cat /etc/ssh/ssh_known_hosts
 |1|jycCFcglLajRKYIlyAJaD+zmOjw=|51hFV+x1XIZNdiMGG6K0Xz+Nkds= ...
 \end{lstlisting}
 
-So it works.
+As a result, we wrote HWRP, which performs the same job as LWRP. HWRP is not so simple and elegant as LWRP, but have huge flexibility, because have more controll by Ruby language.
