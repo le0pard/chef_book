@@ -2,6 +2,8 @@
 
 \href{https://github.com/customink/strainer}{Strainer} is a gem for isolating and testing individual chef cookbooks. It allows you to keep all your cookbooks in a single repository (saving you time and money), while having all the benefits of individual repositories. But also you can use Strainer in <<standalone>> mode. This allows you to use Strainer file from within a cookbook.
 
+\subsubsection{Example}
+
 First, add it in Gemfile:
 
 \begin{lstlisting}[label=lst:testing-strainer1]
@@ -57,4 +59,4 @@ kitchen              | SUCCESS!
 Strainer marked build OK
 \end{lstlisting}
 
-Also you can use it with Rake or Thor. And integrate with CI.
+Also you can use it with Rake or Thor.

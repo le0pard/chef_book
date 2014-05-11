@@ -55,7 +55,7 @@ $ kitchen verify 64
        3 tests, 1 failure
 \end{lstlisting}
 
-We must fix last test:
+We should fix failed test:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen23]
 @test "nginx is running" {
@@ -194,7 +194,7 @@ Okay, it looks like we want to install the \inline{git-core} package for this re
 
 \begin{lstlisting}[language=Ruby,label=lst:testing-test-kitchen30]
 # install needed package
-packages = %w(git)
+packages = %w(ntp)
 
 if "ubuntu" == node['platform'] && node['platform_version'].to_f <= 10.04
   packages << "git-core"

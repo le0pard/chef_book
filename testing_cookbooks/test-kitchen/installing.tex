@@ -1,6 +1,6 @@
 \subsection{Installing}
 
-Let's cover our cookbook by test kitchen tests. First we should add this gem in Gemfile:
+Let's cover our cookbook by test kitchen. First we should add this gem in Gemfile:
 
 \begin{lstlisting}[label=lst:testing-test-kitchen1]
 source 'https://rubygems.org'
@@ -13,7 +13,7 @@ gem 'test-kitchen'
 gem 'kitchen-vagrant'
 \end{lstlisting}
 
-And you should to execute \inline{bundle} command to install this gem. We can check what kitchen installed:
+And you should to execute \inline{bundle} command to install this gems. We can check what kitchen installed:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen2]
 $ kitchen version
@@ -48,15 +48,9 @@ $ kitchen init
     create  test/integration/default
 \end{lstlisting}
 
-What's going on here? The \inline{kitchen init} subcommand will create an initial configuration file for Test Kitchen called \inline{.kitchen.yml}. We'll look at that in a moment.
+What's going on here? The \inline{kitchen init} subcommand will create an initial configuration file for Test Kitchen called \inline{.kitchen.yml}. A few directories were created but these are only a convenience – you don't strictly need <<test/integration/default>> in your project. You can see that you have a \inline{.gitignore} file in your project's root which will tell Git to never commit a directory called \inline{.kitchen} and something called \inline{.kitchen.local.yml}. Finally, a gem called \inline{kitchen-vagrant} was installed. By itself Test Kitchen can't do very much. It needs one or more Drivers which are responsible for managing the virtual machines we need for testing. At present there are many different Test Kitchen Drivers but we're going to stick with the \href{https://github.com/opscode/kitchen-vagrant}{Kitchen Vagrant Driver} for now.
 
-A few directories were created but these are only a convenience–you don't strictly need <<test/integration/default>> in your project.
-
-You can see that you have a \inline{.gitignore} file in your project's root which will tell Git to never commit a directory called \inline{.kitchen} and something called \inline{.kitchen.local.yml}. Don't worry about these for now, just some housekeeping details.
-
-Finally, a gem called \inline{kitchen-vagrant} was installed. By itself Test Kitchen can't do very much. It needs one or more Drivers which are responsible for managing the virtual machines we need for testing. At present there are many different Test Kitchen Drivers but we're going to stick with the \href{https://github.com/opscode/kitchen-vagrant}{Kitchen Vagrant Driver} for now.
-
-Let's turn our attention to the \inline{.kitchen.yml} file for a minute. While Test Kitchen may have created the initial file automatically, it's expected that you will read and edit this file. Opening this file in your editor of choice we see something like the following:
+Let's turn our attention to the \inline{.kitchen.yml} file. While Test Kitchen may have created the initial file automatically, it's expected that you will read and edit this file. Opening this file in your editor of choice we see something like the following:
 
 \begin{lstlisting}[label=lst:testing-test-kitchen4]
 ---

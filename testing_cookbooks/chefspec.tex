@@ -74,7 +74,7 @@ describe 'my_cool_app::default' do
 end
 \end{lstlisting}
 
-And check our tests:
+Now we can check our tests:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-chefspec5]
 $ rspec
@@ -112,7 +112,7 @@ end
 ...
 \end{lstlisting}
 
-Add test for this \inline{include_recipe} and check tests again:
+Add test for \inline{include_recipe} call and check tests again:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-chefspec7]
 $ rspec
@@ -175,4 +175,4 @@ Finished in 3.19 seconds
 12 examples, 0 failures
 \end{lstlisting}
 
-As you can see, we cover cookbook by unit tests using chefspec.
+As a result, we covered cookbook by unit tests using chefspec.

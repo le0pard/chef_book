@@ -3,7 +3,58 @@
 
 \href{http://cukes.info/}{Cucumber} is a tool for running automated tests written in plain language. Because they're written in plain language, they can be read by anyone on your team. Because they can be read by anyone, you can use them to help improve communication, collaboration and trust on your team.
 
-\begin{lstlisting}[language=Bash,label=lst:testing-cucumber-spec1]
+\subsection{Example}
+
+Therefore we need only add the following three gems to a Gemfile:
+
+\begin{lstlisting}[label=lst:testing-cucumber-spec1]
+gem 'cucumber'
+gem 'rspec-expectations'
+gem 'leibniz'
+\end{lstlisting}
+
+And you should to execute \inline{bundle} command to install this gem.
+
+Next we should create directory for our tests:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-cucumber-spec2]
+$ mkdir -p features/step_definitions
+$ mkdir -p features/step_definitions/support
+\end{lstlisting}
+
+And require needed libs in \inline{features/step_definitions/support/env.rb} file:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-cucumber-spec3]
+require 'leibniz'
+require 'faraday'
+\end{lstlisting}
+
+Now we should create file, which will contain tests definitions. Let's call it \inline{features/working_web_page.feature}:
+
+\begin{lstlisting}[label=lst:testing-cucumber-spec4]
+Feature: Customer can use my cool web app
+
+  In order to get more payment customers
+  As a business owner
+  I want web users to be able use my cool web app
+
+  Background:
+    Given I have provisioned the following infrastructure:
+    | Server Name | Operating System | Version | Chef Version | Run List              |
+    | localhost   | ubuntu           | 12.04   | 11.4.4       | my_cool_app::default  |
+
+    And I have run Chef
+
+  Scenario: User visits home page
+    Given a url "http://example.org"
+    When a web user browses to the URL
+    Then the user should see "This is my cool web app"
+    And cleanup test env
+\end{lstlisting}
+
+Next, we can try run cucumber:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-cucumber-spec5]
 $ cucumber
 Feature: Customer can use my cool web app
 
@@ -18,7 +69,7 @@ Feature: Customer can use my cool web app
     And I have run Chef                                    # features/working_web_page.feature:12
 
   Scenario: User visits home page                          # features/working_web_page.feature:14
-    Given a url http://leibniz-localhost                   # features/working_web_page.feature:15
+    Given a url http://example.org                         # features/working_web_page.feature:15
     When a web user browses to the URL                     # features/working_web_page.feature:16
     Then the user should see "This is my cool web app"     # features/working_web_page.feature:17
 
@@ -37,7 +88,7 @@ Given(/^I have run Chef$/) do
   pending # express the regexp above with the code you wish you had
 end
 
-Given(/^a url http:\/\/leibniz-localhost$/) do
+Given(/^a url http:\/\/example\.org$/) do
   pending # express the regexp above with the code you wish you had
 end
 
@@ -54,40 +105,43 @@ just make sure a file with the appropriate file extension
 exists where cucumber looks for step definitions.
 \end{lstlisting}
 
+As you can see, we dont have any line of real tests. Let's add tests in file \inline{features/step_definitions/working_web_page.rb}:
 
+\begin{lstlisting}[label=lst:testing-cucumber-spec6]
+Given(/^I have provisioned the following infrastructure:$/) do |specification|
+  @infrastructure = Leibniz.build(specification)
+end
 
-\begin{lstlisting}[language=Bash,label=lst:testing-cucumber-spec2]
-$ cucumber
-Feature: Customer can use my cool web app
+Given(/^I have run Chef$/) do
+  @infrastructure.destroy
+  @infrastructure.converge
+end
 
-  In order to get more payment customers
-  As a business owner
-  I want web users to be able use my cool web app
+Given(/^a url "(.*?)"$/) do |url|
+  @host_header = url.split('/').last
+end
 
-  Background:                                              # features/working_web_page.feature:7
-    Given I have provisioned the following infrastructure: # features/step_definitions/working_web_page.rb:1
-      | Server Name | Operating System | Version | Chef Version | Run List             |
-      | localhost   | ubuntu           | 12.04   | 11.4.4       | my_cool_app::default |
------> Destroying <leibniz-localhost>...
-       ==> default: Forcing shutdown of VM...
-       ==> default: Destroying VM and associated drives...
-...
+When(/^a web user browses to the URL$/) do
+  connection = Faraday.new(:url => "http://#{@infrastructure['localhost'].ip}", :headers => {'Host' => @host_header}) do |faraday|
+    faraday.adapter Faraday.default_adapter
+  end
+  @page = connection.get('/').body
+end
 
-Chef Client finished, 28 resources updated
-       Finished converging <leibniz-localhost> (1m27.14s).
-    And I have run Chef                                    # features/step_definitions/working_web_page.rb:5
+Then(/^the user should see "(.*?)"$/) do |content|
+  expect(@page).to match /#{content}/
+end
 
-  Scenario: User visits home page                          # features/working_web_page.feature:14
-    Given a url "http://example.org"                       # features/step_definitions/working_web_page.rb:10
-    When a web user browses to the URL                     # features/step_definitions/working_web_page.rb:14
-    Then the user should see "This is my cool web app"     # features/step_definitions/working_web_page.rb:21
-
-1 scenario (1 passed)
-5 steps (5 passed)
-2m57.940s
+Then(/^cleanup test env$/) do
+  @infrastructure.destroy if @infrastructure
+end
 \end{lstlisting}
 
-\begin{lstlisting}[language=Bash,label=lst:testing-cucumber-spec3]
+Leibniz gem read infrastructure configuration from our specs inside <<Background>> and use Test Kitchen to create it. Next, in <<I have run Chef>> we cleanup old and create new node and run chef client inside it. After this we using Faraday gem to do HTTP request inside node and get root page content. We check, what this content should contain <<This is my cool web app>>. In this case we will be sure, what nginx installed, running and server our web page. In the end we added <<cleanup test env>>, which whould cleanup after tests.
+
+Finally, we cat test our cucumber tests:
+
+\begin{lstlisting}[language=Bash,label=lst:testing-cucumber-spec7]
 $ cucumber
 Feature: Customer can use my cool web app
 
@@ -123,3 +177,5 @@ Chef Client finished, 28 resources updated
 6 steps (6 passed)
 2m41.004s
 \end{lstlisting}
+
+As a result, we cover our default recipe by using cucumber.

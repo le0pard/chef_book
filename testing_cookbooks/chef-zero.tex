@@ -142,7 +142,6 @@ Let's create recipe \inline{haproxy} in our cookbook:
 package "haproxy"
 
 # get nodes of some roles
-# get nodes of some roles
 if Chef::Config[:solo]
   Chef::Log.warn("This recipe uses search. Chef Solo does not support search.")
   pool_members = []
@@ -349,7 +348,7 @@ Finished in 33.34 seconds
 9 examples, 0 failures
 \end{lstlisting}
 
-All works.
+As a result, haproxy recipe fully covered by Chefspec and Chef Zero.
 
 \subsection{Using with Test Kitchen}
 
@@ -489,7 +488,7 @@ It should have <<test>> environment and use <<web>> role, because only by this c
 }
 \end{lstlisting}
 
-All this data will load automatically into Chef Zero by test kitchen. And now we cat test our recipe by test kitchen:
+All this data will load automatically into Chef Zero by Test Kitchen. And now we cat test our haproxy recipe by Test Kitchen:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-chef-zero23]
 $ kitchen test haproxy-ubuntu-1204
@@ -524,4 +523,4 @@ Finished in 0.55591 seconds
 -----> Kitchen is finished. (3m28.05s)
 \end{lstlisting}
 
-As you can see, all works as expected.
+As a result, haproxy recipe fully covered by Test Kitchen, Serverspec and Chef Zero.

@@ -10,6 +10,8 @@ Exists two way of usage minitest:
   \item Testing node after cooking by minitest-chef-handler
 \end{itemize}
 
+Second way is very interesting, because allow to you check tests even on production environment. This allow to be sure, what tests pass on check run of chef client on node.
+
 Let's conside each example.
 
 \subsection{Test Kitchen}
@@ -65,7 +67,7 @@ Finished tests in 0.002407s, 415.5347 tests/s, 415.5347 assertions/s.
 -----> Kitchen is finished. (1m27.97s)
 \end{lstlisting}
 
-As you can see all works.
+As you can see, minitest doesn't have additional helpers, like have serverspec (\inline{be_listening}, \inline{be_running}, etc). What is why let's consider second way of using it.
 
 \subsection{Minitest Chef Handler}
 
@@ -108,9 +110,42 @@ suites:
       - recipe[minitest-handler]
 \end{lstlisting}
 
-And run our tests:
+Next we should write some tests. Let's create folder to its:
 
-\begin{lstlisting}[label=lst:testing-minitest6]
+\begin{lstlisting}[language=Bash,label=lst:testing-minitest7]
+$ mkdir -p files/default/test
+\end{lstlisting}
+
+And add some tests to cover default recipe:
+
+\begin{lstlisting}[label=lst:testing-minitest8,title=my-server-cloud/site-cookbooks/my\_cool\_app/files/default/test/default\_test.rb]
+require 'minitest/spec'
+
+describe_recipe 'my_cool_app::default' do
+
+  it "install ntp package" do
+    package('ntp').must_be_installed
+  end
+
+  it "install git package" do
+    if "ubuntu" == node['platform'] && node['platform_version'].to_f <= 10.04
+      pack = "git-core"
+    else
+      pack = "git"
+    end
+    package(pack).must_be_installed
+  end
+
+  it "nginx must running" do
+    service("nginx").must_be_running
+  end
+
+end
+\end{lstlisting}
+
+Finally run our chef-client by Test Kitchen <<converge>> command:
+
+\begin{lstlisting}[label=lst:testing-minitest9]
 $ kitchen converge default-ubuntu-1204
 ...
 Running handlers:
@@ -124,4 +159,4 @@ recipe::my_cool_app::default#test_0001_install ntp package = 0.08 s = .
 recipe::my_cool_app::default#test_0003_nginx must running = 0.09 s = .
 \end{lstlisting}
 
-As you can see, it is very simple.
+As a result, after launching all recipes in \inline{run_list}, last recipe \inline{minitest-handler::default} run minitest to check status of the node.

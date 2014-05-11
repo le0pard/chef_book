@@ -2,6 +2,20 @@
 
 \href{https://github.com/bbatsov/rubocop}{RuboCop} is a Ruby static code analyzer. Out of the box it will enforce many of the guidelines outlined in the community \href{https://github.com/bbatsov/ruby-style-guide}{Ruby Style Guide}.
 
+\subsubsection{Example}
+
+First we should add this gem in Gemfile:
+
+\begin{lstlisting}[label=lst:testing-test-kitchen1]
+source 'https://rubygems.org'
+
+gem 'rubocop', require: false
+\end{lstlisting}
+
+And you should to execute \inline{bundle} command to install this gems.
+
+After this you can use command line tool <<rubocop>> to check your Ruby code by community style guide:
+
 \begin{lstlisting}[language=Bash,label=lst:testing-robocop1]
 $ rubocop
 Inspecting 24 files
@@ -33,3 +47,4 @@ end
 24 files inspected, 229 offenses detected
 \end{lstlisting}
 
+As you can see, this code contain many problems in Ruby style, which can be fixed.
