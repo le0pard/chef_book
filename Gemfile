@@ -6,7 +6,7 @@ gem 'middleman-favicon-maker', '>= 3.5' # Generate favicon files in various size
 gem 'middleman-minify-html' # min html
 gem 'middleman-deploy' # Deploy site
 # css
-gem 'sprockets', '2.8.0'
+gem 'sprockets'
 gem 'sass'
 gem 'compass'
 # UTILS
