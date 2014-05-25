@@ -72,7 +72,7 @@ $success-color: #7b8899;
 // $shiny-edge-active-color: rgba(#000, .2);
 
 // Media Query Ranges
-/*
+
 $small-range: (0em, 40em);
 $medium-range: (40.063em, 64em);
 $large-range: (64.063em, 90em);
@@ -98,7 +98,7 @@ $xlarge-only: "#{$screen} and (min-width:#{lower-bound($xlarge-range)}) and (max
 
 $xxlarge-up: "#{$screen} and (min-width:#{lower-bound($xxlarge-range)})";
 $xxlarge-only: "#{$screen} and (min-width:#{lower-bound($xxlarge-range)}) and (max-width:#{upper-bound($xxlarge-range)})";
-*/
+
 
 // Legacy
 // $small: $medium-up;
