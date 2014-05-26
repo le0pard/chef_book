@@ -16,12 +16,12 @@ As you read from previous sections of book, attributes can be defined in node, r
 Attribute types can be any of the following:
 
 \begin{itemize}
-  \item \inline{default} - attribute is automatically reset at the start of every chef-client run and has the lowest attribute precedence
-  \item \inline{force_default} - attribute is used to ensure that an attribute defined in a cookbook (by an attribute file or by a recipe) takes precedence over a default attribute set by a role or an environment
-  \item \inline{normal} - attribute is a setting that persists on the target system and is never reset during a chef-client run. A normal attribute has a higher attribute precedence than a default attribute
-  \item \inline{override} - attribute is automatically reset at the start of every chef-client run and has a higher attribute precedence than default, force\_default, and normal attributes. An override attribute is most often specified in a recipe, but can be specified in an attribute file, for a role, and/or for an environment
-  \item \inline{force_override} - attribute is used to ensure that an attribute defined in a cookbook (by an attribute file or by a recipe) takes precedence over an override attribute set by a role or an environment
-  \item \inline{automatic} - attribute contains data that is identified by Ohai at the beginning of every chef-client run. An automatic attribute cannot be modified and always has the highest attribute precedence
+  \item \inline!default! - attribute is automatically reset at the start of every chef-client run and has the lowest attribute precedence
+  \item \inline!force_default! - attribute is used to ensure that an attribute defined in a cookbook (by an attribute file or by a recipe) takes precedence over a default attribute set by a role or an environment
+  \item \inline!normal! - attribute is a setting that persists on the target system and is never reset during a chef-client run. A normal attribute has a higher attribute precedence than a default attribute
+  \item \inline!override! - attribute is automatically reset at the start of every chef-client run and has a higher attribute precedence than default, force\_default, and normal attributes. An override attribute is most often specified in a recipe, but can be specified in an attribute file, for a role, and/or for an environment
+  \item \inline!force_override! - attribute is used to ensure that an attribute defined in a cookbook (by an attribute file or by a recipe) takes precedence over an override attribute set by a role or an environment
+  \item \inline!automatic! - attribute contains data that is identified by Ohai at the beginning of every chef-client run. An automatic attribute cannot be modified and always has the highest attribute precedence
 \end{itemize}
 
 At the beginning of a chef-client run, all default, override, and automatic attributes are reset. The chef-client rebuilds them using data collected by Ohai at the beginning of the chef-client run and by attributes that are defined in cookbooks, roles, and environments. Normal attributes are never reset. All attributes are then merged and applied to the node according to attribute precedence. At the conclusion of the chef-client run, all default, override, and automatic attributes disappear, leaving only a collection of normal attributes that will persist until the next chef-client run.
@@ -31,15 +31,15 @@ At the beginning of a chef-client run, all default, override, and automatic attr
 An automatic attribute is a specific detail about a node, such as an IP address, a host name, a list of loaded kernel modules, and so on. Automatic attributes are detected by Ohai and are then used by the chef-client to ensure that these attribute are handled properly during every chef-client run. The most commonly accessed automatic attributes are:
 
 \begin{itemize}
-  \item \inline{node['platform']} - the platform on which a node is running. This attribute helps determine which providers will be used
-  \item \inline{node['platform_version']} - the version of the platform. This attribute helps determine which providers will be used
-  \item \inline{node['ipaddress']} - the IP address for a node. If the node has a default route, this is the IPV4 address for the interface. If the node does not have a default route, the value for this attribute should be nil. The IP address for default route is the recommended default value
-  \item \inline{node['macaddress']} - the MAC address for a node, determined by the same interface that detects the <<node['ipaddress']>>
-  \item \inline{node['fqdn']} - the fully qualified domain name for a node. This is used as the name of a node unless otherwise set
-  \item \inline{node['hostname']} - the host name for the nod
-  \item \inline{node['domain']} - the domain for the node
-  \item \inline{node['recipes']} - a list of recipes associated with a node (and part of that node’s run-list)
-  \item \inline{node['roles']} - a list of roles associated with a node (and part of that node’s run-list)
+  \item \inline!node['platform']! - the platform on which a node is running. This attribute helps determine which providers will be used
+  \item \inline!node['platform_version']! - the version of the platform. This attribute helps determine which providers will be used
+  \item \inline!node['ipaddress']! - the IP address for a node. If the node has a default route, this is the IPV4 address for the interface. If the node does not have a default route, the value for this attribute should be nil. The IP address for default route is the recommended default value
+  \item \inline!node['macaddress']! - the MAC address for a node, determined by the same interface that detects the <<node['ipaddress']>>
+  \item \inline!node['fqdn']! - the fully qualified domain name for a node. This is used as the name of a node unless otherwise set
+  \item \inline!node['hostname']! - the host name for the nod
+  \item \inline!node['domain']! - the domain for the node
+  \item \inline!node['recipes']! - a list of recipes associated with a node (and part of that node’s run-list)
+  \item \inline!node['roles']! - a list of roles associated with a node (and part of that node’s run-list)
 \end{itemize}
 
 The list of automatic attributes that are collected by Ohai at the start of each chef-client run vary from organization to organization, and will often vary between the various server types being configured and the platforms on which those servers are run. All attributes collected by Ohai are unmodifiable by the chef-client.
@@ -49,21 +49,21 @@ The list of automatic attributes that are collected by Ohai at the start of each
 Attribute types can be any of the following:
 
 \begin{enumerate}
-  \item A \inline{default} attribute located in a cookbook attribute file
-  \item A \inline{default} attribute located in a recipe
-  \item A \inline{default} attribute located in an environment
-  \item A \inline{default} attribute located in role
-  \item A \inline{force_default} attribute located in a cookbook attribute file
-  \item A \inline{force_default} attribute located in a recipe
-  \item A \inline{normal} attribute located in a cookbook attribute file
-  \item A \inline{normal} attribute located in a recipe
-  \item An \inline{override} attribute located in a cookbook attribute file
-  \item An \inline{override} attribute located in a recipe
-  \item An \inline{override} attribute located in a role
-  \item An \inline{override} attribute located in an environment
-  \item A \inline{force_override} attribute located in a cookbook attribute file
-  \item A \inline{force_override} attribute located in a recipe
-  \item An \inline{automatic} attribute identified by Ohai at the start of the chef-client run
+  \item A \inline!default! attribute located in a cookbook attribute file
+  \item A \inline!default! attribute located in a recipe
+  \item A \inline!default! attribute located in an environment
+  \item A \inline!default! attribute located in role
+  \item A \inline!force_default! attribute located in a cookbook attribute file
+  \item A \inline!force_default! attribute located in a recipe
+  \item A \inline!normal! attribute located in a cookbook attribute file
+  \item A \inline!normal! attribute located in a recipe
+  \item An \inline!override! attribute located in a cookbook attribute file
+  \item An \inline!override! attribute located in a recipe
+  \item An \inline!override! attribute located in a role
+  \item An \inline!override! attribute located in an environment
+  \item A \inline!force_override! attribute located in a cookbook attribute file
+  \item A \inline!force_override! attribute located in a recipe
+  \item An \inline!automatic! attribute identified by Ohai at the start of the chef-client run
 \end{enumerate}
 
 where the last attribute in the list is the one that is applied to the node.

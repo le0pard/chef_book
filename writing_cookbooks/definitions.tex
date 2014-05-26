@@ -9,13 +9,13 @@ A definition is used to declare resources so they can be added to the resource c
   \item An action does not need to be sent directly to a resource (when it does, it should be sent to a provider)
 \end{itemize}
 
-In our \inline{my_cool_app} cookbook we are using \inline{nginx_site} definition from nginx cookbook.
+In our \inline!my_cool_app! cookbook we are using \inline!nginx_site! definition from nginx cookbook.
 
 Right now definitions continue working in Chef, but better to use LWRP (or HWRP) instead definition (in chapter <<\ref{sec:testing-foodcritic}~\nameref{sec:testing-foodcritic}>> you will see warning about this).
 
 \subsection{Example}
 
-Let's create definition in our \inline{my_cool_app} cookbook. We will move our nginx conf creation into definition. Our code:
+Let's create definition in our \inline!my_cool_app! cookbook. We will move our nginx conf creation into definition. Our code:
 
 \begin{lstlisting}[label=lst:cookbook-definitions-default1,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
 # create nginx config from temlate nginx.conf.erb
@@ -29,7 +29,7 @@ end
 nginx_site "#{node['my_cool_app']['name']}.conf"
 \end{lstlisting}
 
-we moved to definition \inline{enable_web_site}:
+we moved to definition \inline!enable_web_site!:
 
 \begin{lstlisting}[label=lst:cookbook-definitions-enable-site,title=my-server-cloud/site-cookbooks/my\_cool\_app/definitions/enable\_web\_site.rb]
 define :enable_web_site, :enable => true, :template => "site.conf.erb" do
@@ -51,7 +51,7 @@ define :enable_web_site, :enable => true, :template => "site.conf.erb" do
 end
 \end{lstlisting}
 
-And now we can replace code in~\ref{lst:cookbook-definitions-default1} by call of \inline{enable_web_site}:
+And now we can replace code in~\ref{lst:cookbook-definitions-default1} by call of \inline!enable_web_site!:
 
 \begin{lstlisting}[label=lst:cookbook-definitions-default2,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
 # enable website

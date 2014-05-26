@@ -13,7 +13,7 @@ gem 'rspec-expectations'
 gem 'leibniz'
 \end{lstlisting}
 
-And you should to execute \inline{bundle} command to install this gem.
+And you should to execute \inline!bundle! command to install this gem.
 
 Next we should create directory for our tests:
 
@@ -22,14 +22,14 @@ $ mkdir -p features/step_definitions
 $ mkdir -p features/step_definitions/support
 \end{lstlisting}
 
-And require needed libs in \inline{features/step_definitions/support/env.rb} file:
+And require needed libs in \inline!features/step_definitions/support/env.rb! file:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-cucumber-spec3]
 require 'leibniz'
 require 'faraday'
 \end{lstlisting}
 
-Now we should create file, which will contain tests definitions. Let's call it \inline{features/working_web_page.feature}:
+Now we should create file, which will contain tests definitions. Let's call it \inline!features/working_web_page.feature!:
 
 \begin{lstlisting}[label=lst:testing-cucumber-spec4]
 Feature: Customer can use my cool web app
@@ -105,7 +105,7 @@ just make sure a file with the appropriate file extension
 exists where cucumber looks for step definitions.
 \end{lstlisting}
 
-As you can see, we dont have any line of real tests. Let's add tests in file \inline{features/step_definitions/working_web_page.rb}:
+As you can see, we dont have any line of real tests. Let's add tests in file \inline!features/step_definitions/working_web_page.rb!:
 
 \begin{lstlisting}[label=lst:testing-cucumber-spec6]
 Given(/^I have provisioned the following infrastructure:$/) do |specification|

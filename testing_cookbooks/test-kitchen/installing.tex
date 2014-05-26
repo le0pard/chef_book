@@ -13,7 +13,7 @@ gem 'test-kitchen'
 gem 'kitchen-vagrant'
 \end{lstlisting}
 
-And you should to execute \inline{bundle} command to install this gems. We can check what kitchen installed:
+And you should to execute \inline!bundle! command to install this gems. We can check what kitchen installed:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen2]
 $ kitchen version
@@ -48,9 +48,9 @@ $ kitchen init
     create  test/integration/default
 \end{lstlisting}
 
-What's going on here? The \inline{kitchen init} subcommand will create an initial configuration file for Test Kitchen called \inline{.kitchen.yml}. A few directories were created but these are only a convenience – you don't strictly need <<test/integration/default>> in your project. You can see that you have a \inline{.gitignore} file in your project's root which will tell Git to never commit a directory called \inline{.kitchen} and something called \inline{.kitchen.local.yml}. Finally, a gem called \inline{kitchen-vagrant} was installed. By itself Test Kitchen can't do very much. It needs one or more Drivers which are responsible for managing the virtual machines we need for testing. At present there are many different Test Kitchen Drivers but we're going to stick with the \href{https://github.com/opscode/kitchen-vagrant}{Kitchen Vagrant Driver} for now.
+What's going on here? The \inline!kitchen init! subcommand will create an initial configuration file for Test Kitchen called \inline!.kitchen.yml!. A few directories were created but these are only a convenience – you don't strictly need <<test/integration/default>> in your project. You can see that you have a \inline!.gitignore! file in your project's root which will tell Git to never commit a directory called \inline!.kitchen! and something called \inline!.kitchen.local.yml!. Finally, a gem called \inline!kitchen-vagrant! was installed. By itself Test Kitchen can't do very much. It needs one or more Drivers which are responsible for managing the virtual machines we need for testing. At present there are many different Test Kitchen Drivers but we're going to stick with the \href{https://github.com/opscode/kitchen-vagrant}{Kitchen Vagrant Driver} for now.
 
-Let's turn our attention to the \inline{.kitchen.yml} file. While Test Kitchen may have created the initial file automatically, it's expected that you will read and edit this file. Opening this file in your editor of choice we see something like the following:
+Let's turn our attention to the \inline!.kitchen.yml! file. While Test Kitchen may have created the initial file automatically, it's expected that you will read and edit this file. Opening this file in your editor of choice we see something like the following:
 
 \begin{lstlisting}[label=lst:testing-test-kitchen4]
 ---
@@ -71,16 +71,16 @@ suites:
     attributes:
 \end{lstlisting}
 
-Very briefly we can cover the 4 main sections you're likely to find in a \inline{.kitchen.yml} file:
+Very briefly we can cover the 4 main sections you're likely to find in a \inline!.kitchen.yml! file:
 
 \begin{itemize}
-  \item \inline{driver}: This is where we configure the behaviour of the Kitchen Driver - the component that is responsible for creating a machine that we'll use to test our cookbook. Here we set up basics like credentials, ssh usernames, sudo requirements, etc. Each Driver is reponsible for requiring and using the configuration here. Under this section we have \inline{driver.name}: This tells Test Kitchen that we want to use the \inline{kitchen-vagrant} driver by default unless otherwise specified.
-  \item \inline{provisioner}: This tells Test Kitchen how to run Chef, to apply the code in our cookbook to the machine under test. The default and simplest approach is to use \inline{chef-solo}, but other options are available, and ultimately Test Kitchen doesn't care how the infrastructure is built - it could theoretically be with Puppet, Ansible, or Perl for all it cares.
-  \item \inline{platforms}: This is a list of operation systems on which we want to run our code. Note that the operating system's version, architecture, cloud environment, etc. might be relevant to what Test Kitchen considers a Platform.
-  \item \inline{suites}: This section defines what we want to test. It includes the Chef run-list and any node attribute setups that we want run on each Platform above. For example, we might want to test the MySQL client cookbook code seperately from the server cookbook code for maximum isolation.
+  \item \inline!driver!: This is where we configure the behaviour of the Kitchen Driver - the component that is responsible for creating a machine that we'll use to test our cookbook. Here we set up basics like credentials, ssh usernames, sudo requirements, etc. Each Driver is reponsible for requiring and using the configuration here. Under this section we have \inline!driver.name!: This tells Test Kitchen that we want to use the \inline!kitchen-vagrant! driver by default unless otherwise specified.
+  \item \inline!provisioner!: This tells Test Kitchen how to run Chef, to apply the code in our cookbook to the machine under test. The default and simplest approach is to use \inline!chef-solo!, but other options are available, and ultimately Test Kitchen doesn't care how the infrastructure is built - it could theoretically be with Puppet, Ansible, or Perl for all it cares.
+  \item \inline!platforms!: This is a list of operation systems on which we want to run our code. Note that the operating system's version, architecture, cloud environment, etc. might be relevant to what Test Kitchen considers a Platform.
+  \item \inline!suites!: This section defines what we want to test. It includes the Chef run-list and any node attribute setups that we want run on each Platform above. For example, we might want to test the MySQL client cookbook code seperately from the server cookbook code for maximum isolation.
 \end{itemize}
 
-Let's say for argument's sake that we only care about running our Chef cookbook on Ubuntu 12.04 distributions. In that case, we can edit the \inline{.kitchen.yml} file so that the list of platforms has only one entry like so:
+Let's say for argument's sake that we only care about running our Chef cookbook on Ubuntu 12.04 distributions. In that case, we can edit the \inline!.kitchen.yml! file so that the list of platforms has only one entry like so:
 
 \begin{lstlisting}[label=lst:testing-test-kitchen5]
 ---
@@ -100,7 +100,7 @@ suites:
     attributes:
 \end{lstlisting}
 
-To see the results of our work, let's run the \inline{kitchen list} subcommand:
+To see the results of our work, let's run the \inline!kitchen list! subcommand:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen6]
 $ kitchen list
@@ -108,7 +108,7 @@ Instance             Driver   Provisioner  Last Action
 default-ubuntu-1204  Vagrant  ChefSolo     <Not Created>
 \end{lstlisting}
 
-So what's this <<default-ubuntu-1204>> thing and what's an <<Instance>>? A Test Kitchen Instance is a pairwise combination of a Suite and a Platform as laid out in your \inline{.kitchen.yml} file. Test Kitchen has auto-named your only instance by combining the Suite name (<<default>>) and the Platform name (<<ubuntu-12.04>>) into a form that is safe for DNS and hostname records, namely <<default-ubuntu-1204>>.
+So what's this <<default-ubuntu-1204>> thing and what's an <<Instance>>? A Test Kitchen Instance is a pairwise combination of a Suite and a Platform as laid out in your \inline!.kitchen.yml! file. Test Kitchen has auto-named your only instance by combining the Suite name (<<default>>) and the Platform name (<<ubuntu-12.04>>) into a form that is safe for DNS and hostname records, namely <<default-ubuntu-1204>>.
 
 Okay, let's spin this Instance up to see what happens. Test Kitchen calls this the Create Action. We're going to be painfully explicit and ask Test Kitchen to only create the <<default-ubuntu-1204>> instance:
 
@@ -135,7 +135,7 @@ $ kitchen create default-ubuntu-1204
 -----> Kitchen is finished. (3m57.66s)
 \end{lstlisting}
 
-If you are a Vagrant user then the line containing \inline{vagrant up --no-provision} will look familiar. Let's check the status of our instance now:
+If you are a Vagrant user then the line containing \inline!vagrant up --no-provision! will look familiar. Let's check the status of our instance now:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen8]
 $ kitchen list

@@ -3,7 +3,7 @@
 
 The <<.chef>> directory that is used to store .pem files and the knife.rb file.
 
-For Chef Solo in this directory mostly contained only knife.rb file. A knife.rb file is used to specify the chef-repo-specific configuration details for Knife. This file is the default configuration file and is loaded every time this executable is run. The configuration file is located at: \inline{~/.chef/knife.rb}. If a knife.rb file is present in the \inline{.chef/knife.rb} directory in the chef-repo, the settings contained within that file will override the default configuration settings.
+For Chef Solo in this directory mostly contained only knife.rb file. A knife.rb file is used to specify the chef-repo-specific configuration details for Knife. This file is the default configuration file and is loaded every time this executable is run. The configuration file is located at: \inline!~/.chef/knife.rb!. If a knife.rb file is present in the \inline!.chef/knife.rb! directory in the chef-repo, the settings contained within that file will override the default configuration settings.
 
 In example, knife.rb have such content:
 
@@ -21,10 +21,10 @@ knife[:berkshelf_path] = "cookbooks"
 Let's look at the meaning of these options:
 
 \begin{itemize}
-  \item \inline{cookbook_path} - the sub-directory for cookbooks on the chef-client
-  \item \inline{node_path} - the sub-directory for nodes on the chef-client
-  \item \inline{role_path} - the sub-directory for roles on the chef-client
-  \item \inline{environment_path} - the sub-directory for environments on the chef-client
-  \item \inline{data_bag_path} - the sub-directory for Data Bags on the chef-client
-  \item \inline{knife[:berkshelf_path]} - as you remember, knife-solo have integration with Berkshelf and Librarian-Chef. By this option we set directory in which knife will install vendor cookbooks from Berksfile before <<cook>> node
+  \item \inline!cookbook_path! - the sub-directory for cookbooks on the chef-client
+  \item \inline!node_path! - the sub-directory for nodes on the chef-client
+  \item \inline!role_path! - the sub-directory for roles on the chef-client
+  \item \inline!environment_path! - the sub-directory for environments on the chef-client
+  \item \inline!data_bag_path! - the sub-directory for Data Bags on the chef-client
+  \item \inline!knife[:berkshelf_path]! - as you remember, knife-solo have integration with Berkshelf and Librarian-Chef. By this option we set directory in which knife will install vendor cookbooks from Berksfile before <<cook>> node
 \end{itemize}

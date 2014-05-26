@@ -21,7 +21,7 @@ gem 'kitchen-vagrant'
 gem 'chef-zero'
 \end{lstlisting}
 
-And you should to execute \inline{bundle} command to install this gem. We can check what Chef Zero installed:
+And you should to execute \inline!bundle! command to install this gem. We can check what Chef Zero installed:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-chef-zero2]
 $ chef-zero
@@ -32,7 +32,7 @@ $ chef-zero
 >> Stopping Chef Zero ...
 \end{lstlisting}
 
-Command \inline{chef-zero} start Chef Zero server in foreground. This is fully functional (empty) Chef Server. To use it in your own repository, create a \inline{knife.rb} like so:
+Command \inline!chef-zero! start Chef Zero server in foreground. This is fully functional (empty) Chef Server. To use it in your own repository, create a \inline!knife.rb! like so:
 
 \begin{lstlisting}[label=lst:testing-chef-zero3]
 chef_server_url   'http://127.0.0.1:8889'
@@ -42,11 +42,11 @@ client_key        'path_to_any_pem_file.pem'
 
 And use knife like you normally would.
 
-Since Chef Zero does no authentication, any \inline{.pem} file will do. The client just needs something to sign requests with (which will be ignored on the server). Even though it's ignored, the \inline{.pem} must still be a valid format.
+Since Chef Zero does no authentication, any \inline!.pem! file will do. The client just needs something to sign requests with (which will be ignored on the server). Even though it's ignored, the \inline!.pem! must still be a valid format.
 
 If you will stop the Chef Zero server than all the data is gone.
 
-Run \inline{chef-zero --help} to see a list of the supported flags and options:
+Run \inline!chef-zero --help! to see a list of the supported flags and options:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-chef-zero4]
 $ chef-zero --help
@@ -66,7 +66,7 @@ Usage: chef-zero [ARGS]
 
 By default, ChefSpec runs in Chef Solo mode, but you can ask ChefSpec to create an in-memory Chef Server during testing using ChefZero. This is especially helpful if you need to support searching or data bags.
 
-To use the ChefSpec server, simply require the module in your \inline{spec_helper}:
+To use the ChefSpec server, simply require the module in your \inline!spec_helper!:
 
 \begin{lstlisting}[label=lst:testing-chef-zero5]
 # spec_helper.rb
@@ -74,7 +74,7 @@ require 'chefspec'
 require 'chefspec/server'
 \end{lstlisting}
 
-This will automatically create a Chef server, synchronize all the cookbooks in your \inline{cookbook_path}, and wire all the internals of Chef together. Recipe calls to \inline{search}, \inline{data_bag} and \inline{data_bag_item} will now query the ChefSpec server.
+This will automatically create a Chef server, synchronize all the cookbooks in your \inline!cookbook_path!, and wire all the internals of Chef together. Recipe calls to \inline!search!, \inline!data_bag! and \inline!data_bag_item! will now query the ChefSpec server.
 
 The ChefSpec server includes a collection of helpful DSL methods for populating data into the Chef Server.
 
@@ -109,7 +109,7 @@ Create a node:
 ChefSpec::Server.create_node('my_node', { run_list: ['...'] })
 \end{lstlisting}
 
-You may also be interested in the \inline{stub_node} macro, which will create a new \inline{Chef::Node} object and accepts the same parameters as the Chef Runner and a Fauxhai object:
+You may also be interested in the \inline!stub_node! macro, which will create a new \inline!Chef::Node! object and accepts the same parameters as the Chef Runner and a Fauxhai object:
 
 \begin{lstlisting}[label=lst:testing-chef-zero10]
 www = stub_node(platform: 'ubuntu', version: '12.04') do |node|
@@ -134,7 +134,7 @@ let(:chef_run) { ChefSpec::Runner.new.converge(described_recipe, 'role[my_role]'
 
 \subsubsection{Example}
 
-Let's create recipe \inline{haproxy} in our cookbook:
+Let's create recipe \inline!haproxy! in our cookbook:
 
 \begin{lstlisting}[label=lst:testing-chef-zero12]
 # install and setup haproxy
@@ -222,7 +222,7 @@ And default attributes for it:
 default['my_cool_app']['haproxy']['app_server_role']       = 'web'
 \end{lstlisting}
 
-In our recipe used template \inline{haproxy.cfg.erb}:
+In our recipe used template \inline!haproxy.cfg.erb!:
 
 \begin{lstlisting}[label=lst:testing-chef-zero14]
 global
@@ -251,7 +251,7 @@ defaults
 <% end %>
 \end{lstlisting}
 
-As you can see, this recipe install and configure haproxy. It using \inline{search} command to get all nodes with role \inline{web} (by default attributes) and chef environment. After this it collect from all selected nodes hostname and ip address. This data is used to create config for haproxy. This is very usefull way, because if you will add or remove node with role \inline{web} from Chef server, it will automatically update haproxy config. But because we using \inline{search} command, we need test our cookbook with Chef Zero. Here how it look our tests:
+As you can see, this recipe install and configure haproxy. It using \inline!search! command to get all nodes with role \inline!web! (by default attributes) and chef environment. After this it collect from all selected nodes hostname and ip address. This data is used to create config for haproxy. This is very usefull way, because if you will add or remove node with role \inline!web! from Chef server, it will automatically update haproxy config. But because we using \inline!search! command, we need test our cookbook with Chef Zero. Here how it look our tests:
 
 \begin{lstlisting}[label=lst:testing-chef-zero15]
 require 'spec_helper'
@@ -352,7 +352,7 @@ As a result, haproxy recipe fully covered by Chefspec and Chef Zero.
 
 \subsection{Using with Test Kitchen}
 
-To use Chef Zero with test kitchen, you should change \inline{provisioner} type in \inline{.kitchen.yml}:
+To use Chef Zero with test kitchen, you should change \inline!provisioner! type in \inline!.kitchen.yml!:
 
 \begin{lstlisting}[label=lst:testing-chef-zero17]
 ---
@@ -390,7 +390,7 @@ suites:
       - centos-6.4
 \end{lstlisting}
 
-As you can see, we changed \inline{provisioner name} to \inline{chef_zero}. Also we set \inline{roles_path}, \inline{environments_path} and \inline{nodes_path}. This folders will used to upload to Chef Zero test data - roles, environments and nodes. And we set \inline{client_rb} attribute, which allow add attributes for chef client. Here we set environment as <<test>>.
+As you can see, we changed \inline!provisioner name! to \inline!chef_zero!. Also we set \inline!roles_path!, \inline!environments_path! and \inline!nodes_path!. This folders will used to upload to Chef Zero test data - roles, environments and nodes. And we set \inline!client_rb! attribute, which allow add attributes for chef client. Here we set environment as <<test>>.
 
 Next we create new test suite, called <<haproxy>>. Let's check it:
 

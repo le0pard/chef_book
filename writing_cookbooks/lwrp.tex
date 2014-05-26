@@ -54,11 +54,11 @@ And the following files would be part of the <<providers/>> directory:
   \hline
 \end{tabular}
 
-Let's add in our <<my\_cool\_app>> LWRP, which will add in \inline{/etc/ssh/ssh_known_hosts} host.
+Let's add in our <<my\_cool\_app>> LWRP, which will add in \inline!/etc/ssh/ssh_known_hosts! host.
 
 \subsection{Resources}
 
-First of all we should create direcotry <<resources>> and add to it \inline{know_host.rb} file with content:
+First of all we should create direcotry <<resources>> and add to it \inline!know_host.rb! file with content:
 
 \begin{lstlisting}[label=lst:cookbook-lwrp1,title=my-server-cloud/site-cookbooks/my\_cool\_app/resources/know\_host.rb]
 actions :create, :delete
@@ -76,9 +76,9 @@ def initialize(*args)
 end
 \end{lstlisting}
 
-Let's take it line by line. The first line specifies the allowed actions. Actions are what your resource can do, e.g. start, stop, create, delete, etc. In this case, you can \inline{:create} or \inline{:delete} known host. The next line defines the \inline{default_action} for our resource, in this case \inline{:create}. If you don't specify an action when you use the resource in a recipe, it will default to creating a known host, which is what you probably want. A general philosophy of Chef is to define intelligent or <<sane>> defaults.
+Let's take it line by line. The first line specifies the allowed actions. Actions are what your resource can do, e.g. start, stop, create, delete, etc. In this case, you can \inline!:create! or \inline!:delete! known host. The next line defines the \inline!default_action! for our resource, in this case \inline!:create!. If you don't specify an action when you use the resource in a recipe, it will default to creating a known host, which is what you probably want. A general philosophy of Chef is to define intelligent or <<sane>> defaults.
 
-Lines 4-7 define attributes, or properties of the known host resource we are creating. Line 4 defines an \inline{:host} attribute. Its \inline{:name_attribute} is true, which means that this attribute will be set to the string between \inline{my_cool_app_know_host} and \inline{do}. Example:
+Lines 4-7 define attributes, or properties of the known host resource we are creating. Line 4 defines an \inline!:host! attribute. Its \inline!:name_attribute! is true, which means that this attribute will be set to the string between \inline!my_cool_app_know_host! and \inline!do!. Example:
 
 \begin{lstlisting}[label=lst:cookbook-lwrp2]
 my_cool_app_know_host "Add github host" do
@@ -90,11 +90,11 @@ my_cool_app_know_host 'github.com' do
 end
 \end{lstlisting}
 
-In the second example above, the \inline{:host} attribute wll be set to <<github.com>>.
+In the second example above, the \inline!:host! attribute wll be set to <<github.com>>.
 
-Also, on line 4, we are definining the \inline{kind_of} validation parameter to tell the resource which kind of data we should expect (in this case, a string), whether this attribute is required (yes). Line 5 defines a \inline{:key} attribute, which is an optional string with no default. Line 6 defines a \inline{:port} attribute, a Ruby Fixnum (i.e. an integer) with a default of 22, which is the default when you create a known host. Line 7 defines a \inline{:known_hosts_file} attribute, a string with a default of \inline{/etc/ssh/ssh_known_hosts}, which is the default file with known hosts for ssh client.
+Also, on line 4, we are definining the \inline!kind_of! validation parameter to tell the resource which kind of data we should expect (in this case, a string), whether this attribute is required (yes). Line 5 defines a \inline!:key! attribute, which is an optional string with no default. Line 6 defines a \inline!:port! attribute, a Ruby Fixnum (i.e. an integer) with a default of 22, which is the default when you create a known host. Line 7 defines a \inline!:known_hosts_file! attribute, a string with a default of \inline!/etc/ssh/ssh_known_hosts!, which is the default file with known hosts for ssh client.
 
-For example, the \inline{cron_d} lightweight resource (found in the cron cookbook) can be used to manage files located in \inline{/etc/cron.d}:
+For example, the \inline!cron_d! lightweight resource (found in the cron cookbook) can be used to manage files located in \inline!/etc/cron.d!:
 
 \begin{lstlisting}[label=lst:cookbook-lwrp3]
 actions :create, :delete
@@ -118,17 +118,17 @@ attribute :shell, :kind_of => [String, NilClass]
 where
 
 \begin{itemize}
-  \item the \inline{actions} allow a recipe to manage entries in a crontab file (create entry, delete entry)
-  \item \inline{:create} is the default action
-  \item \inline{:minute}, \inline{:hour}, \inline{:day}, \inline{:month}, and \inline{:weekday} are the collection of attributes used to schedule a cron job, assigned a default value of <<*>>
-  \item \inline{:command} is the command that will be run (and also required)
-  \item \inline{:user} is the user by which the command is run
-  \item \inline{:mailto}, \inline{:path}, \inline{:home}, and \inline{:shell} are optional environment variables that do not have default value, which each being defined as an array that supports the String and NilClass Ruby classes
+  \item the \inline!actions! allow a recipe to manage entries in a crontab file (create entry, delete entry)
+  \item \inline!:create! is the default action
+  \item \inline!:minute!, \inline!:hour!, \inline!:day!, \inline!:month!, and \inline!:weekday! are the collection of attributes used to schedule a cron job, assigned a default value of <<*>>
+  \item \inline!:command! is the command that will be run (and also required)
+  \item \inline!:user! is the user by which the command is run
+  \item \inline!:mailto!, \inline!:path!, \inline!:home!, and \inline!:shell! are optional environment variables that do not have default value, which each being defined as an array that supports the String and NilClass Ruby classes
 \end{itemize}
 
 \subsection{Providers}
 
-Now we need to create file \inline{know_host.rb} in <<providers>> directory:
+Now we need to create file \inline!know_host.rb! in <<providers>> directory:
 
 \begin{lstlisting}[label=lst:cookbook-lwrp4,title=my-server-cloud/site-cookbooks/my\_cool\_app/providers/know\_host.rb]
 # Support whyrun
@@ -203,15 +203,15 @@ end
 where:
 
 \begin{itemize}
-  \item \inline{:action_name} corresponds to an action defined by a lightweight resource
-  \item if \inline{@current_resource.exists} is a condition test that is using an instance variable to see if the object already exists on the node; this is an example of a test for idempotence
-  \item If the object already exists, a \inline{@new_resource} already exists - nothing to do. log entry is created
-  \item If the object does not already exists, the resource block is run. This block is a recipe that tells the chef-client what to do. A \inline{@new_resource} created. log entry is created
+  \item \inline!:action_name! corresponds to an action defined by a lightweight resource
+  \item if \inline!@current_resource.exists! is a condition test that is using an instance variable to see if the object already exists on the node; this is an example of a test for idempotence
+  \item If the object already exists, a \inline!@new_resource! already exists - nothing to do. log entry is created
+  \item If the object does not already exists, the resource block is run. This block is a recipe that tells the chef-client what to do. A \inline!@new_resource! created. log entry is created
 \end{itemize}
 
 \subsubsection{current\_resource}
 
-The \inline{current_resource} method is used to represent a resource as it exists on the node at the beginning of the chef-client run. In other words: what the resource is currently. The chef-client compares the resource as it exists on the node to the resource that is created during the chef-client run to determine what steps need to be taken to bring the resource into the desired state. This method is often used as an instance variable (\inline{@current_resource}).
+The \inline!current_resource! method is used to represent a resource as it exists on the node at the beginning of the chef-client run. In other words: what the resource is currently. The chef-client compares the resource as it exists on the node to the resource that is created during the chef-client run to determine what steps need to be taken to bring the resource into the desired state. This method is often used as an instance variable (\inline!@current_resource!).
 
 For example:
 
@@ -231,11 +231,11 @@ action :add do
 end
 \end{lstlisting}
 
-where the \inline{unless} conditional statement checks to make sure the resource doesn't already exist on a node, and then runs a series of commands when it doesn't. If the resource already exists, the log entry would be <<Foo app already exists - nothing to do.>>
+where the \inline!unless! conditional statement checks to make sure the resource doesn't already exist on a node, and then runs a series of commands when it doesn't. If the resource already exists, the log entry would be <<Foo app already exists - nothing to do.>>
 
 \subsubsection{load\_current\_resource}
 
-The \inline{load_current_resource} method is used to find a resource on a node based on a collection of attributes. These attributes are defined in a lightweight resource and are loaded by the chef-client when processing a recipe during a chef-client run. This method will ask the chef-client to look on the node to see if a resource exists with specific matching attributes.
+The \inline!load_current_resource! method is used to find a resource on a node based on a collection of attributes. These attributes are defined in a lightweight resource and are loaded by the chef-client when processing a recipe during a chef-client run. This method will ask the chef-client to look on the node to see if a resource exists with specific matching attributes.
 
 For example:
 
@@ -259,11 +259,11 @@ def load_current_resource
 end
 \end{lstlisting}
 
-In the previous example, if a resource exists with matching attributes, the chef-client does nothing and if a resource does not exist with matching attributes, the chef-client will enforce the state declared in \inline{new_resource}.
+In the previous example, if a resource exists with matching attributes, the chef-client does nothing and if a resource does not exist with matching attributes, the chef-client will enforce the state declared in \inline!new_resource!.
 
 \subsubsection{new\_resource}
 
-The \inline{new_resource} method is used to represent a resource as loaded by the chef-client during the chef-client run. In other words: what the resource should be. The chef-client compares the resource as it exists on the node to the resource that is created during the chef-client run to determine what steps need to be taken to bring the resource into the desired state.
+The \inline!new_resource! method is used to represent a resource as loaded by the chef-client during the chef-client run. In other words: what the resource should be. The chef-client compares the resource as it exists on the node to the resource that is created during the chef-client run to determine what steps need to be taken to bring the resource into the desired state.
 
 For example:
 
@@ -281,11 +281,11 @@ action :delete do
 end
 \end{lstlisting}
 
-where the chef-client checks to see if the file exists, then if the file is writable, and then attempts to delete the resource. \inline{path} is an attribute of the new resource that is defined by the lightweight resource.
+where the chef-client checks to see if the file exists, then if the file is writable, and then attempts to delete the resource. \inline!path! is an attribute of the new resource that is defined by the lightweight resource.
 
 \subsubsection{updated\_by\_last\_action}
 
-The \inline{updated_by_last_action} method is used to notify a lightweight resource that a node was updated successfully. For example, the \inline{cron_d} lightweight resource in the cron cookbook:
+The \inline!updated_by_last_action! method is used to notify a lightweight resource that a node was updated successfully. For example, the \inline!cron_d! lightweight resource in the cron cookbook:
 
 \begin{lstlisting}[label=lst:cookbook-lwrp-dsl-updated]
 action :create do
@@ -313,11 +313,11 @@ action :create do
 end
 \end{lstlisting}
 
-where \inline{t.updated_by_last_action?} uses a variable to check whether a new crontab entry was created.
+where \inline!t.updated_by_last_action?! uses a variable to check whether a new crontab entry was created.
 
 \subsubsection{use\_inline\_resources}
 
-A lightweight resource should be set to inline compile mode by adding the \inline{use_inline_resources} method at the top of the provider. This ensures that notifications work properly across the resource collection. The \inline{use_inline_resources} method was added to the chef-client starting in version 11.0 to address the behavior described below. The \inline{use_inline_resources} method should be considered a requirement for any lightweight resource authored against the 11.0+ versions of the chef-client. This behavior will become the default behavior in an upcoming version of the chef-client.
+A lightweight resource should be set to inline compile mode by adding the \inline!use_inline_resources! method at the top of the provider. This ensures that notifications work properly across the resource collection. The \inline!use_inline_resources! method was added to the chef-client starting in version 11.0 to address the behavior described below. The \inline!use_inline_resources! method should be considered a requirement for any lightweight resource authored against the 11.0+ versions of the chef-client. This behavior will become the default behavior in an upcoming version of the chef-client.
 
 \subsubsection{whyrun\_supported?}
 
@@ -329,11 +329,11 @@ When the chef-client is run in why-run mode, certain assumptions are made:
 
 \begin{itemize}
   \item If the service resource cannot find the appropriate command to verify the status of a service, why-run mode will assume that the command would have been installed by a previous resource and that the service would not be running
-  \item For \inline{not_if} and \inline{only_if} attribute, why-run mode will assume these are commands or blocks that are safe to run. These conditions are not designed to be used to change the state of the system, but rather to help facilitate idempotency for the resource itself. That said, it may be possible that these attributes are being used in a way that modifies the system state
+  \item For \inline!not_if! and \inline!only_if! attribute, why-run mode will assume these are commands or blocks that are safe to run. These conditions are not designed to be used to change the state of the system, but rather to help facilitate idempotency for the resource itself. That said, it may be possible that these attributes are being used in a way that modifies the system state
   \item The closer the current state of the system is to the desired state, the more useful why-run mode will be. For example, if a full run-list is run against a fresh system, that run-list may not be completely correct on the first try, but also that run-list will produce more output than smaller run-list
 \end{itemize}
 
-The \inline{whyrun_supported?} method is used to set a lightweight provider to support why-run mode. The syntax for the \inline{whyrun_supported?} method is as follows:
+The \inline!whyrun_supported?! method is used to set a lightweight provider to support why-run mode. The syntax for the \inline!whyrun_supported?! method is as follows:
 
 \begin{lstlisting}[label=lst:cookbook-lwrp-why-run]
 def whyrun_supported?
@@ -341,11 +341,11 @@ def whyrun_supported?
 end
 \end{lstlisting}
 
-where \inline{whyrun_supported?} is set to true for any lightweight provider that supports using why-run mode. When why-run mode is supported by the a lightweight provider, the \inline{converge_by} method is used to define the strings that are logged by the chef-client when it is run in why-run mode.
+where \inline!whyrun_supported?! is set to true for any lightweight provider that supports using why-run mode. When why-run mode is supported by the a lightweight provider, the \inline!converge_by! method is used to define the strings that are logged by the chef-client when it is run in why-run mode.
 
 \subsubsection{Log entries and rescue}
 
-Use the \inline{Chef::Log} class in a lightweight provider to define log entries that are created during a chef-client run. The syntax for a log message is as follows:
+Use the \inline!Chef::Log! class in a lightweight provider to define log entries that are created during a chef-client run. The syntax for a log message is as follows:
 
 \begin{lstlisting}[label=lst:cookbook-lwrp-logs1]
 Chef::Log.log_type("message")
@@ -354,7 +354,7 @@ Chef::Log.log_type("message")
 where
 
 \begin{itemize}
-  \item \inline{log_type} can be .debug, .info, .warn, .error, or .fatal
+  \item \inline!log_type! can be .debug, .info, .warn, .error, or .fatal
   \item <<message>> is the message that is logged
 \end{itemize}
 
@@ -369,7 +369,7 @@ action :add do
 end
 \end{lstlisting}
 
-where the \inline{Chef::Log} class appends .info as the log type. If the name of the repo was <<foo>>, then the log message would be <<Adding foo repository to /etc/yum.repos.d/foo.repo>>.
+where the \inline!Chef::Log! class appends .info as the log type. If the name of the repo was <<foo>>, then the log message would be <<Adding foo repository to /etc/yum.repos.d/foo.repo>>.
 
 Another example shows two log entries, one that is triggered when a service is being restarted, and then another that is triggered after the service has been restarted:
 
@@ -384,7 +384,7 @@ action :restart do
 end
 \end{lstlisting}
 
-Use the \inline{rescue} clause to make sure that a log message is always provided. For example:
+Use the \inline!rescue! clause to make sure that a log message is always provided. For example:
 
 \begin{lstlisting}[label=lst:cookbook-lwrp-logs4]
 def load_current_resource

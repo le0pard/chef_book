@@ -5,7 +5,7 @@ Ohai is a tool that is used to detect attributes on a node, and then provide the
 
 \subsection{Testing}
 
-As you can see from our node specs, we can set \inline{platform} and \inline{version}, but we can stub additional Ohai attribute by using Fauxhai. Let's look at example:
+As you can see from our node specs, we can set \inline!platform! and \inline!version!, but we can stub additional Ohai attribute by using Fauxhai. Let's look at example:
 
 \begin{lstlisting}[label=lst:testing-fauxhai1]
 require 'chefspec'
@@ -31,9 +31,9 @@ describe 'my_cool_app::default' do
 end
 \end{lstlisting}
 
-As you can see from example, we mock platform, fqdn and cpu numbers from Ohai attributes. And in our recipe we create \inline{/tmp/cpu_count} file, which contain number of cpu on node. By tests we check what this works on different values of Ohai attributes.
+As you can see from example, we mock platform, fqdn and cpu numbers from Ohai attributes. And in our recipe we create \inline!/tmp/cpu_count! file, which contain number of cpu on node. By tests we check what this works on different values of Ohai attributes.
 
-Also we can set node attributes by \inline{ChefSpec::Runner}:
+Also we can set node attributes by \inline!ChefSpec::Runner!:
 
 \begin{lstlisting}[label=lst:testing-fauxhai2,title=my-server-cloud/site-cookbooks/my\_cool\_app/spec/unit/recipes/node\_spec.rb]
 ...

@@ -1,6 +1,6 @@
 \subsection{Running Kitchen Test}
 
-Now it's time to introduce to the \inline{test} meta-action which helps you automate all the previous actions so far into one command. Recall that we currently have our instance in a <<verified>> state. With this in mind, let's run kitchen test:
+Now it's time to introduce to the \inline!test! meta-action which helps you automate all the previous actions so far into one command. Recall that we currently have our instance in a <<verified>> state. With this in mind, let's run kitchen test:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen18]
 $ kitchen test default-ubuntu-1204
@@ -22,20 +22,20 @@ Uploading /tmp/busser/suites/bats/nginx_installed.bats (mode=0755)
 There's only one remaining action left that needs a mention: the Destroy Action which destroys the instance. With this in mind, here's what Test Kitchen is doing in the Test Action:
 
 \begin{itemize}
-  \item Destroys the instance if it exists (\inline{Cleaning up any prior instances of <default-ubuntu-1204>})
-  \item Creates the instance (\inline{Creating <default-ubuntu-1204>})
-  \item Converges the instance (\inline{Converging <default-ubuntu-1204>})
-  \item Sets up Busser and runner plugins on the instance (\inline{Setting up <default-ubuntu-1204>})
-  \item Verifies the instance by running Busser tests (\inline{Verifying <default-ubuntu-1204>})
-  \item Destroys the instance (\inline{Destroying <default-ubuntu-1204>})
+  \item Destroys the instance if it exists (\inline!Cleaning up any prior instances of <default-ubuntu-1204>!)
+  \item Creates the instance (\inline!Creating <default-ubuntu-1204>!)
+  \item Converges the instance (\inline!Converging <default-ubuntu-1204>!)
+  \item Sets up Busser and runner plugins on the instance (\inline!Setting up <default-ubuntu-1204>!)
+  \item Verifies the instance by running Busser tests (\inline!Verifying <default-ubuntu-1204>!)
+  \item Destroys the instance (\inline!Destroying <default-ubuntu-1204>!)
 \end{itemize}
 
 A few details with regards to test:
 
 \begin{itemize}
   \item Test Kitchen will abort the run on the instance at the first sign of trouble. This means that if your Chef run fails then Busser won't be installed and the instance won't be destroyed. This gives you a chance to inspect the state of the instance and fix any issues.
-  \item The behavior of the final destroy action can be overridden if desired. Check out the documentation for the \inline{--destroy} flag using \inline{kitchen help test}.
-  \item The primary use case in mind for this meta-action is in a Continuous Integration environment or a command for developers to run before check in or after a fresh clone. If you're using this in your test-code-verify development cycle it's going to quickly become very slow and frustrating. You're better off running the \inline{converge} and \inline{verify} subcommands in development and save the test subcommand when you need to verify the end-to-end run of your code.
+  \item The behavior of the final destroy action can be overridden if desired. Check out the documentation for the \inline!--destroy! flag using \inline!kitchen help test!.
+  \item The primary use case in mind for this meta-action is in a Continuous Integration environment or a command for developers to run before check in or after a fresh clone. If you're using this in your test-code-verify development cycle it's going to quickly become very slow and frustrating. You're better off running the \inline!converge! and \inline!verify! subcommands in development and save the test subcommand when you need to verify the end-to-end run of your code.
 \end{itemize}
 
 Finally, let's check the status of the instance:
