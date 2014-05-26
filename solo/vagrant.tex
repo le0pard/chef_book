@@ -77,7 +77,7 @@ Setting up chef (11.8.2-1.ubuntu.12.04) ...
 Thank you for installing Chef!
 \end{lstlisting}
 
-We used some options for the \inline{knife prepare} command. \inline{-i} option specify ssh key for mashin, \inline{-N} option specify node name (if it different from host name) and \inline{-p} option specify SSH port. In most cases, this port is 2222, but if you running several mashines from vagrant, it will be different. You can read what port is used for SSH by mashine from output of command \inline{vagrant up}. All this credentials used to login by ssh on the node and install chef client.
+We used some options for the \inline{knife prepare} command. \inline{-i} option specify ssh key for mashine, \inline{-N} option specify node name (if it different from host name) and \inline{-p} option specify SSH port. In most cases, this port is 2222, but if you running several mashines from vagrant, it will be different. You can read what port is used for SSH by mashine from output of command \inline{vagrant up}. All this credentials used to login by ssh on the node and install chef client.
 
 Basically, to run our kitchen on node we are using \inline{knife solo cook} command:
 
