@@ -46,7 +46,7 @@ $ knife ssh "chef_environment:staging" "free -m" -i ../keys/production.pem -x ub
 
 \subsection{Chef-client cookbook}
 
-Sometimes you may want update you servers automatically (instead using \inline!knife ssh!). For example, you just updated new cookbooks, roles and nodes and all nodes should automatically fetch new cookbooks and execute its, if it updated (and for you not critical update speed). We can use special cookbook \href{http://community.opscode.com/cookbooks/chef-client}{chef-client} fo this. It allow for use bluepill, daemontools, runit or cron to configure your systems to run Chef Client as a service. First of all we need add this cookbook in Berksfile and run \inline!berks install!:
+Sometimes you may want update you servers automatically (instead using \inline!knife ssh!). For example, you just updated new cookbooks, roles and nodes and all nodes should automatically fetch new cookbooks and apply changes if something updated (and for you not critical update speed). We can use special cookbook \href{http://community.opscode.com/cookbooks/chef-client}{chef-client} fo this. It allow for use bluepill, daemontools, runit or cron to configure your systems to run Chef Client as a service. First of all we need add this cookbook in Berksfile and run \inline!berks install!:
 
 \begin{lstlisting}[label=lst:my-server-cloud-knife-ssh6,title=my-server-cloud/Berksfile]
 source "http://api.berkshelf.com"
