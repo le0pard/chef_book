@@ -1,9 +1,9 @@
 \section{Idempotence}
 \label{sec:solo-idempotence}
 
-As you read from previous chapter, one of the main idea of Chef is idempotence. It mean, what Chef can safely be run multiple times on the same mashine. Once you develop your configuration, your machines will apply the configuration and Chef will only make any changes to the system if the system state does not match the configured state.
+As you read from previous chapter, one of the main idea of Chef is idempotence. It mean, what Chef can safely be run multiple times on the same machine. Once you develop your configuration, your machines will apply the configuration and Chef will only make any changes to the system if the system state does not match the configured state.
 
-For now we have mashine which contain apache2 running inside it. Let's run \inline!vagrant provision! again:
+For now we have machine which contain apache2 running inside it. Let's run \inline!vagrant provision! again:
 
 \begin{lstlisting}[label=lst:my-cloud-idempotence1]
 $ vagrant provision

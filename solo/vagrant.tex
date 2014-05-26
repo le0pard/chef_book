@@ -60,7 +60,7 @@ Bringing machine 'default' up with 'virtualbox' provider...
 
 After this you can use command \inline!vagrant ssh! to SSH into a running Vagrant machine and give you access to a shell. Command <<vagrant halt>> shuts down the running machine Vagrant is managing. \inline!vagrant destroy! command stops the running machine Vagrant is managing and destroys all resources that were created during the machine creation process.
 
-In most cases, your mashine will not contain chef client. We should install it before using our kitchen. As you remember, we have knife with command \inline!prepare!. Let use this command:
+In most cases, your machine will not contain chef client. We should install it before using our kitchen. As you remember, we have knife with command \inline!prepare!. Let use this command:
 
 \begin{lstlisting}[label=lst:my-cloud-vagrant5]
 $ knife solo prepare vagrant@localhost -i ~/.vagrant.d/insecure_private_key -p 2222 -N web1.example.com
@@ -77,7 +77,7 @@ Setting up chef (11.8.2-1.ubuntu.12.04) ...
 Thank you for installing Chef!
 \end{lstlisting}
 
-We used some options for the \inline!knife prepare! command. \inline!-i! option specify ssh key for mashine, \inline!-N! option specify node name (if it different from host name) and \inline!-p! option specify SSH port. In most cases, this port is 2222, but if you running several mashines from vagrant, it will be different. You can read what port is used for SSH by mashine from output of command \inline!vagrant up!. All this credentials used to login by ssh on the node and install chef client.
+We used some options for the \inline!knife prepare! command. \inline!-i! option specify ssh key for machine, \inline!-N! option specify node name (if it different from host name) and \inline!-p! option specify SSH port. In most cases, this port is 2222, but if you running several machines from vagrant, it will be different. You can read what port is used for SSH by machine from output of command \inline!vagrant up!. All this credentials used to login by ssh on the node and install chef client.
 
 Basically, to run our kitchen on node we are using \inline!knife solo cook! command:
 
@@ -137,7 +137,7 @@ end
 
 Now consider that we have added.
 
-On lines 4-5 required chef and json gem. JSON gem is as part of Vagrant and chef gem was installed by previous command \inline!vagrant plugin install chef!. Further, we load knife.rb file in chef config and parse json from node file <<web1.example.com.json>>. After these manipulations we will have \inline!Chef::Config! ruby hash with knife configuration and \inline!vagrant_json! ruby hash will attributes from node.
+On lines 4-5 required chef and json gem. JSON gem is as part of Vagrant and chef gem was installed by previous command \inline!vagrant plugin install chef!. Further, we load knife.rb file in chef config and parse json from node file <<web1.example.com.json>>. After these manipulations we will have \inline!Chef::Config! ruby hash with knife configuration and \inline!vagrant_json! ruby hash with attributes from node.
 
 On lines 16-26 defined Chef Solo configuration for Vagrant (\inline!environment! is commented, because we don't have it right now, but we will use it later). More information about this you can find in \href{http://docs.vagrantup.com/v2/provisioning/chef\_solo.html}{vagrant website}.
 
@@ -167,7 +167,7 @@ INFO: Running report handlers
 INFO: Report handlers complete
 \end{lstlisting}
 
-To verify that the apache2 successfully installed into node, we can forward the 80 apache2 port to our mashine. To do this, we modify the Vagrantfile:
+To verify that the apache2 successfully installed into node, we can forward the 80 apache2 port to our machine. To do this, we modify the Vagrantfile:
 
 \begin{lstlisting}[language=Ruby, label=lst:my-cloud-vagrant9,title=my-cloud/nodes/Vagrantfile]
 ...

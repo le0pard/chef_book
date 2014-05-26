@@ -1,7 +1,7 @@
 \section{Environment}
 \label{sec:server-environment}
 
-Environment in Chef Server is similar to Chef Solo (chapter <<\ref{sec:solo-environment}~\nameref{sec:solo-environment}>>). Except default attributes, environment in Chef Server can contain \inline!cookbook_versions! attribute. In this attibute you can lock cookbook versions. Example:
+Environment in Chef Server is similar to Chef Solo (chapter <<\ref{sec:solo-environment}~\nameref{sec:solo-environment}>>). Except default attributes, environment in Chef Server can contain \inline!cookbook_versions! attribute. In this attribute you can lock cookbook versions. Example:
 
 \begin{lstlisting}[language=JSON,label=lst:my-serer-cloud-environment1,title=my-server-cloud/environments/development.json]
 {
@@ -16,7 +16,7 @@ Environment in Chef Server is similar to Chef Solo (chapter <<\ref{sec:solo-envi
 }
 \end{lstlisting}
 
-As you can see we locked nginx to 2.2.0 version for development environment. This is very usefull stuff, because when released new versions of some cookbooks, you need check what you can update it to new version without break a production environment. In this case you can change version of cookbooks inside \inline!cookbook_versions! in your test (development, staging, etc.) environment, check what all work fine with new cookbook and update production environment only in success case.
+As you can see we locked nginx to 2.2.0 version for development environment. This is very useful stuff, because when released new versions of some cookbooks, you need check what you can update it to new version without break a production environment. In this case you can change version of cookbooks inside \inline!cookbook_versions! in your test (development, staging, etc.) environment, check what all work fine with new cookbook and update production environment only in success case.
 
 Set environment to node similar to Chef Solo, but in this case you should use \inline!chef_environment! attribute. Example:
 
