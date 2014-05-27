@@ -137,7 +137,7 @@ As you can see node recipe installed Node.js on our node.
 
 \subsubsection{Ohai plugin}
 
-In our node recipe we used maybe not best way to check node version, which already installed on node (if version mistmatch - we should install needed). Let's create Ohai plugin, which will give for use node.js version from server. First of all create in \inline!my_cool_app! new recipe \inline!ohai_plugin.rb! with content:
+In our node recipe we used maybe not best way to check node version, which already installed on node (if version mismatch - we should install needed). Let's create Ohai plugin, which will give for use node.js version from server. First of all create in \inline!my_cool_app! new recipe \inline!ohai_plugin.rb! with content:
 
 \begin{lstlisting}[label=lst:cookbook-ohai-recipe1,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipe/ohai\_plugin.rb]
 template "#{node['ohai']['plugin_path']}/system_node_js.rb" do

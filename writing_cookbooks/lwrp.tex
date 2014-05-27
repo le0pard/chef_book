@@ -58,7 +58,7 @@ Let's add in our <<my\_cool\_app>> LWRP, which will add in \inline!/etc/ssh/ssh_
 
 \subsection{Resources}
 
-First of all we should create direcotry <<resources>> and add to it \inline!know_host.rb! file with content:
+First of all we should create directory <<resources>> and add to it \inline!know_host.rb! file with content:
 
 \begin{lstlisting}[label=lst:cookbook-lwrp1,title=my-server-cloud/site-cookbooks/my\_cool\_app/resources/know\_host.rb]
 actions :create, :delete
@@ -92,7 +92,7 @@ end
 
 In the second example above, the \inline!:host! attribute wll be set to <<github.com>>.
 
-Also, on line 4, we are definining the \inline!kind_of! validation parameter to tell the resource which kind of data we should expect (in this case, a string), whether this attribute is required (yes). Line 5 defines a \inline!:key! attribute, which is an optional string with no default. Line 6 defines a \inline!:port! attribute, a Ruby Fixnum (i.e. an integer) with a default of 22, which is the default when you create a known host. Line 7 defines a \inline!:known_hosts_file! attribute, a string with a default of \inline!/etc/ssh/ssh_known_hosts!, which is the default file with known hosts for ssh client.
+Also, on line 4, we are defining the \inline!kind_of! validation parameter to tell the resource which kind of data we should expect (in this case, a string), whether this attribute is required (yes). Line 5 defines a \inline!:key! attribute, which is an optional string with no default. Line 6 defines a \inline!:port! attribute, a Ruby Fixnum (i.e. an integer) with a default of 22, which is the default when you create a known host. Line 7 defines a \inline!:known_hosts_file! attribute, a string with a default of \inline!/etc/ssh/ssh_known_hosts!, which is the default file with known hosts for ssh client.
 
 For example, the \inline!cron_d! lightweight resource (found in the cron cookbook) can be used to manage files located in \inline!/etc/cron.d!:
 
