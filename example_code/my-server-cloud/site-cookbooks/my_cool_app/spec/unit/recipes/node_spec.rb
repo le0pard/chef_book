@@ -1,9 +1,9 @@
 require 'spec_helper'
 
 describe 'my_cool_app::node' do
-  let(:platfom) { 'ubuntu' }
-  let(:platfom_version) { '12.04' }
-  let(:chef_run) { ChefSpec::Runner.new(platform: platfom, version: platfom_version).converge(described_recipe) }
+  let(:platform) { 'ubuntu' }
+  let(:platform_version) { '12.04' }
+  let(:chef_run) { ChefSpec::Runner.new(platform: platform, version: platform_version).converge(described_recipe) }
   let(:nodejs_version) { '0.10.26' }
   let(:nodejs_tar) { "node-v#{nodejs_version}.tar.gz" }
 
@@ -12,8 +12,8 @@ describe 'my_cool_app::node' do
   end
 
   context 'rhel or fedora' do
-    let(:platfom) { 'redhat' }
-    let(:platfom_version) { '6.5' }
+    let(:platform) { 'redhat' }
+    let(:platform_version) { '6.5' }
 
     it "install openssl-devel package" do
       expect(chef_run).to install_package('openssl-devel')
@@ -35,7 +35,7 @@ describe 'my_cool_app::node' do
   context 'node versions' do
     let(:system_node_version) { nil }
     let(:chef_run) do
-      ChefSpec::Runner.new(platform: platfom, version: platfom_version) do |node|
+      ChefSpec::Runner.new(platform: platform, version: platform_version) do |node|
         node.automatic['system_node_js'] = { 'version' => system_node_version } if system_node_version
       end.converge(described_recipe)
     end

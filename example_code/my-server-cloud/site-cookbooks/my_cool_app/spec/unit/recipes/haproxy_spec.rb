@@ -1,9 +1,9 @@
 require 'spec_helper'
 
 describe 'my_cool_app::haproxy' do
-  let(:platfom) { 'ubuntu' }
-  let(:platfom_version) { '12.04' }
-  let(:chef_run) { ChefSpec::Runner.new(platform: platfom, version: platfom_version).converge(described_recipe) }
+  let(:platform) { 'ubuntu' }
+  let(:platform_version) { '12.04' }
+  let(:chef_run) { ChefSpec::Runner.new(platform: platform, version: platform_version).converge(described_recipe) }
 
   it "install haproxy package" do
     expect(chef_run).to install_package('haproxy')
@@ -20,7 +20,7 @@ describe 'my_cool_app::haproxy' do
   context 'with env, role and one node' do
     let(:node_env) { 'test' }
     let(:chef_run) do
-      ChefSpec::Runner.new(platform: platfom, version: platfom_version) do |node|
+      ChefSpec::Runner.new(platform: platform, version: platform_version) do |node|
         # Create a new environment (you could also use a different :let block or :before block)
         env = Chef::Environment.new
         env.name node_env
