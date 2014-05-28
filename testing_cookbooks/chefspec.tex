@@ -1,7 +1,7 @@
 \section{ChefSpec}
 \label{sec:testing-chefspec}
 
-\href{http://code.sethvargo.com/chefspec/}{ChefSpec} is a unit testing framework for testing Chef cookbooks. ChefSpec makes it easy to write examples and get fast feedback on cookbook changes without the need for virtual machines or cloud servers. ChefSpec using \href{http://rspec.info/}{RSpec} for writting tests, what is why you should know Rspec at least basic stuff.
+\href{http://code.sethvargo.com/chefspec/}{ChefSpec} is a unit testing framework for testing Chef cookbooks. ChefSpec makes it easy to write examples and get fast feedback on cookbook changes without the need for virtual machines or cloud servers. ChefSpec using \href{http://rspec.info/}{RSpec} for writing tests, what is why you should know Rspec at least basic stuff.
 
 \subsection{Installing}
 
@@ -52,7 +52,7 @@ describe 'my_cool_app::default' do
     end
   end
 
-  it 'create direcory for web app' do
+  it 'create directory for web app' do
     expect(chef_run).to create_directory('/var/www/my_cool_app').with(
       user:   'vagrant',
       mode:  "0755"
@@ -85,7 +85,7 @@ Finished in 2.25 seconds
 6 examples, 0 failures
 \end{lstlisting}
 
-Our tests faild, because we used \inline!nginx_site! definition, but dont have nginx service inside our recipe. We can fix this by adding nginx default recipe inside our default recipe (nginx default recipe contain \inline!service! resource).
+Our tests failed, because we used \inline!nginx_site! definition, but dont have nginx service inside our recipe. We can fix this by adding nginx default recipe inside our default recipe (nginx default recipe contain \inline!service! resource).
 
 \begin{lstlisting}[label=lst:testing-chefspec-nginx]
 ...
@@ -131,9 +131,9 @@ Now let's cover our node recipe:
 require 'spec_helper'
 
 describe 'my_cool_app::node' do
-  let(:platfom) { 'ubuntu' }
-  let(:platfom_version) { '12.04' }
-  let(:chef_run) { ChefSpec::Runner.new(platform: platfom, version: platfom_version).converge(described_recipe) }
+  let(:platform) { 'ubuntu' }
+  let(:platform_version) { '12.04' }
+  let(:chef_run) { ChefSpec::Runner.new(platform: platform, version: platform_version).converge(described_recipe) }
   let(:nodejs_version) { '0.10.26' }
   let(:nodejs_tar) { "node-v#{nodejs_version}.tar.gz" }
 
@@ -142,8 +142,8 @@ describe 'my_cool_app::node' do
   end
 
   context 'rhel or fedora' do
-    let(:platfom) { 'redhat' }
-    let(:platfom_version) { '6.5' }
+    let(:platform) { 'redhat' }
+    let(:platform_version) { '6.5' }
 
     it "install openssl-devel package" do
       expect(chef_run).to install_package('openssl-devel')
@@ -164,7 +164,7 @@ describe 'my_cool_app::node' do
 end
 \end{lstlisting}
 
-As you can see, you can pass \inline!platfom! and \inline!version!, which will be used as Ohai attribute values. This used to check, what depend on \inline!platfom! recipe will install different dependencies. Our results:
+As you can see, you can pass \inline!platform! and \inline!version!, which will be used as Ohai attribute values. This used to check, what depend on \inline!platform! recipe will install different dependencies. Our results:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-chefspec9]
 $ rspec
