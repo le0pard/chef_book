@@ -94,7 +94,7 @@ recipe 'my_cool_app',   'Configure my cool app'
 depends 'nginx',           '~> 2.2.0'
 \end{lstlisting}
 
-As you can see, we add for default attributes for recipe. Better to use for cookbook attribute name as root for all attributes - in this case you will not have problem, if several cookbooks will use similar keys for settings. As you can see all attributes of this cookbook located inside <<my\_cool\_app>> attribute. In recipe we add needed commands to create and activate our index.html. Also we add to metadata information about recipe and dependence to nginx cookbook (because we used inside our recipe <<nginx\_site>> resource). After upload cookbook at Chef server and run chef-client at the second node, we can see results at \href{http://10.33.33.35}{http://10.33.33.35} (Pic~\ref{fig:my_cool_app_index}):
+As you can see, we add default attributes for recipe. Better to use for cookbook attribute name as root for all attributes - in this case you will not have problem, if several cookbooks will use similar keys for settings. As you can see all attributes of this cookbook located inside <<my\_cool\_app>> attribute. In recipe we add needed commands to create and activate our index.html. Also we add to metadata information about recipe and dependence to nginx cookbook (because we used inside our recipe <<nginx\_site>> resource). After upload cookbook at Chef server and run chef-client at the second node, we can see results at \href{http://10.33.33.35}{http://10.33.33.35} (Pic~\ref{fig:my_cool_app_index}):
 
 \begin{lstlisting}[language=Bash,label=lst:cookbook-attributes8]
 $ knife cookbook upload my_cool_app

@@ -85,7 +85,7 @@ execute "nodejs make install" do
 end
 \end{lstlisting}
 
-As you can see, we using \inline!node['platform_family']! Ohai variable, which help for us understand type of OS on node and install needed package.
+As you can see, we use \inline!node['platform_family']! Ohai variable, which help for us understand type of OS on node and install needed package.
 
 Also we used cookbook \inline!build-essential!, because we will install node.js from source. In this case we should add it as dependency in our metadata.rb file:
 
