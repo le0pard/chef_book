@@ -251,15 +251,15 @@ defaults
 <% end %>
 \end{lstlisting}
 
-As you can see, this recipe install and configure haproxy. It using \inline!search! command to get all nodes with role \inline!web! (by default attributes) and chef environment. After this it collect from all selected nodes hostname and ip address. This data is used to create config for haproxy. This is very usefull way, because if you will add or remove node with role \inline!web! from Chef server, it will automatically update haproxy config. But because we using \inline!search! command, we need test our cookbook with Chef Zero. Here how it look our tests:
+As you can see, this recipe install and configure haproxy. It using \inline!search! command to get all nodes with role \inline!web! (by default attributes) and chef environment. After this it collect from all selected nodes hostname and ip address. This data is used to create config for haproxy. This is very useful way, because if you will add or remove node with role \inline!web! from Chef server, it will automatically update haproxy config. But because we using \inline!search! command, we need test our cookbook with Chef Zero. Here how it look our tests:
 
 \begin{lstlisting}[label=lst:testing-chef-zero15]
 require 'spec_helper'
 
 describe 'my_cool_app::haproxy' do
-  let(:platfom) { 'ubuntu' }
-  let(:platfom_version) { '12.04' }
-  let(:chef_run) { ChefSpec::Runner.new(platform: platfom, version: platfom_version).converge(described_recipe) }
+  let(:platform) { 'ubuntu' }
+  let(:platform_version) { '12.04' }
+  let(:chef_run) { ChefSpec::Runner.new(platform: platform, version: platform_version).converge(described_recipe) }
 
   it "install haproxy package" do
     expect(chef_run).to install_package('haproxy')
@@ -276,7 +276,7 @@ describe 'my_cool_app::haproxy' do
   context 'with env, role and one node' do
     let(:node_env) { 'test' }
     let(:chef_run) do
-      ChefSpec::Runner.new(platform: platfom, version: platfom_version) do |node|
+      ChefSpec::Runner.new(platform: platform, version: platform_version) do |node|
         # Create a new environment (you could also use a different :let block or :before block)
         env = Chef::Environment.new
         env.name node_env

@@ -41,7 +41,7 @@ Also we can set node attributes by \inline!ChefSpec::Runner!:
   context 'node versions' do
     let(:system_node_version) { nil }
     let(:chef_run) do
-      ChefSpec::Runner.new(platform: platfom, version: platfom_version) do |node|
+      ChefSpec::Runner.new(platform: platform, version: platform_version) do |node|
         node.automatic['system_node_js'] = { 'version' => system_node_version } if system_node_version
       end.converge(described_recipe)
     end

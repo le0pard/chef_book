@@ -33,7 +33,7 @@ default-centos-64    Vagrant  Chef Solo    <Not Created>
 We're going to use two shortcuts here in the next command:
 
 \begin{itemize}
-  \item Each Test Kitchen instance has a simple state machine that tracks where it is in its lifecyle. Given its current state and the desired state, the instance is smart enough to run all actions in between current and desired. In our next example we will take an instance from not created to verified in one command.
+  \item Each Test Kitchen instance has a simple state machine that tracks where it is in its lifecycle. Given its current state and the desired state, the instance is smart enough to run all actions in between current and desired. In our next example we will take an instance from not created to verified in one command.
   \item Any \inline!kitchen! subcommand that takes an instance name as an argument can take a Ruby regular expression that will be used to glob a list of instances together. This means that \inline!kitchen test ubuntu! would run the test action only the ubuntu instance. Note that the list subcommand also takes the regex-globbing argument so feel free to experiment there. In our next example we'll select the \inline!default-centos-64! instance with simply \inline!64!.
 \end{itemize}
 
