@@ -185,7 +185,7 @@
 <ul>
 <li><p>&lt;&lt;Magically&gt;&gt; configure your server</p></li>
 <li><p>Blindly reuse cookbooks and recipes</p></li>
-<li><p>Monitor your servers or softwares</p></li>
+<li><p>Monitor your servers or software</p></li>
 <li><p>Undoing concept</p></li>
 </ul>
 <h2 id="summary">Summary</h2>
@@ -305,7 +305,7 @@ apache2</code></pre>
 <pre><code>{
   &quot;run_list&quot;: []
 }</code></pre>
-<p>Node file should contain valid JSON document. Main key in this json is !run<sub>l</sub>ist!. This key contain array of recipes and roles, which should be executed on mashine. It always executed in the same order as listed in this key. As you can see right now !run<sub>l</sub>ist! is empty. To install apache2 you need to add the recipe in this array. This information can be found in README of cookbook (if this vendor cookbook well written), in metadata.rb or just open directory recipes - the name of the file will mean recipe name. !default.rb! file mean a recipe that will be executed when you call the cookbook in !run<sub>l</sub>ist! without designation of recipe. Examples:</p>
+<p>Node file should contain valid JSON document. Main key in this json is !run<sub>l</sub>ist!. This key contain array of recipes and roles, which should be executed on machine. It always executed in the same order as listed in this key. As you can see right now !run<sub>l</sub>ist! is empty. To install apache2 you need to add the recipe in this array. This information can be found in README of cookbook (if this vendor cookbook well written), in metadata.rb or just open directory recipes - the name of the file will mean recipe name. !default.rb! file mean a recipe that will be executed when you call the cookbook in !run<sub>l</sub>ist! without designation of recipe. Examples:</p>
 <pre><code>{
   &quot;run_list&quot;: [
     &quot;recipe[apache2]&quot;
@@ -353,7 +353,7 @@ Bringing machine &#39;default&#39; up with &#39;virtualbox&#39; provider...
 [default] Mounting shared folders...
 [default] -- /vagrant</code></pre>
 <p>After this you can use command !vagrant ssh! to SSH into a running Vagrant machine and give you access to a shell. Command &lt;&lt;vagrant halt&gt;&gt; shuts down the running machine Vagrant is managing. !vagrant destroy! command stops the running machine Vagrant is managing and destroys all resources that were created during the machine creation process.</p>
-<p>In most cases, your mashine will not contain chef client. We should install it before using our kitchen. As you remember, we have knife with command !prepare!. Let use this command:</p>
+<p>In most cases, your machine will not contain chef client. We should install it before using our kitchen. As you remember, we have knife with command !prepare!. Let use this command:</p>
 <pre><code>$ knife solo prepare vagrant@localhost -i ~/.vagrant.d/insecure_private_key -p 2222 -N web1.example.com
 Bootstrapping Chef...
 --2013-12-27 19:12:56--  https://www.opscode.com/chef/install.sh
@@ -366,7 +366,7 @@ Selecting previously unselected package chef.
 Unpacking chef (from .../chef_11.8.2_amd64.deb) ...
 Setting up chef (11.8.2-1.ubuntu.12.04) ...
 Thank you for installing Chef!</code></pre>
-<p>We used some options for the !knife prepare! command. !-i! option specify ssh key for mashine, !-N! option specify node name (if it different from host name) and !-p! option specify SSH port. In most cases, this port is 2222, but if you running several mashines from vagrant, it will be different. You can read what port is used for SSH by mashine from output of command !vagrant up!. All this credentials used to login by ssh on the node and install chef client.</p>
+<p>We used some options for the !knife prepare! command. !-i! option specify ssh key for machine, !-N! option specify node name (if it different from host name) and !-p! option specify SSH port. In most cases, this port is 2222, but if you running several machines from vagrant, it will be different. You can read what port is used for SSH by machine from output of command !vagrant up!. All this credentials used to login by ssh on the node and install chef client.</p>
 <p>Basically, to run our kitchen on node we are using !knife solo cook! command:</p>
 <pre><code>$ knife solo cook vagrant@localhost -i ~/.vagrant.d/insecure_private_key -p 2222 -N web1.example.com
 Running Chef on localhost...
@@ -411,7 +411,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 end</code></pre>
 <p>Now consider that we have added.</p>
-<p>On lines 4-5 required chef and json gem. JSON gem is as part of Vagrant and chef gem was installed by previous command !vagrant plugin install chef!. Further, we load knife.rb file in chef config and parse json from node file &lt;&lt;web1.example.com.json&gt;&gt;. After these manipulations we will have !Chef::Config! ruby hash with knife configuration and !vagrant<sub>j</sub>son! ruby hash will attributes from node.</p>
+<p>On lines 4-5 required chef and json gem. JSON gem is as part of Vagrant and chef gem was installed by previous command !vagrant plugin install chef!. Further, we load knife.rb file in chef config and parse json from node file &lt;&lt;web1.example.com.json&gt;&gt;. After these manipulations we will have !Chef::Config! ruby hash with knife configuration and !vagrant<sub>j</sub>son! ruby hash with attributes from node.</p>
 <p>On lines 16-26 defined Chef Solo configuration for Vagrant (!environment! is commented, because we don’t have it right now, but we will use it later). More information about this you can find in <a href="http://docs.vagrantup.com/v2/provisioning/chef_solo.html">vagrant website</a>.</p>
 <p>Because we changed the Vagrantfile configuration, we need to restart the test node by using !vagrant reload! command:</p>
 <pre><code>$ vagrant reload
@@ -435,7 +435,7 @@ INFO: service[apache2] restarted
 INFO: Chef Run complete in 18.115479422 seconds
 INFO: Running report handlers
 INFO: Report handlers complete</code></pre>
-<p>To verify that the apache2 successfully installed into node, we can forward the 80 apache2 port to our mashine. To do this, we modify the Vagrantfile:</p>
+<p>To verify that the apache2 successfully installed into node, we can forward the 80 apache2 port to our machine. To do this, we modify the Vagrantfile:</p>
 <pre><code>...
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -453,8 +453,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 ...</code></pre>
 <p>Now in any of your browser you can open url <a href="http://localhost:8085/">http://localhost:8085/</a> and see 404 page from apache2 server (because we only install it).</p>
 <h2 id="sec:solo-idempotence">Idempotence</h2>
-<p>As you read from previous chapter, one of the main idea of Chef is idempotence. It mean, what Chef can safely be run multiple times on the same mashine. Once you develop your configuration, your machines will apply the configuration and Chef will only make any changes to the system if the system state does not match the configured state.</p>
-<p>For now we have mashine which contain apache2 running inside it. Let’s run !vagrant provision! again:</p>
+<p>As you read from previous chapter, one of the main idea of Chef is idempotence. It mean, what Chef can safely be run multiple times on the same machine. Once you develop your configuration, your machines will apply the configuration and Chef will only make any changes to the system if the system state does not match the configured state.</p>
+<p>For now we have machine which contain apache2 running inside it. Let’s run !vagrant provision! again:</p>
 <pre><code>$ vagrant provision
 [default] Running provisioner: chef_solo...
 Generating chef JSON and uploading...
@@ -650,7 +650,7 @@ Chef Client finished, 1 resources updated</code></pre>
     &quot;recipe[apache2]&quot;
   ]
 }</code></pre>
-<p>and use commad !knife solo cook! without !-E! argument.</p>
+<p>and use command !knife solo cook! without !-E! argument.</p>
 <p>Once an environment exists on the server, a node can be associated with that environment using the !chef<sub>e</sub>nvironment! method of &lt;&lt;node&gt;&gt; object in Ruby (I’ll consider this in the next chapters).</p>
 <p>As you can see in Chef Solo environment can be used only for setting attributes. In Chef Server it have additional feature for locking cookbook versions, which we will consider in &lt;&lt;[sec:server-environment] &gt;&gt; chapter.</p>
 <h2 id="sec:solo-data-bag">Defining data bags</h2>
@@ -661,7 +661,7 @@ Chef Client finished, 1 resources updated</code></pre>
 gem &#39;knife-solo&#39;
 gem &#39;knife-solo_data_bag&#39;
 gem &#39;berkshelf&#39;</code></pre>
-<p>and run command !bundle! to install it. After instalation you knife should have new commands for working with Chef Solo:</p>
+<p>and run command !bundle! to install it. After installation you knife should have new commands for working with Chef Solo:</p>
 <pre><code>$ knife --help | grep solo
   knife solo cook [USER@]HOSTNAME [JSON] (options)
   knife solo init DIRECTORY
@@ -759,7 +759,7 @@ mysql_creds[&quot;password&quot;]
 mysql_creds[&quot;password&quot;]
 # =&gt; &quot;secret&quot;</code></pre>
 <h2 id="summary-1">Summary</h2>
-<p>Chef Solo is a most simple way to begin woking with Chef. Also it is very good choice, if your environment small (several servers) and you don’t need setup or buy separate Chef Server. But if you have huge numbers of servers or you don’t like limited functionality of Chef Solo, in this case you should thinking to setup or buy own Chef Server.</p>
+<p>Chef Solo is a most simple way to begin working with Chef. Also it is very good choice, if your environment small (several servers) and you don’t need setup or buy separate Chef Server. But if you have huge numbers of servers or you don’t like limited functionality of Chef Solo, in this case you should thinking to setup or buy own Chef Server.</p>
 <h1 id="chef-server">Chef Server</h1>
 <p>The Chef Server acts as a hub for configuration data. The server stores cookbooks, the policies that are applied to nodes, and metadata that describes each registered node that is being managed by the chef-client. Nodes use the chef-client to ask the server for configuration details, such as recipes, templates, and file distributions. The chef-client then does as much of the configuration work as possible on the nodes themselves (and not on the server). This scalable approach distributes the configuration effort throughout the organization.</p>
 <p>The diagram [fig:overview<sub>c</sub>hef<sub>d</sub>raft] shows the relationships between the various elements of Chef, including the nodes, the server, and the workstations. These elements work together to provide the chef-client the information and instruction that it needs so that it can do its job.</p>
@@ -771,7 +771,7 @@ mysql_creds[&quot;password&quot;]
 <li><p>Go to <a href="http://www.getchef.com/chef/install/">www.getchef.com/chef/install</a>, select the operating system, version, and architecture of the server and install the downloaded package on it. After installation you can configure server by command &lt;&lt;sudo chef-server-ctl reconfigure&gt;&gt;</p></li>
 <li><p>Use Chef Solo to install Chef Server</p></li>
 </ul>
-<p>Of course, I prefer to use Chef Solo to install and configure Chef Server. Chef Solo will help us quickly deploy Chef Server on a new server, if with it something happens (crash file system of server, etc.). Do not forget to make a backups of Chef Server (because compared with Chef Solo, Chef Server will be the point of failure in your configuration management system).</p>
+<p>Of course, I prefer to use Chef Solo to install and configure Chef Server. Chef Solo will help us quickly deploy Chef Server on a new server, if something happens with it (crash file system of server, etc.). Do not forget to make a backups of Chef Server (because compared with Chef Solo, Chef Server will be the point of failure in your configuration management system).</p>
 <p>Let’s create our folder, which will contain all our Chef kitchen:</p>
 <pre><code>$ mkdir my-server-cloud
 $ cd my-server-cloud
@@ -809,7 +809,7 @@ Using chef-server (2.0.1)</code></pre>
     &quot;recipe[chef-server]&quot;
   ]
 }</code></pre>
-<p>By !configuration! key you can change settings for Chef Server. All available setting, which is possible to redefined, you can find <a href="https://github.com/opscode/omnibus-chef-server/blob/master/files/chef-server-cookbooks/chef-server/attributes/default.rb">here</a>. Our Chef Server by default takes your systems <a href="http://en.wikipedia.org/wiki/Fully_qualified_domain_name">FQDN</a> as Chef Server url, what is why I set &lt;&lt;fqdn&gt;&gt; in node IP 10.33.33.33, which will set to my server by Vagrant.</p>
+<p>By !configuration! key you can change settings for Chef Server. All available setting, which can be redefined, you can find <a href="https://github.com/opscode/omnibus-chef-server/blob/master/files/chef-server-cookbooks/chef-server/attributes/default.rb">here</a>. Our Chef Server by default takes your systems <a href="http://en.wikipedia.org/wiki/Fully_qualified_domain_name">FQDN</a> as Chef Server url, what is why I set &lt;&lt;fqdn&gt;&gt; in node IP 10.33.33.33, which will set to my server by Vagrant.</p>
 <p>First, we should generate Vagrantfile:</p>
 <pre><code>$ vagrant init precise64
 A `Vagrantfile` has been placed in this directory. You are now
@@ -1146,7 +1146,7 @@ $ knife ssh &#39;name:first.example.com&#39; &#39;sudo chef-client&#39; -i ~/.va
 10.33.33.34     - reload service service[nginx]
 10.33.33.34
 10.33.33.34 Chef Client finished, 4 resources updated</code></pre>
-<p>After first run of this command next time you can get errors like &lt;&lt;Failed to connect to&gt;&gt;. It is because FQDN set by Ohai in chef-client will not visible hostname (in my example nodes have &lt;&lt;precise64&gt;&gt; hostname). In real cluster you will not have such problems, because you will use real hostnames. But in our case we can use Vagrant &lt;&lt;chef_client&gt;&gt; stuff. Let’s create node &lt;&lt;second.example.com&gt;&gt; and upload it on server:</p>
+<p>Second time you run this command can cause errors like &lt;&lt;Failed to connect to&gt;&gt;. It is because FQDN set by Ohai in chef-client will not visible hostname (in my example nodes have &lt;&lt;precise64&gt;&gt; hostname). In real cluster you will not have such problems, because you will use real hostnames. But in our case we can use Vagrant &lt;&lt;chef_client&gt;&gt; stuff. Let’s create node &lt;&lt;second.example.com&gt;&gt; and upload it on server:</p>
 <pre><code>{
   &quot;name&quot;: &quot;second.example.com&quot;,
   &quot;json_class&quot;: &quot;Chef::Node&quot;,
@@ -1178,7 +1178,7 @@ INFO: Running report handlers
 INFO: Report handlers complete</code></pre>
 <p>It will run chef-client on server, which will get all needed info how to &lt;&lt;cook&gt;&gt; node from Chef Server. After this you can check what on url <a href="http://10.33.33.35/">http://10.33.33.35/</a> running nginx.</p>
 <h2 id="sec:server-environment">Environment</h2>
-<p>Environment in Chef Server is similar to Chef Solo (chapter &lt;&lt;[sec:solo-environment] &gt;&gt;). Except default attributes, environment in Chef Server can contain !cookbook<sub>v</sub>ersions! attribute. In this attibute you can lock cookbook versions. Example:</p>
+<p>Environment in Chef Server is similar to Chef Solo (chapter &lt;&lt;[sec:solo-environment] &gt;&gt;). Except default attributes, environment in Chef Server can contain !cookbook<sub>v</sub>ersions! attribute. In this attribute you can lock cookbook versions. Example:</p>
 <pre><code>{
   &quot;name&quot;: &quot;development&quot;,
   &quot;description&quot;: &quot;development environment&quot;,
@@ -1189,7 +1189,7 @@ INFO: Report handlers complete</code></pre>
     &quot;nginx&quot;: &quot;= 2.2.0&quot;
   }
 }</code></pre>
-<p>As you can see we locked nginx to 2.2.0 version for development environment. This is very usefull stuff, because when released new versions of some cookbooks, you need check what you can update it to new version without break a production environment. In this case you can change version of cookbooks inside !cookbook<sub>v</sub>ersions! in your test (development, staging, etc.) environment, check what all work fine with new cookbook and update production environment only in success case.</p>
+<p>As you can see we locked nginx to 2.2.0 version for development environment. This is very useful stuff, because when released new versions of some cookbooks, you need check what you can update it to new version without break a production environment. In this case you can change version of cookbooks inside !cookbook<sub>v</sub>ersions! in your test (development, staging, etc.) environment, check what all work fine with new cookbook and update production environment only in success case.</p>
 <p>Set environment to node similar to Chef Solo, but in this case you should use !chef<sub>e</sub>nvironment! attribute. Example:</p>
 <pre><code>{
   &quot;name&quot;: &quot;second.example.com&quot;,
@@ -1242,7 +1242,7 @@ Generating chef JSON and uploading...
 ***.com Swap:          895          6        889
 ...</code></pre>
 <h3 id="chef-client-cookbook">Chef-client cookbook</h3>
-<p>Sometimes you may want update you servers automaticaly (instead using !knife ssh!). For example, you just updated new cookbooks, roles and nodes and all nodes should automaticaly fetch new cookbooks and execute its, if it updated (and for you not critical update speed). We can use special cookbook <a href="http://community.opscode.com/cookbooks/chef-client">chef-client</a> fo this. It allow for use bluepill, daemontools, runit or cron to configure your systems to run Chef Client as a service. First of all we need add this cookbook in Berksfile and run !berks install!:</p>
+<p>Sometimes you may want update you servers automatically (instead using !knife ssh!). For example, you just updated new cookbooks, roles and nodes and all nodes should automatically fetch new cookbooks and apply changes if something updated (and for you not critical update speed). We can use special cookbook <a href="http://community.opscode.com/cookbooks/chef-client">chef-client</a> for this. It allow for use bluepill, daemontools, runit or cron to configure your systems to run Chef Client as a service. First of all we need add this cookbook in Berksfile and run !berks install!:</p>
 <pre><code>source &quot;http://api.berkshelf.com&quot;
 
 cookbook &#39;chef-server&#39;
@@ -1330,7 +1330,7 @@ charlie[&quot;shell&quot;]
 <p>Chef is a systems and cloud infrastructure automation framework that makes it easy to deploy servers and applications to any physical, virtual, or cloud location, no matter the size of the infrastructure.</p>
 <h1 id="writing-cookbooks">Writing Cookbooks</h1>
 <p>A cookbook is the fundamental unit of configuration and policy distribution. Each cookbook defines a scenario, such as everything needed to install and configure MySQL, and then it contains all of the components that are required to support that scenario.</p>
-<p>As you read from previous chapter vendor cookbooks can help you to install and configure any possible software, but in most cases it is not enough. This is because you have you application, which need install, configure special cases only for this application. What is why you must to know how to write own Chef cookbooks.</p>
+<p>As you read from previous chapter vendor cookbooks can help you to install and configure any possible software, but in most cases it is not enough. This is because you have your application, which need install, configure special cases only for this application. What is why you must to know how to write own Chef cookbooks.</p>
 <p>Chef cookbooks is written on <a href="https://www.ruby-lang.org">Ruby</a> language. It is dynamic and open source programming language, which very well fit to use as <a href="http://en.wikipedia.org/wiki/Domain-specific_language">DSL</a> for Chef recipes. Before you start reading this chapter, you should know Ruby at least basic stuff (Ruby types, loops, conditions, ERB, etc).</p>
 <h2 id="sec:cookbook-files">Cookbook file organization</h2>
 <p>For beginning we will generate cookbook by knife or berks. You can install both by bundler (we already did this in our Chef server kitchens). So, let’s create &lt;&lt;my_cool_app&gt;&gt; cookbook inside &lt;&lt;site-cookbooks&gt;&gt; dir:</p>
@@ -1713,7 +1713,7 @@ version          &#39;0.1.0&#39;
 recipe &#39;my_cool_app&#39;,   &#39;Configure my cool app&#39;
 
 depends &#39;nginx&#39;,           &#39;~&gt; 2.2.0&#39;</code></pre>
-<p>As you can see, we add for default attributes for recipe. Better to use for cookbook attribute name as root for all attributes - in this case you will not have problem, if several cookbooks will use similar keys for settings. As you can see all attributes of this cookbook located inside &lt;&lt;my_cool_app&gt;&gt; attribute. In recipe we add needed commands to create and activate our index.html. Also we add to metadata information about recipe and dependence to nginx cookbook (because we used inside our recipe &lt;&lt;nginx_site&gt;&gt; resource). After upload cookbook at Chef server and run chef-client at the second node, we can see results at <a href="http://10.33.33.35">http://10.33.33.35</a> (Pic [fig:my<sub>c</sub>ool<sub>a</sub>pp<sub>i</sub>ndex]):</p>
+<p>As you can see, we add default attributes for recipe. Better to use for cookbook attribute name as root for all attributes - in this case you will not have problem, if several cookbooks will use similar keys for settings. As you can see all attributes of this cookbook located inside &lt;&lt;my_cool_app&gt;&gt; attribute. In recipe we add needed commands to create and activate our index.html. Also we add to metadata information about recipe and dependence to nginx cookbook (because we used inside our recipe &lt;&lt;nginx_site&gt;&gt; resource). After upload cookbook at Chef server and run chef-client at the second node, we can see results at <a href="http://10.33.33.35">http://10.33.33.35</a> (Pic [fig:my<sub>c</sub>ool<sub>a</sub>pp<sub>i</sub>ndex]):</p>
 <pre><code>$ knife cookbook upload my_cool_app
 Uploading my_cool_app    [0.1.0]
 Uploaded 1 cookbook.
@@ -1922,7 +1922,7 @@ end</code></pre>
 </table>
 <p>Let’s add in our &lt;&lt;my_cool_app&gt;&gt; LWRP, which will add in !/etc/ssh/ssh<sub>k</sub>nown<sub>h</sub>osts! host.</p>
 <h3 id="resources">Resources</h3>
-<p>First of all we should create direcotry &lt;&lt;resources&gt;&gt; and add to it !know<sub>h</sub>ost.rb! file with content:</p>
+<p>First of all we should create directory &lt;&lt;resources&gt;&gt; and add to it !know<sub>h</sub>ost.rb! file with content:</p>
 <pre><code>actions :create, :delete
 default_action :create
 
@@ -1946,7 +1946,7 @@ my_cool_app_know_host &#39;github.com&#39; do
   # The :host attribute will be set to &#39;github.com&#39;
 end</code></pre>
 <p>In the second example above, the !:host! attribute wll be set to &lt;&lt;github.com&gt;&gt;.</p>
-<p>Also, on line 4, we are definining the !kind<sub>o</sub>f! validation parameter to tell the resource which kind of data we should expect (in this case, a string), whether this attribute is required (yes). Line 5 defines a !:key! attribute, which is an optional string with no default. Line 6 defines a !:port! attribute, a Ruby Fixnum (i.e. an integer) with a default of 22, which is the default when you create a known host. Line 7 defines a !:known<sub>h</sub>osts<sub>f</sub>ile! attribute, a string with a default of !/etc/ssh/ssh<sub>k</sub>nown<sub>h</sub>osts!, which is the default file with known hosts for ssh client.</p>
+<p>Also, on line 4, we are defining the !kind<sub>o</sub>f! validation parameter to tell the resource which kind of data we should expect (in this case, a string), whether this attribute is required (yes). Line 5 defines a !:key! attribute, which is an optional string with no default. Line 6 defines a !:port! attribute, a Ruby Fixnum (i.e. an integer) with a default of 22, which is the default when you create a known host. Line 7 defines a !:known<sub>h</sub>osts<sub>f</sub>ile! attribute, a string with a default of !/etc/ssh/ssh<sub>k</sub>nown<sub>h</sub>osts!, which is the default file with known hosts for ssh client.</p>
 <p>For example, the !cron<sub>d</sub>! lightweight resource (found in the cron cookbook) can be used to manage files located in !/etc/cron.d!:</p>
 <pre><code>actions :create, :delete
 default_action :create
@@ -2502,7 +2502,7 @@ vagrant@precise64:~$ cat /etc/ssh/ssh_known_hosts
 |1|Daaa5BVIzI52zRmJ2ifMfOkkLJE=|Y611mqhJbVkdJ1onVkaqfV+3iks= ...
 # bitbucket.org SSH-2.0-OpenSSH_5.3
 |1|jycCFcglLajRKYIlyAJaD+zmOjw=|51hFV+x1XIZNdiMGG6K0Xz+Nkds= ...</code></pre>
-<p>As a result, we wrote HWRP, which performs the same job as LWRP. HWRP is not so simple and elegant as LWRP, but have huge flexibility, because have more controll by Ruby language.</p>
+<p>As a result, we wrote HWRP, which performs the same job as LWRP. HWRP is not so simple and elegant as LWRP, but have huge flexibility, because have more control by Ruby language.</p>
 <h2 id="sec:cookbook-definitions">Definitions</h2>
 <p>A definition is used to declare resources so they can be added to the resource collection. A definition is not a resource or a lightweight resource. A definition does not have an associated provider. A definition groups two (or more) resource declarations. There is no limit to the number of resources that can be part of a definition. All definitions within a cookbook must be located in the &lt;&lt;definitions/&gt;&gt; folder. A definition is never declared into a cookbook. A definition is best-used when:</p>
 <ul>
@@ -2558,7 +2558,7 @@ INFO: template[/etc/nginx/sites-available/my_cool_app.conf] updated file content
 INFO: template[/etc/nginx/sites-available/my_cool_app.conf] mode changed to 644
 INFO: execute[nxensite my_cool_app.conf] ran successfully
 ...</code></pre>
-<p>As you can see our definition is works as expected.</p>
+<p>As you can see our definition works as expected.</p>
 <h2 id="sec:cookbook-ohai">Ohai</h2>
 <p>Ohai detects data about your operating system. It can be used standalone, but its primary purpose is to provide node data to Chef.</p>
 <p>When invoked, it collects detailed, extensible information about the machine it’s running on, including Chef configuration, hostname, FQDN, networking, memory, CPU, platform, and kernel data.</p>
@@ -2626,7 +2626,7 @@ execute &quot;nodejs make install&quot; do
     `#{node[&#39;my_cool_app&#39;][&#39;nodejs&#39;][&#39;dir&#39;]}/bin/node --version`.chomp == &quot;v#{node[&#39;my_cool_app&#39;][&#39;nodejs&#39;][&#39;version&#39;]}&quot;
   end
 end</code></pre>
-<p>As you can see, we using !node[’platform<sub>f</sub>amily’]! Ohai variable, which help for us understand type of OS on node and install needed package.</p>
+<p>As you can see, we use !node[’platform<sub>f</sub>amily’]! Ohai variable, which help for us understand type of OS on node and install needed package.</p>
 <p>Also we used cookbook !build-essential!, because we will install node.js from source. In this case we should add it as dependency in our metadata.rb file:</p>
 <pre><code>depends &#39;nginx&#39;,           &#39;~&gt; 2.2.0&#39;
 depends &#39;build-essential&#39;</code></pre>
@@ -2659,7 +2659,7 @@ vagrant@precise64:~$ node -v
 v0.10.26</code></pre>
 <p>As you can see node recipe installed Node.js on our node.</p>
 <h4 id="ohai-plugin">Ohai plugin</h4>
-<p>In our node recipe we used maybe not best way to check node version, which already installed on node (if version mistmatch - we should install needed). Let’s create Ohai plugin, which will give for use node.js version from server. First of all create in !my<sub>c</sub>ool<sub>a</sub>pp! new recipe !ohai<sub>p</sub>lugin.rb! with content:</p>
+<p>In our node recipe we used maybe not best way to check node version, which already installed on node (if version mismatch - we should install needed). Let’s create Ohai plugin, which will give for use node.js version from server. First of all create in !my<sub>c</sub>ool<sub>a</sub>pp! new recipe !ohai<sub>p</sub>lugin.rb! with content:</p>
 <pre><code>template &quot;#{node[&#39;ohai&#39;][&#39;plugin_path&#39;]}/system_node_js.rb&quot; do
   source &quot;plugins/system_node_js.rb.erb&quot;
   owner &quot;root&quot;
@@ -2738,7 +2738,7 @@ WARN: Cloning resource attributes for package[libssl-dev] from prior resource (C
 <h3 id="acceptance-testing">Acceptance Testing</h3>
 <p><a href="http://en.wikipedia.org/wiki/Acceptance_testing">Acceptance testing</a>, a testing technique performed to determine whether or not the software system has met the requirement specifications. The main purpose of this test is to evaluate the system’s compliance with the business requirements and verify if it is has met the required criteria for delivery to end users.</p>
 <h2 id="sec:testing-chefspec">ChefSpec</h2>
-<p><a href="http://code.sethvargo.com/chefspec/">ChefSpec</a> is a unit testing framework for testing Chef cookbooks. ChefSpec makes it easy to write examples and get fast feedback on cookbook changes without the need for virtual machines or cloud servers. ChefSpec using <a href="http://rspec.info/">RSpec</a> for writting tests, what is why you should know Rspec at least basic stuff.</p>
+<p><a href="http://code.sethvargo.com/chefspec/">ChefSpec</a> is a unit testing framework for testing Chef cookbooks. ChefSpec makes it easy to write examples and get fast feedback on cookbook changes without the need for virtual machines or cloud servers. ChefSpec using <a href="http://rspec.info/">RSpec</a> for writing tests, what is why you should know Rspec at least basic stuff.</p>
 <h3 id="installing">Installing</h3>
 <p>Let’s cover our cookbook by chefspec tests. First we should add this gem in Gemfile:</p>
 <pre><code>source &#39;https://rubygems.org&#39;
@@ -2775,7 +2775,7 @@ describe &#39;my_cool_app::default&#39; do
     end
   end
 
-  it &#39;create direcory for web app&#39; do
+  it &#39;create directory for web app&#39; do
     expect(chef_run).to create_directory(&#39;/var/www/my_cool_app&#39;).with(
       user:   &#39;vagrant&#39;,
       mode:  &quot;0755&quot;
@@ -2802,7 +2802,7 @@ FFFFFF
 
 Finished in 2.25 seconds
 6 examples, 0 failures</code></pre>
-<p>Our tests faild, because we used !nginx<sub>s</sub>ite! definition, but dont have nginx service inside our recipe. We can fix this by adding nginx default recipe inside our default recipe (nginx default recipe contain !service! resource).</p>
+<p>Our tests failed, because we used !nginx<sub>s</sub>ite! definition, but dont have nginx service inside our recipe. We can fix this by adding nginx default recipe inside our default recipe (nginx default recipe contain !service! resource).</p>
 <pre><code>...
 
 service &#39;nginx&#39; do
@@ -2833,9 +2833,9 @@ Finished in 2.25 seconds
 <pre><code>require &#39;spec_helper&#39;
 
 describe &#39;my_cool_app::node&#39; do
-  let(:platfom) { &#39;ubuntu&#39; }
-  let(:platfom_version) { &#39;12.04&#39; }
-  let(:chef_run) { ChefSpec::Runner.new(platform: platfom, version: platfom_version).converge(described_recipe) }
+  let(:platform) { &#39;ubuntu&#39; }
+  let(:platform_version) { &#39;12.04&#39; }
+  let(:chef_run) { ChefSpec::Runner.new(platform: platform, version: platform_version).converge(described_recipe) }
   let(:nodejs_version) { &#39;0.10.26&#39; }
   let(:nodejs_tar) { &quot;node-v#{nodejs_version}.tar.gz&quot; }
 
@@ -2844,8 +2844,8 @@ describe &#39;my_cool_app::node&#39; do
   end
 
   context &#39;rhel or fedora&#39; do
-    let(:platfom) { &#39;redhat&#39; }
-    let(:platfom_version) { &#39;6.5&#39; }
+    let(:platform) { &#39;redhat&#39; }
+    let(:platform_version) { &#39;6.5&#39; }
 
     it &quot;install openssl-devel package&quot; do
       expect(chef_run).to install_package(&#39;openssl-devel&#39;)
@@ -2864,7 +2864,7 @@ describe &#39;my_cool_app::node&#39; do
     expect(chef_run).to run_execute(&#39;make install&#39;).with(cwd: &quot;/usr/local/src/node-v#{nodejs_version}&quot;)
   end
 end</code></pre>
-<p>As you can see, you can pass !platfom! and !version!, which will be used as Ohai attribute values. This used to check, what depend on !platfom! recipe will install different dependencies. Our results:</p>
+<p>As you can see, you can pass !platform! and !version!, which will be used as Ohai attribute values. This used to check, what depend on !platform! recipe will install different dependencies. Our results:</p>
 <pre><code>$ rspec
 
 ..........
@@ -2904,7 +2904,7 @@ end</code></pre>
   context &#39;node versions&#39; do
     let(:system_node_version) { nil }
     let(:chef_run) do
-      ChefSpec::Runner.new(platform: platfom, version: platfom_version) do |node|
+      ChefSpec::Runner.new(platform: platform, version: platform_version) do |node|
         node.automatic[&#39;system_node_js&#39;] = { &#39;version&#39; =&gt; system_node_version } if system_node_version
       end.converge(described_recipe)
     end
@@ -2998,10 +2998,10 @@ suites:
     attributes:</code></pre>
 <p>Very briefly we can cover the 4 main sections you’re likely to find in a !.kitchen.yml! file:</p>
 <ul>
-<li><p>!driver!: This is where we configure the behaviour of the Kitchen Driver - the component that is responsible for creating a machine that we’ll use to test our cookbook. Here we set up basics like credentials, ssh usernames, sudo requirements, etc. Each Driver is reponsible for requiring and using the configuration here. Under this section we have !driver.name!: This tells Test Kitchen that we want to use the !kitchen-vagrant! driver by default unless otherwise specified.</p></li>
+<li><p>!driver!: This is where we configure the behaviour of the Kitchen Driver - the component that is responsible for creating a machine that we’ll use to test our cookbook. Here we set up basics like credentials, ssh usernames, sudo requirements, etc. Each Driver is responsible for requiring and using the configuration here. Under this section we have !driver.name!: This tells Test Kitchen that we want to use the !kitchen-vagrant! driver by default unless otherwise specified.</p></li>
 <li><p>!provisioner!: This tells Test Kitchen how to run Chef, to apply the code in our cookbook to the machine under test. The default and simplest approach is to use !chef-solo!, but other options are available, and ultimately Test Kitchen doesn’t care how the infrastructure is built - it could theoretically be with Puppet, Ansible, or Perl for all it cares.</p></li>
 <li><p>!platforms!: This is a list of operation systems on which we want to run our code. Note that the operating system’s version, architecture, cloud environment, etc. might be relevant to what Test Kitchen considers a Platform.</p></li>
-<li><p>!suites!: This section defines what we want to test. It includes the Chef run-list and any node attribute setups that we want run on each Platform above. For example, we might want to test the MySQL client cookbook code seperately from the server cookbook code for maximum isolation.</p></li>
+<li><p>!suites!: This section defines what we want to test. It includes the Chef run-list and any node attribute setups that we want run on each Platform above. For example, we might want to test the MySQL client cookbook code separately from the server cookbook code for maximum isolation.</p></li>
 </ul>
 <p>Let’s say for argument’s sake that we only care about running our Chef cookbook on Ubuntu 12.04 distributions. In that case, we can edit the !.kitchen.yml! file so that the list of platforms has only one entry like so:</p>
 <pre><code>---
@@ -3104,7 +3104,7 @@ vagrant@default-ubuntu-1204:~$ ps ax | grep nginx
 <h3 id="writing-a-test">Writing a Test</h3>
 <p>Now if you are interested in writing some tests, Test Kitchen has several options available to you. The component that helps facilitate testing on your instances is called Busser. Just like Test Kitchen it is a RubyGem library and it provides a plugin system so that you can wire in whatever testing framework your heart desires. A quick <a href="https://rubygems.org/search?utf8=%E2%9C%93&amp;amp;query=busser-">search</a> on the RubyGems website returns several testing frameworks currently available to you.</p>
 <p>To keep things simple we’re going to use the !busser-bats! runner plugin which uses the <a href="https://github.com/sstephenson/bats">Bash Automated Testing System</a> also known as bats.</p>
-<p>We need to put our test files in a specifc location, so let’s create the directory:</p>
+<p>We need to put our test files in a specific location, so let’s create the directory:</p>
 <pre><code>$ mkdir -p test/integration/default/bats</code></pre>
 <p>It looks long and dense, but each directory has some meaning to Test Kitchen and the Busser helper:</p>
 <ul>
@@ -3215,7 +3215,7 @@ default-ubuntu-1204  Vagrant  Chef Solo    &lt;Not Created&gt;
 default-centos-64    Vagrant  Chef Solo    &lt;Not Created&gt;</code></pre>
 <p>We’re going to use two shortcuts here in the next command:</p>
 <ul>
-<li><p>Each Test Kitchen instance has a simple state machine that tracks where it is in its lifecyle. Given its current state and the desired state, the instance is smart enough to run all actions in between current and desired. In our next example we will take an instance from not created to verified in one command.</p></li>
+<li><p>Each Test Kitchen instance has a simple state machine that tracks where it is in its lifecycle. Given its current state and the desired state, the instance is smart enough to run all actions in between current and desired. In our next example we will take an instance from not created to verified in one command.</p></li>
 <li><p>Any !kitchen! subcommand that takes an instance name as an argument can take a Ruby regular expression that will be used to glob a list of instances together. This means that !kitchen test ubuntu! would run the test action only the ubuntu instance. Note that the list subcommand also takes the regex-globbing argument so feel free to experiment there. In our next example we’ll select the !default-centos-64! instance with simply !64!.</p></li>
 </ul>
 <p>Let’s see how CentOS runs our cookbook:</p>
@@ -3774,13 +3774,13 @@ defaults
 &lt;% end %&gt;
 &lt;% end %&gt;
 &lt;% end %&gt;</code></pre>
-<p>As you can see, this recipe install and configure haproxy. It using !search! command to get all nodes with role !web! (by default attributes) and chef environment. After this it collect from all selected nodes hostname and ip address. This data is used to create config for haproxy. This is very usefull way, because if you will add or remove node with role !web! from Chef server, it will automatically update haproxy config. But because we using !search! command, we need test our cookbook with Chef Zero. Here how it look our tests:</p>
+<p>As you can see, this recipe install and configure haproxy. It using !search! command to get all nodes with role !web! (by default attributes) and chef environment. After this it collect from all selected nodes hostname and ip address. This data is used to create config for haproxy. This is very useful way, because if you will add or remove node with role !web! from Chef server, it will automatically update haproxy config. But because we using !search! command, we need test our cookbook with Chef Zero. Here how it look our tests:</p>
 <pre><code>require &#39;spec_helper&#39;
 
 describe &#39;my_cool_app::haproxy&#39; do
-  let(:platfom) { &#39;ubuntu&#39; }
-  let(:platfom_version) { &#39;12.04&#39; }
-  let(:chef_run) { ChefSpec::Runner.new(platform: platfom, version: platfom_version).converge(described_recipe) }
+  let(:platform) { &#39;ubuntu&#39; }
+  let(:platform_version) { &#39;12.04&#39; }
+  let(:chef_run) { ChefSpec::Runner.new(platform: platform, version: platform_version).converge(described_recipe) }
 
   it &quot;install haproxy package&quot; do
     expect(chef_run).to install_package(&#39;haproxy&#39;)
@@ -3797,7 +3797,7 @@ describe &#39;my_cool_app::haproxy&#39; do
   context &#39;with env, role and one node&#39; do
     let(:node_env) { &#39;test&#39; }
     let(:chef_run) do
-      ChefSpec::Runner.new(platform: platfom, version: platfom_version) do |node|
+      ChefSpec::Runner.new(platform: platform, version: platform_version) do |node|
         # Create a new environment (you could also use a different :let block or :before block)
         env = Chef::Environment.new
         env.name node_env
@@ -4017,7 +4017,7 @@ Finished in 0.55591 seconds
 <li><p>Testing node after cooking by minitest-chef-handler</p></li>
 </ul>
 <p>Second way is very interesting, because allow to you check tests even on production environment. This allow to be sure, what tests pass on check run of chef client on node.</p>
-<p>Let’s conside each example.</p>
+<p>Let’s consider each example.</p>
 <h3 id="test-kitchen">Test Kitchen</h3>
 <p>As you remember, we used bats and serverspec with Test Kitchen. But inside it you can use any test framework, for which exists &lt;&lt;busser&gt;&gt;. Right now you can find:</p>
 <ul>
@@ -4062,7 +4062,7 @@ Finished tests in 0.002407s, 415.5347 tests/s, 415.5347 assertions/s.
 -----&gt; Kitchen is finished. (1m27.97s)</code></pre>
 <p>As you can see, minitest doesn’t have additional helpers, like have serverspec (!be<sub>l</sub>istening!, !be<sub>r</sub>unning!, etc). What is why let’s consider second way of using it.</p>
 <h3 id="minitest-chef-handler">Minitest Chef Handler</h3>
-<p>Minitest-chef-handler run minitest suites after your Chef recipes to check the status of your system. It can be very usefull, because you testing inside your real environment. Exists 2 option to use it:</p>
+<p>Minitest-chef-handler run minitest suites after your Chef recipes to check the status of your system. It can be very useful, because you testing inside your real environment. Exists 2 option to use it:</p>
 <p>Option 1: Add the report handler to your client.rb or solo.rb file:</p>
 <pre><code>require &#39;minitest-chef-handler&#39;
 
@@ -4232,7 +4232,7 @@ end
 Then(/^cleanup test env$/) do
   @infrastructure.destroy if @infrastructure
 end</code></pre>
-<p>Leibniz gem read infrastructure configuration from our specs inside &lt;&lt;Background&gt;&gt; and use Test Kitchen to create it. Next, in &lt;&lt;I have run Chef&gt;&gt; we cleanup old and create new node, install chef client and run it inside node. After this we using Faraday gem to do HTTP request inside node and get root page content. We are checking, what this content should contain &lt;&lt;This is my cool web app&gt;&gt;. In this case we will be sure, what nginx installed, running and server our web page. In the end we added &lt;&lt;cleanup test env&gt;&gt;, which whould remove node after tests.</p>
+<p>Leibniz gem read infrastructure configuration from our specs inside &lt;&lt;Background&gt;&gt; and use Test Kitchen to create it. Next, in &lt;&lt;I have run Chef&gt;&gt; we cleanup old and create new node, install chef client and run it inside node. After this we using Faraday gem to do HTTP request inside node and get root page content. We are checking, what this content should contain &lt;&lt;This is my cool web app&gt;&gt;. In this case we will be sure, what nginx installed, running and server our web page. In the end we added &lt;&lt;cleanup test env&gt;&gt;, which would remove node after tests.</p>
 <p>Finally, we cat test our cucumber tests:</p>
 <pre><code>$ cucumber
 Feature: Customer can use my cool web app
@@ -4322,7 +4322,7 @@ my_cool_app/providers/know_host.rb
 <p>And run again !foodcritic!:</p>
 <pre><code>$  foodcritic .
 FC015: Consider converting definition to a LWRP: ./definitions/enable_web_site.rb:1</code></pre>
-<p>As you can see almoust all warnings fixed.</p>
+<p>As you can see almost all warnings fixed.</p>
 <h4 id="integration-by-rake">Integration by Rake</h4>
 <p>Foodcritic has unreleased experimental support for Rake included. With foodcritic and rake in your Gemfile your Rakefile would look like this:</p>
 <pre><code>require &#39;foodcritic&#39;
