@@ -69,6 +69,8 @@ set :markdown_engine, :redcarpet
 set :markdown, filter_html: false, fenced_code_blocks: true, smartypants: true
 set :encoding, 'utf-8'
 
+ignore "code/*" # ignore source code
+
 # Build-specific configuration
 configure :build do
   # For example, change the Compass output style for deployment
@@ -91,7 +93,7 @@ configure :build do
   # Or use a different image path
   # set :http_path, "/Content/images/"
   #
-  activate :asset_hash, ignore: [/^code\//]
+  activate :asset_hash
   # min html
   activate :minify_html
 
@@ -115,6 +117,12 @@ configure :build do
       ]
     }
   end
+end
+
+# copy code
+after_build do |builder|
+  FileUtils.cp_r File.join(config[:source], 'code'), File.join(config[:build_dir], 'code')
+  builder.say_status :chef_code, 'Chef code copied'
 end
 
 # deploy
