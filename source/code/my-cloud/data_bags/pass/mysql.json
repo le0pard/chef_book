@@ -1,0 +1,1 @@
+{"name":"data_bag_item_pass_mysql","json_class":"Chef::DataBagItem","chef_type":"data_bag_item","data_bag":"pass","raw_data":{"id":"mysql","password":"secret"}}

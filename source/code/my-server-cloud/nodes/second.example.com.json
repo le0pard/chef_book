@@ -1,0 +1,17 @@
+{
+  "name": "second.example.com",
+  "json_class": "Chef::Node",
+  "chef_type": "node",
+  "chef_environment": "development",
+  "normal": {
+    "fqdn": "10.33.33.35"
+  },
+  "default": {},
+  "override": {},
+  "run_list": [
+    "role[chef-client]",
+    "role[nginx]",
+    "recipe[my_cool_app]",
+    "recipe[my_cool_app::node]"
+  ]
+}

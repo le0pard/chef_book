@@ -1,0 +1,33 @@
+DEPENDENCIES
+  chef-client
+  chef-server
+  nginx
+  yum (~> 3.0)
+
+GRAPH
+  apt (2.3.10)
+  bluepill (2.3.1)
+    rsyslog (>= 0.0.0)
+  build-essential (2.0.2)
+  chef-client (3.5.0)
+    cron (>= 1.2.0)
+    logrotate (>= 1.2.0)
+  chef-server (2.1.4)
+  cron (1.4.0)
+  logrotate (1.5.0)
+  nginx (2.6.2)
+    apt (~> 2.2)
+    bluepill (~> 2.3)
+    build-essential (~> 2.0)
+    ohai (~> 1.1)
+    runit (~> 1.2)
+    yum-epel (~> 0.3)
+  ohai (1.1.12)
+  rsyslog (1.12.2)
+  runit (1.5.10)
+    build-essential (>= 0.0.0)
+    yum (~> 3.0)
+    yum-epel (>= 0.0.0)
+  yum (3.2.0)
+  yum-epel (0.3.6)
+    yum (~> 3.0)

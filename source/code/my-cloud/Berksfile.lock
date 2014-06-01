@@ -1,0 +1,11 @@
+DEPENDENCIES
+  apache2
+
+GRAPH
+  apache2 (1.10.4)
+    iptables (>= 0.0.0)
+    logrotate (>= 0.0.0)
+    pacman (>= 0.0.0)
+  iptables (0.13.2)
+  logrotate (1.5.0)
+  pacman (1.1.1)

@@ -1,0 +1,10 @@
+{
+  "name": "test",
+  "description": "The test role, it is not used in kitchen",
+  "chef_type": "role",
+  "json_class": "Chef::Role",
+  "run_list": [
+    "role[web]",
+    "recipe[postgresql]"
+  ]
+}

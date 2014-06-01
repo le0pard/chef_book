@@ -1,0 +1,24 @@
+global
+  log 127.0.0.1   local0
+  log 127.0.0.1   local1 notice
+  maxconn 5000
+  user haproxy
+  group haproxy
+
+defaults
+  log     global
+  mode    http
+  retries 3
+  timeout client 60000
+  timeout server 50000
+  timeout connect 25000
+  balance roundrobin
+
+<% @listeners.each do |type, listeners | %>
+<% listeners.each do |name, listen| %>
+<%= type %> <%= name %>
+<% listen.each do |option| %>
+  <%= option %>
+<% end %>
+<% end %>
+<% end %>
