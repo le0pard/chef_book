@@ -31,6 +31,7 @@
 \RequirePackage{pdfpages} % cover image
 \RequirePackage{lmodern}
 \RequirePackage{xcolor}
+\RequirePackage[breakall]{truncate}
 
 
 \ifpdf
@@ -137,7 +138,7 @@
        %\scriptsize
        \small
        \color{download}\ttfamily\href{http://chef.leopard.in.ua/code/#1}{Download}
-       \color{title}\sffamily\bfseries#1}
+       \color{title}\sffamily\bfseries\truncate{.85\textwidth}{#1}}
    \vskip\belowcaptionskip}
 \makeatother
 
