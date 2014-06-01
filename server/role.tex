@@ -87,7 +87,7 @@ $ knife ssh 'name:first.example.com' 'sudo chef-client' -i ~/.vagrant.d/insecure
 10.33.33.34 Chef Client finished, 4 resources updated
 \end{lstlisting}
 
-After first run of this command next time you can get errors like <<Failed to connect to>>. It is because FQDN set by Ohai in chef-client will not visible hostname (in my example nodes have <<precise64>> hostname). In real cluster you will not have such problems, because you will use real hostnames. But in our case we can use Vagrant <<chef\_client>> stuff. Let's create node <<second.example.com>> and upload it on server:
+Second time you run this command can cause errors like <<Failed to connect to>>. It is because FQDN set by Ohai in chef-client will not visible hostname (in my example nodes have <<precise64>> hostname). In real cluster you will not have such problems, because you will use real hostnames. But in our case we can use Vagrant <<chef\_client>> stuff. Let's create node <<second.example.com>> and upload it on server:
 
 \begin{lstlisting}[language=JSON,label=lst:my-serer-cloud-role6,title=my-server-cloud/nodes/second.example.com.json]
 {

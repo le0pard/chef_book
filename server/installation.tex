@@ -8,7 +8,7 @@ Exists several ways to install own Chef Server:
   \item Use Chef Solo to install Chef Server
 \end{itemize}
 
-Of course, I prefer to use Chef Solo to install and configure Chef Server. Chef Solo will help us quickly deploy Chef Server on a new server, if with it something happens (crash file system of server, etc.). Do not forget to make a backups of Chef Server (because compared with Chef Solo, Chef Server will be the point of failure in your configuration management system).
+Of course, I prefer to use Chef Solo to install and configure Chef Server. Chef Solo will help us quickly deploy Chef Server on a new server, if something happens with it (crash file system of server, etc.). Do not forget to make a backups of Chef Server (because compared with Chef Solo, Chef Server will be the point of failure in your configuration management system).
 
 Let's create our folder, which will contain all our Chef kitchen:
 
@@ -63,7 +63,7 @@ Now we should configure a Chef Solo node for our Chef Server. From chapter <<\re
 }
 \end{lstlisting}
 
-By \inline!configuration! key you can change settings for Chef Server. All available setting, which is possible to redefined, you can find \href{https://github.com/opscode/omnibus-chef-server/blob/master/files/chef-server-cookbooks/chef-server/attributes/default.rb}{here}. Our Chef Server by default takes your systems \href{http://en.wikipedia.org/wiki/Fully\_qualified\_domain\_name}{FQDN} as Chef Server url, what is why I set <<fqdn>> in node IP 10.33.33.33, which will set to my server by Vagrant.
+By \inline!configuration! key you can change settings for Chef Server. All available setting, which can be redefined, you can find \href{https://github.com/opscode/omnibus-chef-server/blob/master/files/chef-server-cookbooks/chef-server/attributes/default.rb}{here}. Our Chef Server by default takes your systems \href{http://en.wikipedia.org/wiki/Fully\_qualified\_domain\_name}{FQDN} as Chef Server url, what is why I set <<fqdn>> in node IP 10.33.33.33, which will set to my server by Vagrant.
 
 First, we should generate Vagrantfile:
 
