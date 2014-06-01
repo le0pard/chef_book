@@ -42,7 +42,7 @@ Time.zone = "Kyiv"
 ###
 helpers do
   def default_keywords_helper
-    "chef, devops, book, free, open source"
+    "chef, getchef, devops, book, free, open source"
   end
   def default_description_helper
     "Cooking Infrastructure by Chef"
