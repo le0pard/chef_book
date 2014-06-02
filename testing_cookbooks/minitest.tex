@@ -81,7 +81,7 @@ require 'minitest-chef-handler'
 report_handlers << MiniTest::Chef::Handler.new
 \end{lstlisting}
 
-Options 2: Using \href{https://github.com/btm/minitest-handler-cookbook}{minitest-handler} cookbook, which should be added in the end of \inline!run_list!:
+Option 2: Using \href{https://github.com/btm/minitest-handler-cookbook}{minitest-handler} cookbook, which should be added in the end of \inline!run_list!:
 
 \begin{lstlisting}[label=lst:testing-minitest4]
 chef.run_list = [

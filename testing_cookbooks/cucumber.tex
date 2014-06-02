@@ -137,7 +137,7 @@ Then(/^cleanup test env$/) do
 end
 \end{lstlisting}
 
-Leibniz gem read infrastructure configuration from our specs inside <<Background>> and use Test Kitchen to create it. Next, in <<I have run Chef>> we cleanup old and create new node, install chef client and run it inside node. After this we using Faraday gem to do HTTP request inside node and get root page content. We are checking, what this content should contain <<This is my cool web app>>. In this case we will be sure, what nginx installed, running and server our web page. In the end we added <<cleanup test env>>, which would remove node after tests.
+Leibniz gem read infrastructure configuration from our specs inside <<Background>> and use Test Kitchen to create it. Next, in <<I have run Chef>> we cleanup old and create new node, install chef client and run it inside node. After this we using Faraday gem to do HTTP request inside node and get root page content. We are checking, what this content should contain <<This is my cool web app>>. In this case we will be sure, what nginx installed, running and serve our web page. In the end we added <<cleanup test env>>, which would remove node after tests.
 
 Finally, we cat test our cucumber tests:
 
