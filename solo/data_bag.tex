@@ -90,6 +90,23 @@ $ EDITOR=vim knife solo data bag create passwords mysql --secret-file .chef/encr
 Created data_bag_item[mysql]
 \end{lstlisting}
 
+Editor is opened with such content:
+
+\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag20]
+{
+  "id": "mysql"
+}
+\end{lstlisting}
+
+And you can add you password and save it:
+
+\begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag21]
+{
+  "id": "mysql",
+  "password": "secret"
+}
+\end{lstlisting}
+
 As a result we obtain the encrypted data bag:
 
 \begin{lstlisting}[language=Bash,label=lst:my-cloud-chef-databag7]
@@ -97,9 +114,9 @@ $ knife solo data bag show passwords mysql
 id:       mysql
 password:
   cipher:         aes-256-cbc
-  encrypted_data: qsoqyxXYSrQ29EJZZ8dPLx3dhlDsVpalLmkm5IDr4jk=
+  encrypted_data: ++RR0s5f3rypFO3+SZj25px9QHTFq7AN854F3XZotnQ=
 
-  iv:             QwXUtR8P5/5e7xb+M0lgJw==
+  iv:             fxvNqHFHHbCNKntW8bBJkg==
 
   version:        1
 \end{lstlisting}
