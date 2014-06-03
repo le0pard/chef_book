@@ -6,7 +6,7 @@ To get started working with Chef, you need to install the required software:
 \begin{itemize}
   \item \href{https://www.virtualbox.org/}{Virtual Box} to provide a local virtual machine to manage using Chef
   \item \href{http://www.vagrantup.com/}{Vagrant} to give a command line interface to manage Virtual Box
-  \item \href{http://git-scm.com/}{Git} to revision a Chef code
+  \item \href{http://git-scm.com/}{Git} to revision Chef code and Recipes
   \item \href{https://www.ruby-lang.org}{Ruby} (since Chef runs on it). For simple installation of it you can use the \href{https://rvm.io/}{RVM} or \href{https://github.com/sstephenson/rbenv}{Rbenv}
 \end{itemize}
 
@@ -19,7 +19,7 @@ gem 'knife-solo'
 gem 'berkshelf'
 \end{lstlisting}
 
-and run command \inline!bundle! in terminal. As a result, by using \href{http://bundler.io/}{bundler} we install a required rubygems.
+and run command \inline!bundle! in terminal. As a result, by using \href{http://bundler.io/}{bundler}, we install any required rubygems.
 
 \subsection{Rubygems and bundler}
 
@@ -45,4 +45,4 @@ Knife-solo also integrates with \href{http://berkshelf.com/}{Berkshelf} and \hre
 
 \subsection{Berkshelf}
 
-\href{http://berkshelf.com/}{Berkshelf} used as well as the bundler for rubygems - it manage a cookbooks and its dependencies. Also, there is exists a \href{https://github.com/applicationsonline/librarian-chef}{librarian-chef}, which performs a similar functions. I prefer to use berkshelf, because it have a bigger set of features and integrations.
+\href{http://berkshelf.com/}{Berkshelf} is used as well as the bundler for rubygems - it manages cookbooks and their dependencies. Also, there is \href{https://github.com/applicationsonline/librarian-chef}{librarian-chef}, which performs a similar function. I prefer to use berkshelf, because it has more features and integrations.

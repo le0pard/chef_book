@@ -1,7 +1,7 @@
 \section{Creation of kitchen (chef-repo)}
 \label{sec:solo-kitchen}
 
-Working with Chef Solo starts with creating kitchen (chef-repo). The kitchen is located on a workstation (location from which most users will do most of their work, ie. your computer) and should be synchronized with a version control system. To create a kitchen used knife-solo rubygems:
+Working with Chef Solo starts with creating kitchen (chef-repo). The kitchen is located on a workstation (the location from which most users will do most of their work, ie. your computer) and should be synchronized with a version control system. To create a kitchen use knife-solo rubygems:
 
 \begin{lstlisting}[language=Bash,label=lst:my-cloud-kitchen1,title=my-cloud]
 $ cd my-cloud
@@ -24,7 +24,7 @@ drwxr-xr-x  3 leo   102 Dec 14 00:36 roles
 drwxr-xr-x  3 leo   102 Dec 14 00:36 site-cookbooks
 \end{lstlisting}
 
-Let's consider a directory structure:
+Let's consider the directory structure:
 
 \begin{itemize}
   \item \inline!.chef! - a hidden directory that is used to store .pem files and the knife.rb file
@@ -34,7 +34,7 @@ Let's consider a directory structure:
   \item \inline!nodes! - directory for Chef nodes
   \item \inline!roles! - directory for Chef roles
   \item \inline!site-cookbooks! - directory for your custom Chef cookbooks
-  \item \inline!Berksfile! - file contains a list of sources identifying what cookbooks to retrieve and where to get them for berkshelf (like Gemfile for rubygems)
+  \item \inline!Berksfile! - file contains a list of sources identifying which cookbooks to retrieve and where to get them for berkshelf (like Gemfile for rubygems)
 \end{itemize}
 
 <<Cookbooks>> directory added into <<.gitignore>>, because it contains only vendor cookbooks. Vendor cookbook data will not be modified, so there is no reason to keep them in VCS (git, mercurial, etc).
