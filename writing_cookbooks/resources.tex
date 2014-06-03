@@ -191,7 +191,15 @@ user "random" do
 end
 \end{lstlisting}
 
-\begin{lstlisting}[label=lst:cookbook-resources-cookbook-user2]
+There are a number of encryption options and tools that can be used to create a password shadow hash. In general, using a strong encryption method like SHA-512 and the passwd command in the OpenSSL toolkit is a good approach, however the encryption options and tools that are available may be different from one distribution to another. The following examples show how the command line can be used to create a password shadow hash. When using the \inline!passwd! command in the OpenSSL tool:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-resources-cookbook-user2]
+$ openssl passwd -1 "theplaintextpassword"
+\end{lstlisting}
+
+Another example:
+
+\begin{lstlisting}[label=lst:cookbook-resources-cookbook-user3]
 user "systemguy" do
   comment "system guy"
   system true
