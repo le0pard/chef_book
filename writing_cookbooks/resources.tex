@@ -197,9 +197,15 @@ There are a number of encryption options and tools that can be used to create a 
 $ openssl passwd -1 "theplaintextpassword"
 \end{lstlisting}
 
+When using \inline!mkpasswd!:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-resources-cookbook-user3]
+$ mkpasswd -m sha-512
+\end{lstlisting}
+
 Another example:
 
-\begin{lstlisting}[label=lst:cookbook-resources-cookbook-user3]
+\begin{lstlisting}[label=lst:cookbook-resources-cookbook-user4]
 user "systemguy" do
   comment "system guy"
   system true
