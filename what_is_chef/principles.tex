@@ -3,11 +3,11 @@
 
 \subsection{Idempotence}
 
-A recipe can run multiple times on the same system and the results will always be identical. A resource is defined in a recipe, which then defines the actions to be performed on the system. The chef-client ensures that actions are not performed if the resources have not changed and that any action that is performed is done the same way each time. If a recipe is re-run and nothing has change, then the chef-client will not do anything.
+A recipe can run multiple times on the same system and the results will always be identical. A resource is defined in a recipe, which then defines the actions to be performed on the system. The chef-client ensures that actions are not performed if the resources have not changed and that any action that is performed is done the same way each time. If a recipe is re-run and nothing has changed, then the chef-client will not do anything.
 
 \subsection{Thick Clients, Thin Server}
 
-Chef does as much work as possible on the node and as little as possible on the server. A chef-client runs on each node and it only interacts with the server when it needs to. The server is designed to distribute of data to each node easily, including all cookbooks, recipes, templates, files, and so on. The server also retains a copy of the state of the node at the conclusion of every chef-client run. This approach ensures that the actual work needed to configure each node in your infrastructure is distributed across the organization, rather than centralized on smaller set of configuration management servers.
+Chef does as much work as possible on the node and as little as possible on the server. A chef-client runs on each node and it only interacts with the server when it needs to. The server is designed to distribute the data to each node easily, including all cookbooks, recipes, templates, files, and so on. The server also retains a copy of the state of the node at the conclusion of every chef-client run. This approach ensures that the actual work needed to configure each node in your infrastructure is distributed across the organization, rather than centralized on smaller set of configuration management servers.
 
 \subsection{Order Matters}
 
