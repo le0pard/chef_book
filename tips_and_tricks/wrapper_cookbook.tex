@@ -1,2 +1,86 @@
 \section{Wrapper cookbook}
 \label{sec:tat-wrapper-cookbook}
+
+A wrapper cookbook wraps an upstream cookbook to change its behavior without forking it.
+
+There are two main reasons you might want to do this:
+
+\begin{itemize}
+  \item Codifying the standard settings for your organization or business unit’s use of that cookbook without placing those attributes in a role
+  \item Modifying the behavior of an upstream cookbook
+\end{itemize}
+
+
+\subsection{Codifying Standards in Your Organization}
+
+Suppose I use the community \href{http://community.opscode.com/cookbooks/ntp}{ntp} cookbook but I want to enforce a set of timeservers across my infrastructure. Instead of running this cookbook directly, I could create an \inline!acmeco-ntp! cookbook with the following settings:
+
+\begin{lstlisting}[label=lst:wrapper-cookbook1,caption=acmeco-ntp/attributes/default.rb]
+default['ntp']['peers'] = ['ntp1.acmeco.com', 'ntp2.acmeco.com']
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:wrapper-cookbook2,caption=acmeco-ntp/recipes/default.rb]
+include_recipe 'ntp'
+\end{lstlisting}
+
+Now I can simply run \inline!recipe[acmeco-ntp]! in my infrastructure and the default settings will take effect.
+
+Note that it is not necessary to use normal or override priority here. Dependent cookbooks are loaded first by Chef Client and their attribute files are evaluated before those of the caller.
+
+
+\subsection{Modifying Upstream Cookbook Behavior}
+
+Sometimes you want to modify the behavior of an upstream cookbook without forking it. For example, let's take the \href{http://community.opscode.com/cookbooks/postgresql}{PostgreSQL community cookbook}. It installs whatever PostgreSQL packages come from your operating system distribution. Suppose you want to install version 9.4 of PostgreSQL on an operating system that would not natively provide it (e.g. RedHat Enterprise Linux 6) but those packages can be found in the official PostgreSQL Global Development Group (PGDG) repository. How would you go about doing that? You could write a wrapper cookbook that set the right attributes:
+
+\begin{lstlisting}[label=lst:wrapper-cookbook3,caption=acmeco-postgresql/attributes/default.rb]
+default['postgresql']['version'] = '9.4'
+default['postgresql']['client']['packages'] = ["postgresql#{node['postgresql']['version'].split('.').join}-devel"]
+default['postgresql']['server']['packages'] = ["postgresql#{node['postgresql']['version'].split('.').join}-server"]
+default['postgresql']['contrib']['packages'] = ["postgresql#{node['postgresql']['version'].split('.').join}-contrib"]
+default['postgresql']['dir'] = "/var/lib/pgsql/#{node['postgresql']['version']}/data"
+default['postgresql']['server']['service_name'] = "postgresql-#{node['postgresql']['version']}"
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:wrapper-cookbook4,caption=acmeco-postgresql/recipes/default.rb]
+include_recipe 'postgresql::yum_pgdg_postgresql'
+include_recipe 'postgresql::server'
+\end{lstlisting}
+
+What's with the repetition of computed attributes in the wrapper? Well, the values for \inline!default['postgresql']['client']['packages']! and so on were calculated when the attributes were loaded by the dependency, so to recompute them based on the new value, we need to restate the expressions.
+
+You could do all of this work in roles as well — and if you do, the computed attributes will be correctly resolved without this kind of repetition. This is another reason that roles are still valuable.
+
+You can take this one step further: suppose you wanted to then derive the \inline!pg_hba.conf! (the database access control file in PostgreSQL) through some external mechanism that isn't supported in the upstream cookbook. No problem: you can also set an attribute in recipe context, before the \inline!include_recipe! statements above:
+
+\begin{lstlisting}[label=lst:wrapper-cookbook5]
+pg_hba_hash = call_some_method_to_get_a_hash()
+node.default['postgresql']['pg_hba'] = pg_hba_hash
+\end{lstlisting}
+
+Again, in recipe context, there is no need to use normal or override priority to achieve the desired effect.
+
+
+\subsection{Advanced Upstream Cookbook Modification}
+
+You can also use wrapper cookbooks to manipulate Chef's Resource Collection. Put simply, the resource collection is the ordered list of resources, from the recipes in your expanded run list, that are to be run on a node. You can manipulate attributes of the resources in the resource collection. One common use case for this is to change the template used by an upstream cookbook to the caller's cookbook. Again, suppose I'm using the PostgreSQL cookbook but I really hate the sysconfig template that it uses. I can simply make my own template inside the wrapper cookbook:
+
+\begin{lstlisting}[label=lst:wrapper-cookbook6,caption=acmeco-postgresql/templates/pgsql.sysconfig.erb]
+PGDATA=<%= node['postgresql']['dir'] %>
+<% if node['postgresql']['config'].attribute?("port") -%>
+PGPORT=<%= node['postgresql']['config']['port'] %>
+<% end -%>
+PGCHEFS="Ohai" # or whatever changes you want to make
+\end{lstlisting}
+
+and <<rewind>> the resource collection definition after that resource has been loaded by \inline!recipe[postgresql::server]! to change its cookbook attribute:
+
+\begin{lstlisting}[label=lst:wrapper-cookbook7,caption=acmeco-postgresql/recipes/default.rb]
+include_recipe 'postgresql::yum_pgdg_postgresql'
+include_recipe "postgresql::server"
+
+resources("template[/etc/sysconfig/pgsql/#{node['postgresql']['server']['service_name']}]").cookbook 'acmeco-postgresql'
+\end{lstlisting}
+
+You can play this game with any other parameters to a previously defined resource that you want to change. Because Chef uses a two-phase execution model (compile, then converge), you can manipulate the results of that compilation in many different ways before convergence happens.
+
+\href{https://github.com/bryanwb/chef-rewind}{Chef Rewind gem} will also do this kind of manipulation.
