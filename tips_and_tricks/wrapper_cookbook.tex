@@ -84,3 +84,12 @@ resources("template[/etc/sysconfig/pgsql/#{node['postgresql']['server']['service
 You can play this game with any other parameters to a previously defined resource that you want to change. Because Chef uses a two-phase execution model (compile, then converge), you can manipulate the results of that compilation in many different ways before convergence happens.
 
 \href{https://github.com/bryanwb/chef-rewind}{Chef Rewind gem} will also do this kind of manipulation.
+
+
+\subsection{Summary}
+
+Wrapper cookbooks allow you to modify the behavior of upstream cookbooks without forking them. These modifications can be very straightforward, such as you might do with a role, except that they can contain logic to govern the changes you want to make. Or the modifications can get quite advanced, through altering the resources in the resource collection.
+
+It's useful to name your wrapper cookbooks with a standard prefix that denotes your organization (e.g. <<oc->> is what we use at Opscode). That distinguishes your wrapper from the cookbook you’re wrapping.
+
+Finally, you need not strictly adopt only wrapper cookbooks or only roles. Used effectively, both roles and wrapper cookbooks give you a wealth of tools to model your infrastructure effectively.
