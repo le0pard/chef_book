@@ -1,6 +1,7 @@
 DEPENDENCIES
   chef-client
   chef-server
+  hostsfile
   nginx
   yum (~> 3.0)
 
@@ -14,6 +15,7 @@ GRAPH
     logrotate (>= 1.2.0)
   chef-server (2.1.4)
   cron (1.4.0)
+  hostsfile (2.4.4)
   logrotate (1.5.0)
   nginx (2.6.2)
     apt (~> 2.2)
