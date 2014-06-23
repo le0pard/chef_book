@@ -16,10 +16,10 @@ $ berks install
 Using apache2 (1.7.0)
 \end{lstlisting}
 
-By default, you will not find this cookbook in <<cookbooks>> directory. Berkshelf install cookbooks in <<~/.berkshelf>> directory (to avoid duplication of cookbooks, if you have several chef-repo). To install it in special path you can use \inline!--path! option:
+By default, you will not find this cookbook in <<cookbooks>> directory. Berkshelf install cookbooks in <<~/.berkshelf>> directory (to avoid duplication of cookbooks, if you have several chef-repo). To install it in special path you can use \inline!vendor! command:
 
 \begin{lstlisting}[language=Bash,label=lst:my-cloud-berkshelf3]
-$ berks install --path cookbooks
+$ berks vendor cookbooks
 Using apache2 (1.7.0)
 $ ls cookbooks
 apache2
