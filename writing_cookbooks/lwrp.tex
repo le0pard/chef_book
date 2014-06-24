@@ -319,6 +319,84 @@ where \inline!t.updated_by_last_action?! uses a variable to check whether a new 
 
 A lightweight resource should be set to inline compile mode by adding the \inline!use_inline_resources! method at the top of the provider. This ensures that notifications work properly across the resource collection. The \inline!use_inline_resources! method was added to the chef-client starting in version 11.0 to address the behavior described below. The \inline!use_inline_resources! method should be considered a requirement for any lightweight resource authored against the 11.0+ versions of the chef-client. This behavior will become the default behavior in an upcoming version of the chef-client.
 
+The reason why the \inline!use_inline_resources method! exists at all is due to how the chef-client processes resources. Currently, the default behavior of the chef-client processes a single collection of resources, converged on the node in order.
+
+A lightweight resource is often implemented using the core chef-client resources — \inline!file!, \inline!template!, \inline!package!, and so on—as building blocks. A lightweight resource is then added to a recipe using the short name of the lightweight resource in the recipe (and not by using any of the building block resource components).
+
+This situation can create problems with notifications because the chef-client includes embedded resources in the <<single collection of resources>> after the parent resource has been fully evaluated.
+
+For example:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp-inline-resources1]
+custom_resource "something" do
+  action :run
+  notifies :restart, "service[whatever]", :immediately
+end
+
+service "whatever" do
+  action :nothing
+end
+\end{lstlisting}
+
+If the \inline!custom_resource! is built using the file resource, what happens during the chef-client run is:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-lwrp-inline-resources2]
+custom_resource (not updated)
+  file (updated)
+service (skipped, due to ``:nothing``)
+\end{lstlisting}
+
+The \inline!custom_resource! is converged completely, its state set to not updated before the \inline!file! resource is evaluated. The \inline!notifies :restart! is ignored and the service is not restarted.
+
+If the author of the custom resource knows in advance what notification is required, then the \inline!file! resource can be configured for the notification in the provider. For example:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp-inline-resources3]
+action :run do
+  file "/tmp/foo" do
+    owner "root"
+    group "root"
+    mode "0644"
+    notifies :restart, "service[whatever]", :immediately
+  end
+end
+\end{lstlisting}
+
+And then in the recipe:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp-inline-resources4]
+service "whatever" do
+  action :nothing
+end
+\end{lstlisting}
+
+This approach works, but only when the author of the lightweight resource knows what should be notified in advance of the chef-client run. Consequently, this is less-than-ideal for most situations.
+
+Using the \inline!use_inline_resources! method will ensure that the chef-client processes a lightweight resource as if it were its own resource collection—a <<mini chef-client run>>, effectively—that is converged before the chef-client finishes evaluating the parent lightweight resource. This ensures that any notifications that may exist in the embedded resources are processed as if they were notifications on the parent lightweight resource. For example:
+
+\begin{lstlisting}[label=lst:cookbook-lwrp-inline-resources5]
+custom_resource "something" do
+  action :run
+  notifies :restart, "service[whatever]", :immediately
+end
+
+service "whatever" do
+  action :nothing
+end
+\end{lstlisting}
+
+If the \inline!custom_resource! is built using the \inline!file! resource, what happens during the chef-client run is:
+
+\begin{lstlisting}[language=Bash,label=lst:cookbook-lwrp-inline-resources6]
+custom_resource (starts converging)
+  file (updated)
+custom_resource (updated, because ``file`` updated)
+service (updates, because ``:immediately`` is set in the custom resource)
+\end{lstlisting}
+
+The \inline!use_inline_resources! method should be considered a default method for any provider that defines a custom resource. It's the correct behavior. And it will soon become the default behavior in a future version of the chef-client.
+
+Because inline compile mode makes it impossible for embedded resources to notify resources in the parent resource collection, inline compile mode may cause issues with some provider implementations. In these cases, use a definition to work around inline compile mode.
+
 \subsubsection{whyrun\_supported?}
 
 why-run mode is a way to see what the chef-client would have configured, had an actual chef-client run occurred. This approach is similar to the concept of <<no-operation>> (or <<no-op>>): decide what should be done, but then don't actually do anything until it's done right. This approach to configuration management can help identify where complexity exists in the system, where inter-dependencies may be located, and to verify that everything will be configured in the desired manner.
