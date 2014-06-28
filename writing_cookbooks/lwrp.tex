@@ -311,11 +311,12 @@ action :create do
       })
     action :create
   end
+  t.run_action(:create)
   new_resource.updated_by_last_action(t.updated_by_last_action?)
 end
 \end{lstlisting}
 
-where \inline!t.updated_by_last_action?! uses a variable to check whether a new crontab entry was created.
+where \inline!t.updated_by_last_action?! uses a variable to check whether a new crontab entry was created. Also you should remember that \inline!t.updated_by_last_action?! will work only with \inline!run_action!, without it this method will return always false.
 
 \subsubsection{use\_inline\_resources}
 
