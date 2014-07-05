@@ -11,7 +11,7 @@ On main site you can find \href{http://www.foodcritic.io/}{list of rules}. Also 
 
 \subsubsection{Example}
 
-We need to add foodcritic gems in Gemfile inside our \inline!my_cool_app! cookbook:
+We need to add foodcritic gems in Gemfile inside our \lstinline!my_cool_app! cookbook:
 
 \begin{lstlisting}[label=lst:testing-foodcritic1]
 source 'https://rubygems.org'
@@ -20,7 +20,7 @@ gem 'berkshelf'
 gem 'foodcritic'
 \end{lstlisting}
 
-And you should to execute \inline!bundle! command to install this gem. Next we can to check \inline!my_cool_app! cookbook by foodcritic:
+And you should to execute \lstinline!bundle! command to install this gem. Next we can to check \lstinline!my_cool_app! cookbook by foodcritic:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-foodcritic2]
 $ foodcritic .
@@ -64,7 +64,7 @@ my_cool_app/providers/know_host.rb
      content       '# This file must contain at least one line. This is that line.'
 \end{lstlisting}
 
-And run again \inline!foodcritic!:
+And run again \lstinline!foodcritic!:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-foodcritic4]
 $  foodcritic .
@@ -97,7 +97,7 @@ end
 
 While Rake is the old grand-daddy of Ruby build tools, a number of people prefer to use Thor.
 
-We need to add \href{https://github.com/reset/thor-foodcritic}{thor-foodcritic} gem in Gemfile inside our \inline!my_cool_app! cookbook:
+We need to add \href{https://github.com/reset/thor-foodcritic}{thor-foodcritic} gem in Gemfile inside our \lstinline!my_cool_app! cookbook:
 
 \begin{lstlisting}[label=lst:testing-thor1]
 source 'https://rubygems.org'
@@ -107,7 +107,7 @@ gem 'foodcritic'
 gem 'thor-foodcritic'
 \end{lstlisting}
 
-And you should to execute \inline!bundle! command to install this gem. Add the FoodCritic tasks to Thorfile:
+And you should to execute \lstinline!bundle! command to install this gem. Add the FoodCritic tasks to Thorfile:
 
 \begin{lstlisting}[label=lst:testing-thor2]
 # encoding: utf-8
@@ -157,7 +157,7 @@ Options:
 Run a lint test against the specified Cookbook and Role paths or otherwise your current working directory.
 \end{lstlisting}
 
-We can ignore some rules by using tags. For example, to ignore \inline!FC015! warning, we can run command:
+We can ignore some rules by using tags. For example, to ignore \lstinline!FC015! warning, we can run command:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-thor6]
 $ thor foodcritic:lint -t ~FC015
@@ -165,7 +165,7 @@ $ thor foodcritic:lint -t ~FC015
 $
 \end{lstlisting}
 
-Or we can use \inline!.foodcritic! file inside our cookbook folder and add tags inside it:
+Or we can use \lstinline!.foodcritic! file inside our cookbook folder and add tags inside it:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-thor7]
 $ cat .foodcritic
@@ -176,8 +176,8 @@ $ thor foodcritic:lint
 $
 \end{lstlisting}
 
-Here we use the tilde \inline!~! to exclude \inline!FC015!.
-For example, if we need check only rules, which have tags \inline!services! and \inline!style!, we use directly by foodcritic command:
+Here we use the tilde \lstinline!~! to exclude \lstinline!FC015!.
+For example, if we need check only rules, which have tags \lstinline!services! and \lstinline!style!, we use directly by foodcritic command:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-thor8]
 $ foodcritic -t style,services .

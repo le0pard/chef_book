@@ -9,7 +9,7 @@ Node itself represent any physical, virtual, or cloud machine. In most cases num
 }
 \end{lstlisting}
 
-Node file should contain valid JSON document. Main key in this json is \inline!run_list!. This key contain array of recipes and roles, which should be executed on machine. It always executed in the same order as listed in this key. As you can see right now \inline!run_list! is empty. To install apache2 you need to add the recipe in this array. This information can be found in README of cookbook (if this vendor cookbook well written), in metadata.rb or just open directory recipes - the name of the file will mean recipe name. \inline!default.rb! file mean a recipe that will be executed when you call the cookbook in \inline!run_list! without designation of recipe. Examples:
+Node file should contain valid JSON document. Main key in this json is \lstinline!run_list!. This key contain array of recipes and roles, which should be executed on machine. It always executed in the same order as listed in this key. As you can see right now \lstinline!run_list! is empty. To install apache2 you need to add the recipe in this array. This information can be found in README of cookbook (if this vendor cookbook well written), in metadata.rb or just open directory recipes - the name of the file will mean recipe name. \lstinline!default.rb! file mean a recipe that will be executed when you call the cookbook in \lstinline!run_list! without designation of recipe. Examples:
 
 \begin{lstlisting}[language=JSON,label=lst:my-cloud-node2,title=my-cloud/nodes/web1.example.com.json]
 {
@@ -19,6 +19,6 @@ Node file should contain valid JSON document. Main key in this json is \inline!r
 }
 \end{lstlisting}
 
-This \inline!run_list! will execute default recipe from apache2 cookbook.
+This \lstinline!run_list! will execute default recipe from apache2 cookbook.
 
 Now we are ready to test our kitchen.

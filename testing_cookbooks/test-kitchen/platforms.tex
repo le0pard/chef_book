@@ -1,6 +1,6 @@
 \subsection{Adding a Platform}
 
-Now that we are masters of the Ubuntu platform, let's add support for CentOS to our cookbook. This shouldn't be too bad. Open \inline!.kitchen.yml! in your editor and the \inline!centos-6.4! line to your platforms list so that it resembles:
+Now that we are masters of the Ubuntu platform, let's add support for CentOS to our cookbook. This shouldn't be too bad. Open \lstinline!.kitchen.yml! in your editor and the \lstinline!centos-6.4! line to your platforms list so that it resembles:
 
 \begin{lstlisting}[label=lst:testing-test-kitchen20]
 ---
@@ -34,7 +34,7 @@ We're going to use two shortcuts here in the next command:
 
 \begin{itemize}
   \item Each Test Kitchen instance has a simple state machine that tracks where it is in its lifecycle. Given its current state and the desired state, the instance is smart enough to run all actions in between current and desired. In our next example we will take an instance from not created to verified in one command.
-  \item Any \inline!kitchen! subcommand that takes an instance name as an argument can take a Ruby regular expression that will be used to glob a list of instances together. This means that \inline!kitchen test ubuntu! would run the test action only the ubuntu instance. Note that the list subcommand also takes the regex-globbing argument so feel free to experiment there. In our next example we'll select the \inline!default-centos-64! instance with simply \inline!64!.
+  \item Any \lstinline!kitchen! subcommand that takes an instance name as an argument can take a Ruby regular expression that will be used to glob a list of instances together. This means that \lstinline!kitchen test ubuntu! would run the test action only the ubuntu instance. Note that the list subcommand also takes the regex-globbing argument so feel free to experiment there. In our next example we'll select the \lstinline!default-centos-64! instance with simply \lstinline!64!.
 \end{itemize}
 
 Let's see how CentOS runs our cookbook:
@@ -111,13 +111,13 @@ $ kitchen destroy
 -----> Kitchen is finished. (0m12.95s)
 \end{lstlisting}
 
-Any \inline!kitchen! subcommand without an instance argument will apply to all instances.
+Any \lstinline!kitchen! subcommand without an instance argument will apply to all instances.
 
 
 
 \subsection{Fixing Converge}
 
-Now a colleague has expressed interest in running the cookbook on a fleet of older Ubuntu 10.04 systems. Open \inline!.kitchen.yml! in your editor and add a \inline!ubuntu-10.04! entry to the platforms list:
+Now a colleague has expressed interest in running the cookbook on a fleet of older Ubuntu 10.04 systems. Open \lstinline!.kitchen.yml! in your editor and add a \lstinline!ubuntu-10.04! entry to the platforms list:
 
 \begin{lstlisting}[label=lst:testing-test-kitchen26]
 ---
@@ -139,7 +139,7 @@ suites:
     attributes:
 \end{lstlisting}
 
-And run \inline!kitchen list! to confirm the introduction of our latest instance:
+And run \lstinline!kitchen list! to confirm the introduction of our latest instance:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen27]
 $ kitchen list
@@ -149,7 +149,7 @@ default-ubuntu-1004  Vagrant  ChefSolo     <Not Created>
 default-centos-64    Vagrant  ChefSolo     <Not Created>
 \end{lstlisting}
 
-Now we'll run the \inline!test! subcommand and go grab a coffee:
+Now we'll run the \lstinline!test! subcommand and go grab a coffee:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen28]
 $ kitchen test 10
@@ -190,7 +190,7 @@ git-svn - fast, scalable, distributed revision control system (svn interoperabil
 gitweb - fast, scalable, distributed revision control system (web interface)
 \end{lstlisting}
 
-Okay, it looks like we want to install the \inline!git-core! package for this release of Ubuntu. Let's fix this up back in the default recipe. Open up \inline!recipes/default.rb! and edit to something like:
+Okay, it looks like we want to install the \lstinline!git-core! package for this release of Ubuntu. Let's fix this up back in the default recipe. Open up \lstinline!recipes/default.rb! and edit to something like:
 
 \begin{lstlisting}[language=Ruby,label=lst:testing-test-kitchen30]
 # install needed package
@@ -266,7 +266,7 @@ Uploading /tmp/busser/suites/bats/nginx_installed.bats (mode=0755)
 -----> Kitchen is finished. (0m6.12s)
 \end{lstlisting}
 
-We used \inline!-c! to run a test against all matching instances concurrently, where next argument mean number of instances run at the same time.
+We used \lstinline!-c! to run a test against all matching instances concurrently, where next argument mean number of instances run at the same time.
 
 We've successfully verified all three instances, so let's shut them down.
 

@@ -13,7 +13,7 @@ There are two main reasons you might want to do this:
 
 \subsection{Codifying Standards in Your Organization}
 
-Suppose I use the community \href{https://supermarket.getchef.com/cookbooks/ntp}{ntp} cookbook but I want to enforce a set of timeservers across my infrastructure. Instead of running this cookbook directly, I could create an \inline!acmeco-ntp! cookbook with the following settings:
+Suppose I use the community \href{https://supermarket.getchef.com/cookbooks/ntp}{ntp} cookbook but I want to enforce a set of timeservers across my infrastructure. Instead of running this cookbook directly, I could create an \lstinline!acmeco-ntp! cookbook with the following settings:
 
 \begin{lstlisting}[label=lst:wrapper-cookbook1,caption=acmeco-ntp/attributes/default.rb]
 default['ntp']['peers'] = ['ntp1.acmeco.com', 'ntp2.acmeco.com']
@@ -23,7 +23,7 @@ default['ntp']['peers'] = ['ntp1.acmeco.com', 'ntp2.acmeco.com']
 include_recipe 'ntp'
 \end{lstlisting}
 
-Now I can simply run \inline!recipe[acmeco-ntp]! in my infrastructure and the default settings will take effect.
+Now I can simply run \lstinline!recipe[acmeco-ntp]! in my infrastructure and the default settings will take effect.
 
 Note that it is not necessary to use normal or override priority here. Dependent cookbooks are loaded first by Chef Client and their attribute files are evaluated before those of the caller.
 
@@ -46,11 +46,11 @@ include_recipe 'postgresql::yum_pgdg_postgresql'
 include_recipe 'postgresql::server'
 \end{lstlisting}
 
-What's with the repetition of computed attributes in the wrapper? Well, the values for \inline!default['postgresql']['client']['packages']! and so on were calculated when the attributes were loaded by the dependency, so to recompute them based on the new value, we need to restate the expressions.
+What's with the repetition of computed attributes in the wrapper? Well, the values for \lstinline!default['postgresql']['client']['packages']! and so on were calculated when the attributes were loaded by the dependency, so to recompute them based on the new value, we need to restate the expressions.
 
 You could do all of this work in roles as well — and if you do, the computed attributes will be correctly resolved without this kind of repetition. This is another reason that roles are still valuable.
 
-You can take this one step further: suppose you wanted to then derive the \inline!pg_hba.conf! (the database access control file in PostgreSQL) through some external mechanism that isn't supported in the upstream cookbook. No problem: you can also set an attribute in recipe context, before the \inline!include_recipe! statements above:
+You can take this one step further: suppose you wanted to then derive the \lstinline!pg_hba.conf! (the database access control file in PostgreSQL) through some external mechanism that isn't supported in the upstream cookbook. No problem: you can also set an attribute in recipe context, before the \lstinline!include_recipe! statements above:
 
 \begin{lstlisting}[label=lst:wrapper-cookbook5]
 pg_hba_hash = call_some_method_to_get_a_hash()
@@ -72,7 +72,7 @@ PGPORT=<%= node['postgresql']['config']['port'] %>
 PGCHEFS="Ohai" # or whatever changes you want to make
 \end{lstlisting}
 
-and <<rewind>> the resource collection definition after that resource has been loaded by \inline!recipe[postgresql::server]! to change its cookbook attribute:
+and <<rewind>> the resource collection definition after that resource has been loaded by \lstinline!recipe[postgresql::server]! to change its cookbook attribute:
 
 \begin{lstlisting}[label=lst:wrapper-cookbook7,caption=acmeco-postgresql/recipes/default.rb]
 include_recipe 'postgresql::yum_pgdg_postgresql'

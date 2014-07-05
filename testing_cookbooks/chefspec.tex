@@ -16,7 +16,7 @@ gem 'thor-foodcritic'
 gem 'chefspec'
 \end{lstlisting}
 
-And you should to execute \inline!bundle! command to install this gem.
+And you should to execute \lstinline!bundle! command to install this gem.
 
 \subsection{Testing}
 
@@ -85,7 +85,7 @@ Finished in 2.25 seconds
 6 examples, 0 failures
 \end{lstlisting}
 
-Our tests failed, because we used \inline!nginx_site! definition, but dont have nginx service inside our recipe. We can fix this by adding nginx default recipe inside our default recipe (nginx default recipe contain \inline!service! resource).
+Our tests failed, because we used \lstinline!nginx_site! definition, but dont have nginx service inside our recipe. We can fix this by adding nginx default recipe inside our default recipe (nginx default recipe contain \lstinline!service! resource).
 
 \begin{lstlisting}[label=lst:testing-chefspec-nginx]
 ...
@@ -96,7 +96,7 @@ service 'nginx' do
 end
 \end{lstlisting}
 
-You can ask me: <<Wait, we already have role \inline!nginx! inside our node, which install nginx. Does in this case we will call nginx recipe twice?>>. Yes, your are right. But as you remember, main idea of Chef is idempotence, so on second call of nginx recipe it will do nothing (if recipe written in this way). So we shouldn't worry about this:
+You can ask me: <<Wait, we already have role \lstinline!nginx! inside our node, which install nginx. Does in this case we will call nginx recipe twice?>>. Yes, your are right. But as you remember, main idea of Chef is idempotence, so on second call of nginx recipe it will do nothing (if recipe written in this way). So we shouldn't worry about this:
 
 \begin{lstlisting}[label=lst:testing-chefspec6,title=my-server-cloud/site-cookbooks/my\_cool\_app/recipes/default.rb]
 ...
@@ -112,7 +112,7 @@ end
 ...
 \end{lstlisting}
 
-Add test for \inline!include_recipe! call and check tests again:
+Add test for \lstinline!include_recipe! call and check tests again:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-chefspec7]
 $ rspec
@@ -164,7 +164,7 @@ describe 'my_cool_app::node' do
 end
 \end{lstlisting}
 
-As you can see, you can pass \inline!platform! and \inline!version!, which will be used as Ohai attribute values. This used to check, what depend on \inline!platform! recipe will install different dependencies. Our results:
+As you can see, you can pass \lstinline!platform! and \lstinline!version!, which will be used as Ohai attribute values. This used to check, what depend on \lstinline!platform! recipe will install different dependencies. Our results:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-chefspec9]
 $ rspec

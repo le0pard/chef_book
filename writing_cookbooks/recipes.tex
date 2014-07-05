@@ -101,7 +101,7 @@ depends "apache2"
 
 \subsection{Create Exceptions}
 
-A recipe can write events to a log file and can cause exceptions using \inline!Chef::Log!. The levels include debug, info, warn, error, and fatal. For example, to just capture information:
+A recipe can write events to a log file and can cause exceptions using \lstinline!Chef::Log!. The levels include debug, info, warn, error, and fatal. For example, to just capture information:
 
 \begin{lstlisting}[language=Bash,label=lst:cookbook-recipes8]
 Chef::Log.info('some useful information')
@@ -115,7 +115,7 @@ Chef::Log.fatal!('something bad')
 
 \subsection{Include Recipes}
 
-A recipe can include one (or more) recipes located in external cookbooks by using the \inline!include_recipe! method. When a recipe is included, the resources found in that recipe will be inserted (in the same exact order) at the point where the \inline!include_recipe! keyword is located. The syntax for including a recipe is like this:
+A recipe can include one (or more) recipes located in external cookbooks by using the \lstinline!include_recipe! method. When a recipe is included, the resources found in that recipe will be inserted (in the same exact order) at the point where the \lstinline!include_recipe! keyword is located. The syntax for including a recipe is like this:
 
 \begin{lstlisting}[language=Bash,label=lst:cookbook-recipes10]
 include_recipe "recipe"
@@ -127,7 +127,7 @@ For example:
 include_recipe "apache2::mod_ssl"
 \end{lstlisting}
 
-If the \inline!include_recipe! method is used more than once to include a recipe, only the first inclusion is processed and any subsequent inclusions are ignored.
+If the \lstinline!include_recipe! method is used more than once to include a recipe, only the first inclusion is processed and any subsequent inclusions are ignored.
 
 \subsection{Reload Attributes}
 

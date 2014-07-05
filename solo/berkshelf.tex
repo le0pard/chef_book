@@ -9,14 +9,14 @@ source "http://api.berkshelf.com"
 cookbook 'apache2'
 \end{lstlisting}
 
-After running the command \inline!berks install! this cookbook will be installed with dependencies.
+After running the command \lstinline!berks install! this cookbook will be installed with dependencies.
 
 \begin{lstlisting}[language=Bash,label=lst:my-cloud-berkshelf2]
 $ berks install
 Using apache2 (1.7.0)
 \end{lstlisting}
 
-By default, you will not find this cookbook in <<cookbooks>> directory. Berkshelf install cookbooks in <<~/.berkshelf>> directory (to avoid duplication of cookbooks, if you have several chef-repo). To install it in special path you can use \inline!vendor! command:
+By default, you will not find this cookbook in <<cookbooks>> directory. Berkshelf install cookbooks in <<~/.berkshelf>> directory (to avoid duplication of cookbooks, if you have several chef-repo). To install it in special path you can use \lstinline!vendor! command:
 
 \begin{lstlisting}[language=Bash,label=lst:my-cloud-berkshelf3]
 $ berks vendor cookbooks
@@ -25,6 +25,6 @@ $ ls cookbooks
 apache2
 \end{lstlisting}
 
-Option \inline!knife[:berkshelf_path]! in knife.rb file set to install our cookbooks into cookbooks directory. In this case no need to run \inline!berks install --path cookbooks! each time, when you need <<cook>> a node - knife-solo will do it automatically.
+Option \lstinline!knife[:berkshelf_path]! in knife.rb file set to install our cookbooks into cookbooks directory. In this case no need to run \lstinline!berks install --path cookbooks! each time, when you need <<cook>> a node - knife-solo will do it automatically.
 
 Now we can start to work with a nodes.

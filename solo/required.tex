@@ -19,7 +19,7 @@ gem 'knife-solo'
 gem 'berkshelf'
 \end{lstlisting}
 
-and run command \inline!bundle! in terminal. As a result, by using \href{http://bundler.io/}{bundler}, we install any required rubygems.
+and run command \lstinline!bundle! in terminal. As a result, by using \href{http://bundler.io/}{bundler}, we install any required rubygems.
 
 \subsection{Rubygems and bundler}
 
@@ -34,11 +34,11 @@ But why do we need these rubygems?
 Knife is a command-line tool that provides an interface between a local chef-repo and the Chef server. But for Chef Solo is better to install the \href{http://matschaffer.github.io/knife-solo/}{knife-solo} plugin. It will install knife as dependency and adds 5 subcommands to knife tool:
 
 \begin{itemize}
-  \item \inline!knife solo init! is used to create a new directory structure (i.e. kitchen) that fits with Chef's standard structure and can be used to build and store recipes
-  \item \inline!knife solo prepare! installs Chef on a given host. It's structured to auto-detect the target OS and change the installation process accordingly
-  \item \inline!knife solo cook! uploads the current kitchen to the target host and runs chef-solo on that host
-  \item \inline!knife solo bootstrap! combines the two previous ones (prepare and cook)
-  \item \inline!knife solo clean! removes the uploaded kitchen from the target host
+  \item \lstinline!knife solo init! is used to create a new directory structure (i.e. kitchen) that fits with Chef's standard structure and can be used to build and store recipes
+  \item \lstinline!knife solo prepare! installs Chef on a given host. It's structured to auto-detect the target OS and change the installation process accordingly
+  \item \lstinline!knife solo cook! uploads the current kitchen to the target host and runs chef-solo on that host
+  \item \lstinline!knife solo bootstrap! combines the two previous ones (prepare and cook)
+  \item \lstinline!knife solo clean! removes the uploaded kitchen from the target host
 \end{itemize}
 
 Knife-solo also integrates with \href{http://berkshelf.com/}{Berkshelf} and \href{https://github.com/applicationsonline/librarian-chef}{Librarian-Chef}.

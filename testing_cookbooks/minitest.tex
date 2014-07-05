@@ -67,7 +67,7 @@ Finished tests in 0.002407s, 415.5347 tests/s, 415.5347 assertions/s.
 -----> Kitchen is finished. (1m27.97s)
 \end{lstlisting}
 
-As you can see, minitest doesn't have additional helpers, like have serverspec (\inline!be_listening!, \inline!be_running!, etc). What is why let's consider second way of using it.
+As you can see, minitest doesn't have additional helpers, like have serverspec (\lstinline!be_listening!, \lstinline!be_running!, etc). What is why let's consider second way of using it.
 
 \subsection{Minitest Chef Handler}
 
@@ -81,7 +81,7 @@ require 'minitest-chef-handler'
 report_handlers << MiniTest::Chef::Handler.new
 \end{lstlisting}
 
-Option 2: Using \href{https://github.com/btm/minitest-handler-cookbook}{minitest-handler} cookbook, which should be added in the end of \inline!run_list!:
+Option 2: Using \href{https://github.com/btm/minitest-handler-cookbook}{minitest-handler} cookbook, which should be added in the end of \lstinline!run_list!:
 
 \begin{lstlisting}[label=lst:testing-minitest4]
 chef.run_list = [
@@ -90,7 +90,7 @@ chef.run_list = [
 ]
 \end{lstlisting}
 
-I prefer second variant. Just add in \inline!Berksfile! cookbook \inline!minitest-handler!:
+I prefer second variant. Just add in \lstinline!Berksfile! cookbook \lstinline!minitest-handler!:
 
 \begin{lstlisting}[label=lst:testing-minitest5]
 source "http://api.berkshelf.com"
@@ -100,7 +100,7 @@ metadata
 cookbook "minitest-handler"
 \end{lstlisting}
 
-Add it in \inline!run_list!:
+Add it in \lstinline!run_list!:
 
 \begin{lstlisting}[label=lst:testing-minitest6]
 suites:
@@ -159,4 +159,4 @@ recipe::my_cool_app::default#test_0001_install ntp package = 0.08 s = .
 recipe::my_cool_app::default#test_0003_nginx must running = 0.09 s = .
 \end{lstlisting}
 
-As a result, after launching all recipes in \inline!run_list!, last recipe \inline!minitest-handler::default! run minitest to check status of the node.
+As a result, after launching all recipes in \lstinline!run_list!, last recipe \lstinline!minitest-handler::default! run minitest to check status of the node.

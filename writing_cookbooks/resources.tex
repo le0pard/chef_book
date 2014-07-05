@@ -1,7 +1,7 @@
 \section{Resources and Providers}
 \label{sec:cookbook-resources}
 
-As you read from previous chapter, Chef inside have resources (in example we used \inline!package! resource). A resource defines the actions that can be taken, such as when a package should be installed, whether a service should be enabled or restarted, which groups, users, or groups of users should be created, where to put a collection of files, what the name of a new directory should be, and so on. During a chef-client run, each resource is identified and then associated with a provider. The provider then does the work to complete the action defined by the resource. Each resource is processed in the same order as they appear in a recipe. The chef-client ensures that the same actions are taken the same way everywhere and that actions produce the same result every time. A resource is implemented within a recipe using Ruby.
+As you read from previous chapter, Chef inside have resources (in example we used \lstinline!package! resource). A resource defines the actions that can be taken, such as when a package should be installed, whether a service should be enabled or restarted, which groups, users, or groups of users should be created, where to put a collection of files, what the name of a new directory should be, and so on. During a chef-client run, each resource is identified and then associated with a provider. The provider then does the work to complete the action defined by the resource. Each resource is processed in the same order as they appear in a recipe. The chef-client ensures that the same actions are taken the same way everywhere and that actions produce the same result every time. A resource is implemented within a recipe using Ruby.
 
 Let's look at the most necessary resources.
 
@@ -191,13 +191,13 @@ user "random" do
 end
 \end{lstlisting}
 
-There are a number of encryption options and tools that can be used to create a password shadow hash. In general, using a strong encryption method like SHA-512 and the passwd command in the OpenSSL toolkit is a good approach, however the encryption options and tools that are available may be different from one distribution to another. The following examples show how the command line can be used to create a password shadow hash. When using the \inline!passwd! command in the OpenSSL tool:
+There are a number of encryption options and tools that can be used to create a password shadow hash. In general, using a strong encryption method like SHA-512 and the passwd command in the OpenSSL toolkit is a good approach, however the encryption options and tools that are available may be different from one distribution to another. The following examples show how the command line can be used to create a password shadow hash. When using the \lstinline!passwd! command in the OpenSSL tool:
 
 \begin{lstlisting}[language=Bash,label=lst:cookbook-resources-cookbook-user2]
 $ openssl passwd -1 "theplaintextpassword"
 \end{lstlisting}
 
-When using \inline!mkpasswd!:
+When using \lstinline!mkpasswd!:
 
 \begin{lstlisting}[language=Bash,label=lst:cookbook-resources-cookbook-user3]
 $ mkpasswd -m sha-512
@@ -217,4 +217,4 @@ end
 
 The deploy resource is used to manage and control deployments. This is a popular resource, but is also complex, having the most attributes, multiple providers, the added complexity of callbacks, plus four attributes that support layout modifications from within a recipe.
 
-The deploy resource is modeled after \href{http://capistranorb.com/}{Capistrano}, a utility and framework for executing commands in parallel on multiple remote machines via SSH. The deploy resource is designed to behave in a way that is similar to the \inline!deploy! and \inline!deploy:migration! tasks in Capistrano.
+The deploy resource is modeled after \href{http://capistranorb.com/}{Capistrano}, a utility and framework for executing commands in parallel on multiple remote machines via SSH. The deploy resource is designed to behave in a way that is similar to the \lstinline!deploy! and \lstinline!deploy:migration! tasks in Capistrano.

@@ -26,7 +26,7 @@ Anything you put in <<resources/>> or <<providers/>> Chef will attempt to parse 
 
 \subsection{Example}
 
-Let's go through an example. We are going to create a HWRP that is very simple, it already written as a LWRP. Our HWRP will called \inline!my_cool_app_known_host!, to not conflict with already existed in cookbook LWRP \inline!my_cool_app_know_host!.
+Let's go through an example. We are going to create a HWRP that is very simple, it already written as a LWRP. Our HWRP will called \lstinline!my_cool_app_known_host!, to not conflict with already existed in cookbook LWRP \lstinline!my_cool_app_know_host!.
 
 \subsubsection{Resource}
 
@@ -141,7 +141,7 @@ class Chef
 end
 \end{lstlisting}
 
-While we don't need to write an initialize method (we can), we do need to override \inline!load_current_resource!.
+While we don't need to write an initialize method (we can), we do need to override \lstinline!load_current_resource!.
 
 \begin{lstlisting}[label=lst:cookbook-hwrp6]
 require 'chef/provider'
@@ -171,7 +171,7 @@ class Chef
 end
 \end{lstlisting}
 
-Now it is time to define what we do in our actions, with our HWRP we need to define methods like \inline!action_create! to define a \inline!:create! action. Chef will do some introspection to find these methods and hook them up.
+Now it is time to define what we do in our actions, with our HWRP we need to define methods like \lstinline!action_create! to define a \lstinline!:create! action. Chef will do some introspection to find these methods and hook them up.
 
 \begin{lstlisting}[label=lst:cookbook-hwrp7]
 require 'chef/provider'
@@ -216,7 +216,7 @@ Now we can test it.
 my_cool_app_known_host 'bitbucket.org'
 \end{lstlisting}
 
-To run chef-client in debug mode you should use \inline!-l! attribute with settings \inline!debug!. In vagrant you need set \inline!log_level! for node in Vagrantfile:
+To run chef-client in debug mode you should use \lstinline!-l! attribute with settings \lstinline!debug!. In vagrant you need set \lstinline!log_level! for node in Vagrantfile:
 
 \begin{lstlisting}[label=lst:cookbook-hwrp9]
 chef_client.vm.provision :chef_client do |chef|
@@ -245,7 +245,7 @@ INFO: Chef Run complete in 15.491575653 seconds
 ...
 \end{lstlisting}
 
-Now let's add code for actions \inline!:create! and \inline!:delete! (this code similar to LWRP code):
+Now let's add code for actions \lstinline!:create! and \lstinline!:delete! (this code similar to LWRP code):
 
 \begin{lstlisting}[label=lst:cookbook-hwrp11]
 require 'chef/provider'

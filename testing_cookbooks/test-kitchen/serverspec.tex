@@ -10,7 +10,7 @@ First we're going to create a directory for our test file:
 $ mkdir -p test/integration/node/serverspec
 \end{lstlisting}
 
-Next, create a file called \inline!test/integration/server/serverspec/nginx_daemon_spec.rb! with the following:
+Next, create a file called \lstinline!test/integration/server/serverspec/nginx_daemon_spec.rb! with the following:
 
 \begin{lstlisting}[label=lst:testing-test-kitchen37]
 require 'serverspec'
@@ -37,7 +37,7 @@ describe "Nginx Daemon" do
 end
 \end{lstlisting}
 
-And \inline!test/integration/server/serverspec/node_spec.rb! with the following:
+And \lstinline!test/integration/server/serverspec/node_spec.rb! with the following:
 
 \begin{lstlisting}[label=lst:testing-test-kitchen39]
 require 'serverspec'
@@ -60,7 +60,7 @@ describe "Node" do
 end
 \end{lstlisting}
 
-As our primary target platform was Ubuntu 12.04, we'll target this one first for development. Now, in Test-Driven style we'll run \inline!kitchen verify! to watch our tests fail spectacularly:
+As our primary target platform was Ubuntu 12.04, we'll target this one first for development. Now, in Test-Driven style we'll run \lstinline!kitchen verify! to watch our tests fail spectacularly:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen40]
 $ kitchen verify node-ubuntu-1204
@@ -84,7 +84,7 @@ Finished in 0.22341 seconds
 
 \end{lstlisting}
 
-One quick check of \inline!kitchen list! tells us that our instance was created by not successfully converged:
+One quick check of \lstinline!kitchen list! tells us that our instance was created by not successfully converged:
 
 \begin{lstlisting}[language=Bash,label=lst:testing-test-kitchen41]
 $ kitchen list
@@ -146,7 +146,7 @@ Finished in 0.09353 seconds
 -----> Kitchen is finished. (0m9.27s)
 \end{lstlisting}
 
-If for example, you don't want support some platform, you can use \inline!excludes! key in \inline!.kitchen.yml! file:
+If for example, you don't want support some platform, you can use \lstinline!excludes! key in \lstinline!.kitchen.yml! file:
 
 \begin{lstlisting}[label=lst:testing-test-kitchen43]
 ---
