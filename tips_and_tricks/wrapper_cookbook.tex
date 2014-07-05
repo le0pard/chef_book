@@ -13,7 +13,7 @@ There are two main reasons you might want to do this:
 
 \subsection{Codifying Standards in Your Organization}
 
-Suppose I use the community \href{http://community.opscode.com/cookbooks/ntp}{ntp} cookbook but I want to enforce a set of timeservers across my infrastructure. Instead of running this cookbook directly, I could create an \inline!acmeco-ntp! cookbook with the following settings:
+Suppose I use the community \href{https://supermarket.getchef.com/cookbooks/ntp}{ntp} cookbook but I want to enforce a set of timeservers across my infrastructure. Instead of running this cookbook directly, I could create an \inline!acmeco-ntp! cookbook with the following settings:
 
 \begin{lstlisting}[label=lst:wrapper-cookbook1,caption=acmeco-ntp/attributes/default.rb]
 default['ntp']['peers'] = ['ntp1.acmeco.com', 'ntp2.acmeco.com']
@@ -30,7 +30,7 @@ Note that it is not necessary to use normal or override priority here. Dependent
 
 \subsection{Modifying Upstream Cookbook Behavior}
 
-Sometimes you want to modify the behavior of an upstream cookbook without forking it. For example, let's take the \href{http://community.opscode.com/cookbooks/postgresql}{PostgreSQL community cookbook}. It installs whatever PostgreSQL packages come from your operating system distribution. Suppose you want to install version 9.4 of PostgreSQL on an operating system that would not natively provide it (e.g. RedHat Enterprise Linux 6) but those packages can be found in the official PostgreSQL Global Development Group (PGDG) repository. How would you go about doing that? You could write a wrapper cookbook that set the right attributes:
+Sometimes you want to modify the behavior of an upstream cookbook without forking it. For example, let's take the \href{https://supermarket.getchef.com/cookbooks/postgresql}{PostgreSQL community cookbook}. It installs whatever PostgreSQL packages come from your operating system distribution. Suppose you want to install version 9.4 of PostgreSQL on an operating system that would not natively provide it (e.g. RedHat Enterprise Linux 6) but those packages can be found in the official PostgreSQL Global Development Group (PGDG) repository. How would you go about doing that? You could write a wrapper cookbook that set the right attributes:
 
 \begin{lstlisting}[label=lst:wrapper-cookbook3,caption=acmeco-postgresql/attributes/default.rb]
 default['postgresql']['version'] = '9.4'
