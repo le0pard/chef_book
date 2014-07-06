@@ -1,2 +1,9 @@
 \section{Knife Plugins}
 \label{sec:tat-knife-plugins}
+
+A Knife plugin is a set of one (or more) subcommands that can be added to Knife to support additional functionality that is not built-in to the base set of Knife subcommands. Many of the Knife plugins are built by members of the Chef community and several of them are built and maintained by Chef. A Knife plugin is installed to the \lstinline!~/.chef/plugins/knife/! directory, from where it can be run just like any other Knife subcommand.
+
+\begin{itemize}
+  \item The same common options used by Knife subcommands can also be used by Knife plug-ins
+  \item A Knife plugin can make authenticated API requests to the Chef server
+\end{itemize}
