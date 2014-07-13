@@ -4,6 +4,88 @@
 A Knife plugin is a set of one (or more) subcommands that can be added to Knife to support additional functionality that is not built-in to the base set of Knife subcommands. Many of the Knife plugins are built by members of the Chef community and several of them are built and maintained by Chef. A Knife plugin is installed to the \lstinline!~/.chef/plugins/knife/! directory, from where it can be run just like any other Knife subcommand.
 
 \begin{itemize}
-  \item The same common options used by Knife subcommands can also be used by Knife plug-ins
-  \item A Knife plugin can make authenticated API requests to the Chef server
+  \item the same common options used by Knife subcommands can also be used by Knife plug-ins;
+  \item a Knife plugin can make authenticated API requests to the Chef server;
 \end{itemize}
+
+The following Knife plug-ins are maintained by Chef:
+
+\begin{itemize}
+  \item \textbf{knife azure} - Microsoft Azure is a cloud hosting platform from Microsoft that provides virtual machines for Linux and Windows Server, cloud and database services, and more. The knife azure subcommand is used to manage API-driven cloud servers that are hosted by Microsoft Azure;
+  \item \textbf{knife bluebox} - Blue Box provides on-demand computing that is backed by a proprietary cloud operating system. The knife bluebox subcommand is used to manage API-driven cloud servers that are hosted by Blue Box;
+  \item \textbf{knife ec2} - Amazon EC2 is a web service that provides resizable compute capacity in the cloud, based on pre-configured operating systems and virtual application software using Amazon Machine Images (AMI). The knife ec2 subcommand is used to manage API-driven cloud servers that are hosted by Amazon EC2;
+  \item \textbf{knife eucalyptus} - Eucalyptus is an infrastructure as a service (IaaS) platform that supports hybrid-IaaS configurations that allow data to move between hosted and on-premise data centers. The knife eucalyptus subcommand is used to manage API-driven cloud servers that are hosted by Eucalyptus;
+  \item \textbf{knife google} - Google Compute Engine is a cloud hosting platform that offers scalable and flexible virtual machine computing. The knife google subcommand is used to manage API-driven cloud servers that are hosted by Google Compute Engine;
+  \item \textbf{knife hp} - HP Cloud Compute is a cloud hosting platform that provides computing, storage, identity, and other services across private, managed, and public clouds. The knife hp subcommand is used to manage API-driven cloud servers that are hosted by HP Cloud Compute;
+  \item \textbf{knife linode} - Linode is a cloud hosting platform that provides virtual private server hosting from the kernal and root access on up. The knife linode subcommand is used to manage API-driven cloud servers that are hosted by Linode;
+  \item \textbf{knife openstack} - The knife openstack subcommand is used to manage API-driven cloud servers that are hosted by OpenStack;
+  \item \textbf{knife rackspace} - Rackspace is a cloud-driven platform of virtualized servers that provide services for storage and data, platform and networking, and cloud computing. The knife rackspace subcommand is used to manage API-driven cloud servers that are hosted by Rackspace cloud services;
+  \item \textbf{knife terremark} - Terremark is a cloud hosting platform that provides cloud, IT infrastructure, and managed hosting services. The knife terremark subcommand is used to manage API-driven cloud servers that are hosted by Terremark;
+  \item \textbf{knife windows} - The knife windows subcommand is used to configure and interact with nodes that exist on server and/or desktop machines that are running Microsoft Windows. Nodes are configured using Windows Remote Management, which allows native objects—batch scripts, Windows PowerShell scripts, or scripting library variables—to be called by external applications;
+\end{itemize}
+
+
+\subsection{Examples}
+
+Let's consider an example of using \textbf{knife ec2} plugin. First of all you should install it. You can use bundler or rubugems:
+
+\begin{lstlisting}[language=Bash,label=lst:knife-plugins1]
+$ gem install knife-ec2
+\end{lstlisting}
+
+The \lstinline!server create! argument is used to create a new Amazon EC2 cloud instance. This will provision a new image in Amazon EC2, perform a bootstrap (using the SSH protocol), and then install the chef-client on the target system so that it can be used to configure the node and to communicate with a Chef server.
+
+To launch a new Amazon EC2 instance with the <<webserver>> role (Ubuntu Server 14.04 LTS (HVM), c3.large type):
+
+\begin{lstlisting}[language=Bash,label=lst:knife-plugins2]
+$ knife ec2 server create -r "role[webserver]" -I ami-a6926dce -f c3.large -G www,default -x ubuntu -N server01 -A aws-access-key-id -K aws-secret-access-key -S aws/servers.pem
+\end{lstlisting}
+
+Let's look at the meaning of these options:
+
+\begin{itemize}
+  \item \lstinline!-A KEY, --aws-access-key-id KEY! - the access key identifier used with Amazon EC2;
+  \item \lstinline!-K SECRET, --aws-secret-access-key SECRET! - the secret access key for the API endpoint used with Amazon EC2;
+  \item \lstinline!-f FLAVOR, --flavor FLAVOR! - the name of the flavor that identifies the hardware configuration of the server, including disk space, memory capacity, and CPU priority;
+  \item \lstinline!-G X,Y,Z, --groups X,Y,Z! - a comma-separated list of security groups. Not supported when using Amazon Virtual Private Cloud;
+  \item \lstinline!-x USERNAME, --ssh-user USERNAME! - the SSH user name;
+  \item \lstinline!-r RUN_LIST, --run-list RUN_LIST! - a comma-separated list of roles and/or recipes to be applied;
+  \item \lstinline!-S KEY, --ssh-key KEY! - the SSH key for the Amazon EC2 environment;
+\end{itemize}
+
+Some of this keys possible to setup inside \lstinline!knife.rb!:
+
+\begin{lstlisting}[language=Bash,label=lst:knife-plugins3]
+$ cat ~/.chef/knife.rb
+knife[:availability_zone] = ENV['EC2_AVAILABILITY_ZONE']
+knife[:aws_access_key_id] = ENV['AWS_ACCESS_KEY_ID']
+knife[:aws_secret_access_key] = ENV['AWS_SECRET_ACCESS_KEY']
+knife[:aws_ssh_key_id] = "aws/servers.pem"
+knife[:image] = "ami-a6926dce"
+knife[:flavor] = "c3.large"
+knife[:chef_mode] = "solo"
+knife[:region] = ENV['EC2_REGION']
+\end{lstlisting}
+
+And now \lstinline!server create! command has a different look:
+
+\begin{lstlisting}[language=Bash,label=lst:knife-plugins4]
+$ AWS_ACCESS_KEY_ID=aws-access-key-id AWS_SECRET_ACCESS_KEY=aws-secret-access-key knife ec2 server create -r "role[webserver]" -G www,default -x ubuntu -N server01
+\end{lstlisting}
+
+The \lstinline!server list! argument is used to find instances that are associated with a Amazon EC2 account. The results may show instances that are not currently managed by the Chef server.
+
+\begin{lstlisting}[language=Bash,label=lst:knife-plugins5]
+$ AWS_ACCESS_KEY_ID=aws-access-key-id AWS_SECRET_ACCESS_KEY=aws-secret-access-key knife ec2 server list
+Instance ID  Name                     Public IP       Private IP      Flavor     Image         SSH Key       Security Groups  IAM Profile  State
+i-xxx   staging-fix                   25.196.195.41   11.31.53.118    m1.medium  ami-f62cdf9e  some_key      db,web                        running
+i-xxx   Staging::Web                                                  m1.medium  ami-3d4ff254  some_key      web                           stopped
+\end{lstlisting}
+
+The \lstinline!server delete! argument is used to delete one or more nodes that are running in the Amazon EC2 cloud. To find a specific cloud instance, use the \lstinline!knife ec2 server list! argument. Use the \lstinline!--purge! option to delete all associated node and client objects from the Chef server or use the \lstinline!knife node delete! and \lstinline!knife client delete! sub-commands to delete specific node and client objects.
+
+\begin{lstlisting}[language=Bash,label=lst:knife-plugins6]
+$ AWS_ACCESS_KEY_ID=aws-access-key-id AWS_SECRET_ACCESS_KEY=aws-secret-access-key knife ec2 server delete i-xxx
+\end{lstlisting}
+
+As you can see in these examples knife plugins simplify working with hosting cloud providers.
