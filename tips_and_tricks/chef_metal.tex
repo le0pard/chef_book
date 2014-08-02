@@ -1,2 +1,161 @@
 \section{Chef Metal}
 \label{sec:tat-chef-metal}
+
+\href{https://github.com/opscode/chef-metal}{Chef Metal} solves the problem of repeatably creating machines and infrastructures in Chef. It has a plugin model that lets you write bootstrappers for your favorite infrastructures, including VirtualBox, EC2, LXC, bare metal, and many more. Combined with the power of Chef, Metal's \lstinline!machine! resource helps you to describe, version, deploy and manage everything from simple to complex clusters with a common set of tools.
+
+\subsection{Examples}
+
+First of all, we should create file structure of project:
+
+\begin{lstlisting}[language=Bash,label=lst:tat-chef-metal1]
+$ tree -R -a .
+.
+|--.chef
+|.. -- knife.rb
+|--.ruby-version
+|-- Berksfile
+|-- Berksfile.lock
+|-- cluster.rb
+|-- Gemfile
+|-- Gemfile.lock
+|-- destroy_all.rb
+ -- vagrant.rb
+\end{lstlisting}
+
+File \lstinline!knife.rb! contain setting for knife client:
+
+\begin{lstlisting}[language=Ruby,label=lst:tat-chef-metal2]
+# This file exists mainly to ensure we don't pick up knife.rb from anywhere else
+local_mode true
+config_dir "#{File.expand_path('..', __FILE__)}/" # Wherefore art config_dir, chef?
+
+# Chef 11.14 binds to "localhost", which interferes with port forwarding on IPv6 machines for some reason
+begin
+  chef_zero.host '127.0.0.1'
+rescue
+end
+\end{lstlisting}
+
+Chef Metal uses Chef Zero to create cluster of nodes.
+
+Next we should install chef-zero rubygem. Also we should select which provisioner we will use. For our example we will use Vagrant, what is why we need install also chef-metal-vagrant rubygem. In this example uses bundler to install all rubygems. This is content of Gemfile file:
+
+\begin{lstlisting}[language=Ruby,label=lst:tat-chef-metal3]
+source "http://rubygems.org"
+
+gem 'chef-metal'
+gem 'chef-metal-vagrant'
+\end{lstlisting}
+
+And run \lstinline!bundle! command in terminal to install all rubygems.
+
+In this example uses berkshelf to get all needed cookbooks. Content of Berksfile file:
+
+\begin{lstlisting}[language=Ruby,label=lst:tat-chef-metal4]
+source "http://api.berkshelf.com"
+
+cookbook 'apache2'
+cookbook 'mysql'
+\end{lstlisting}
+
+And run \lstinline!berks install && berks vendor cookbooks! command in terminal to install and put all cookbooks to cookbooks directory.
+
+All configuration will contains in files \lstinline!vagrant.rb! (file contain configuration for provisioner):
+
+\begin{lstlisting}[language=Ruby,label=lst:tat-chef-metal5]
+require 'chef_metal_vagrant'
+
+vagrant_box 'precise64' do
+  url 'http://files.vagrantup.com/precise64.box'
+end
+
+with_machine_options :vagrant_options => {
+  'vm.box' => 'precise64'
+}
+\end{lstlisting}
+
+and \lstinline!cluster.rb! (file contain configuration for our cluster):
+
+\begin{lstlisting}[language=Ruby,label=lst:tat-chef-metal6]
+require 'chef_metal'
+
+WEB_NODES = 2
+
+1.upto(WEB_NODES) do |i|
+  machine "web#{i}" do
+    tag 'web'
+    recipe 'apache2'
+    converge true
+  end
+end
+
+machine 'db' do
+  tag 'db'
+  recipe 'mysql::server'
+  converge true
+end
+\end{lstlisting}
+
+By this setting we will create two web nodes and one database node. Now we are ready to create our cluster of nodes:
+
+\begin{lstlisting}[language=Bash,label=lst:tat-chef-metal7]
+$ chef-client -z vagrant.rb cluster.rb
+Starting Chef Client, version 11.14.2
+resolving cookbooks for run list: []
+Synchronizing Cookbooks:
+Compiling Cookbooks...
+[2014-08-02T21:22:49+03:00] WARN: Node alexeys-mbp-2 has an empty run list.
+Converging 2 resources
+Recipe: @recipe_files::/Users/leo/Downloads/chef-metal/vagrant.rb
+  * vagrant_box[precise64] action create (up to date)
+Recipe: @recipe_files::/Users/leo/Downloads/chef-metal/cluster.rb
+  * machine_batch[default] action converge
+
+...
+
+Running handlers complete
+Chef Client finished, 0/18 resources updated in 46.728927972 seconds
+\end{lstlisting}
+
+If you need more web nodes you just need increase \lstinline!WEB_NODES! variable and run Chef Metal again.
+
+To cleanup all nodes I created \lstinline!destroy_all.rb! file:
+
+\begin{lstlisting}[language=Ruby,label=lst:tat-chef-metal8]
+require 'chef_metal'
+
+machine_batch do
+  machines search(:node, '*:*').map { |n| n.name }
+  action :destroy
+end
+\end{lstlisting}
+
+As a result you should see this output:
+
+\begin{lstlisting}[language=Bash,label=lst:tat-chef-metal9]
+$ chef-client -z destroy_all.rb
+Starting Chef Client, version 11.14.2
+resolving cookbooks for run list: []
+Synchronizing Cookbooks:
+Compiling Cookbooks...
+[2014-08-02T21:46:26+03:00] WARN: Node alexeys-mbp-2 has an empty run list.
+Converging 1 resources
+Recipe: @recipe_files::/Users/leo/Downloads/chef-metal/destroy_all.rb
+  * machine_batch[default] action destroy
+    - run vagrant destroy -f db web1 web2 (status was 'running, running, running')
+    - delete node db at http://127.0.0.1:8889
+    - delete client db at http://127.0.0.1:8889
+    - delete file /Users/leo/Downloads/chef-metal/.chef/vms/db.vm
+    - delete node web1 at http://127.0.0.1:8889
+    - delete client web1 at http://127.0.0.1:8889
+    - delete file /Users/leo/Downloads/chef-metal/.chef/vms/web1.vm
+    - delete node web2 at http://127.0.0.1:8889
+    - delete client web2 at http://127.0.0.1:8889
+    - delete file /Users/leo/Downloads/chef-metal/.chef/vms/web2.vm
+
+Running handlers:
+Running handlers complete
+Chef Client finished, 1/1 resources updated in 32.419881 seconds
+\end{lstlisting}
+
+As a result, we have DSL to describe our infrastructure (this is more <<visible>> for DevOps engineers) and can be used to describe, version, deploy and manage everything from simple to complex clusters with a common set of tools. Also Chef Metal is working on top of Chef, so it is very simple to extend and modify your cluster configuration.
