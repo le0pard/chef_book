@@ -1,4 +1,4 @@
-# Cooking Infrastructure by Chef
+# Cooking Infrastructure by Chef [chef.leopard.in.ua](http://chef.leopard.in.ua/)
 
 Book about [Chef (DevOps tool)](http://www.getchef.com/chef/).
 
