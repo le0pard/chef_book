@@ -8,7 +8,7 @@ Book about [Chef (DevOps tool)](http://www.getchef.com/chef/).
 
 ## Generate Epub
 
-    pandoc --smart -t epub3 -s chef.tex -o chef.epub --epub-cover-image=images/cover.jpg --epub-chapter-level=3
+    pandoc --smart -t epub3 -s chef.tex -o chef.epub --epub-cover-image=cover/cover.jpg --epub-chapter-level=3
 
 If you want to see in the output were normal quotes (`U+00ab` &laquo;, `U+00bb` &raquo;), you need to put them first hand because pandoc until it is able to (https://github.com/jgm/pandoc/issues/84). For example, by using vim:
 
