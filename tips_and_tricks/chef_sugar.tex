@@ -1,4 +1,73 @@
 \section{Chef Sugar}
 \label{sec:tat-chef-sugar}
 
-Chef Sugar is a rubygem and Chef recipe that includes series of helpful sugar of the Chef core and other resources to make a cleaner, more lean recipe DSL, enforce DRY principles, and make writing Chef recipes an awesome experience.
+Chef Sugar is a rubygem and Chef recipe that includes series of helpful sugar of the Chef core and other resources to make a cleaner, more lean recipe DSL, enforce DRY principles, and make writing Chef recipes an awesome experience. This is very useful library, which have huge amount of helpers and help for developers to not <<reinvent the wheel>> inside own cookbooks.
+
+\subsection{Usage}
+
+First of all, you should add Chef Sugar inside own cookbook metadata.rb file as dependency:
+
+\begin{lstlisting}[language=Ruby,label=lst:tat-chef-sugar1]
+depends 'chef-sugar'
+\end{lstlisting}
+
+In order to use Chef Sugar in your Chef Recipes, you'll first need to include it:
+
+\begin{lstlisting}[language=Ruby,label=lst:tat-chef-sugar2]
+include_recipe 'chef-sugar'
+\end{lstlisting}
+
+Alternatively you can put it in a base role or recipe and it will be included subsequently.
+
+Requiring the Chef Sugar Gem will automatically extend the Recipe DSL, \lstinline!Chef::Resource! and \lstinline!Chef::Provider! with helpful convenience methods. If you are working outside of the Recipe DSL, you can use the module methods instead of the Recipe DSL. In general, the module methods have the same name as their Recipe DSL counterparts, but require the node object as a parameter. For example:
+
+In recipe:
+
+\begin{lstlisting}[language=Ruby,label=lst:tat-chef-sugar3]
+# cookbook/recipes/default.rb
+do_something if windows?
+\end{lstlisting}
+
+In a library as a singleton:
+
+\begin{lstlisting}[language=Ruby,label=lst:tat-chef-sugar4]
+# cookbook/libraries/default.rb
+def only_on_windows(&block)
+  yield if Chef::Sugar::PlatformFamily.windows?(@node)
+end
+\end{lstlisting}
+
+In a library as a mixin:
+
+\begin{lstlisting}[language=Ruby,label=lst:tat-chef-sugar5]
+# cookbook/libraries/default.rb
+include Chef::Sugar::PlatformFamily
+
+def only_on_windows(&block)
+  yield if windows?(@node)
+end
+\end{lstlisting}
+
+Chef Sugar have huge amount of helper methods, more information about its you can found in \href{https://github.com/sethvargo/chef-sugar#api}{README}. Examples:
+
+\begin{lstlisting}[language=Ruby,label=lst:tat-chef-sugar6]
+execute 'build[my binary]' do
+  command '...'
+  not_if  { _64_bit? } # check system 64 bit
+end
+\end{lstlisting}
+
+\begin{lstlisting}[language=Ruby,label=lst:tat-chef-sugar7]
+if ubuntu? # system is ubuntu
+  execute 'apt-get update'
+end
+\end{lstlisting}
+
+\begin{lstlisting}[language=Ruby,label=lst:tat-chef-sugar8]
+if includes_recipe?('apache2::default') # determines if the current run context includes the recipe
+  apache_module 'my_module' do
+    # ...
+  end
+end
+\end{lstlisting}
+
