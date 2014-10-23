@@ -1,3 +1,3 @@
 Add:
 
- * AWS OpsWork
+ * AWS OpsWorks
