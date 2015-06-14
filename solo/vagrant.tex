@@ -37,7 +37,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 end
 \end{lstlisting}
 
-We can check, what vagrant is working fine by command <<vagrant up>>:
+We can check, that vagrant is working fine by command <<vagrant up>>:
 
 \begin{lstlisting}[label=lst:my-cloud-vagrant4]
 $ vagrant up
@@ -77,7 +77,7 @@ Setting up chef (11.8.2-1.ubuntu.12.04) ...
 Thank you for installing Chef!
 \end{lstlisting}
 
-We used some options for the \lstinline!knife prepare! command. \lstinline!-i! option specify ssh key for machine, \lstinline!-N! option specify node name (if it different from host name) and \lstinline!-p! option specify SSH port. In most cases, this port is 2222, but if you running several machines from vagrant, it will be different. You can read what port is used for SSH by machine from output of command \lstinline!vagrant up!. All this credentials used to login by ssh on the node and install chef client.
+We used some options for the \lstinline!knife prepare! command. \lstinline!-i! option specifies ssh key for machine, \lstinline!-N! option specifies node name (if it different from host name) and \lstinline!-p! option specifies SSH port. In most cases, this port is 2222, but if you running several machines from vagrant, it will be different. You can read what port is used for SSH by machine from output of command \lstinline!vagrant up!. All this credentials used to login by ssh on the node and install chef client.
 
 Basically, to run our kitchen on node we are using \lstinline!knife solo cook! command:
 

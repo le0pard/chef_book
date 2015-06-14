@@ -1,7 +1,7 @@
 \section{Defining nodes}
 \label{sec:solo-node}
 
-Node itself represent any physical, virtual, or cloud machine. In most cases number of nodes in kitchen equal of number of machines in your cloud. To install apache2 to the correct server, we need to create a file in the nodes folder. Basically, this file is named as machine domain. For example, I attach to the machine domain <<web1.example.com>> and create node for it:
+Node itself represent any physical, virtual, or cloud machine. In most cases number of nodes in kitchen equals to the number of machines in your cloud. To install apache2 to the correct server, we need to create a file in the nodes folder. Basically, this file is named as machine domain. For example, I attach to the machine domain <<web1.example.com>> and create node for it:
 
 \begin{lstlisting}[language=JSON,label=lst:my-cloud-node1,title=my-cloud/nodes/web1.example.com.json]
 {
@@ -9,7 +9,7 @@ Node itself represent any physical, virtual, or cloud machine. In most cases num
 }
 \end{lstlisting}
 
-Node file should contain valid JSON document. Main key in this json is \lstinline!run_list!. This key contain array of recipes and roles, which should be executed on machine. It always executed in the same order as listed in this key. As you can see right now \lstinline!run_list! is empty. To install apache2 you need to add the recipe in this array. This information can be found in README of cookbook (if this vendor cookbook well written), in metadata.rb or just open directory recipes - the name of the file will mean recipe name. \lstinline!default.rb! file mean a recipe that will be executed when you call the cookbook in \lstinline!run_list! without designation of recipe. Examples:
+Node file should contain valid JSON document. Main key in this json is \lstinline!run_list!. This key contains array of recipes and roles, which should be executed on machine. It always executed in the same order as listed in this key. As you can see right now \lstinline!run_list! is empty. To install apache2 you need to add the recipe in this array. This information can be found in README of cookbook (if this vendor cookbook well written), in metadata.rb or just open directory recipes - the name of the file will mean recipe name. \lstinline!default.rb! file means a recipe that will be executed when you call the cookbook in \lstinline!run_list! without designation of recipe. Examples:
 
 \begin{lstlisting}[language=JSON,label=lst:my-cloud-node2,title=my-cloud/nodes/web1.example.com.json]
 {
