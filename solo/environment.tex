@@ -22,7 +22,7 @@ We create for our example development environment:
 Let's consider a json structure:
 
 \begin{itemize}
-  \item \lstinline!name! - a unique name of environment
+  \item \lstinline!name! - a unique name of the environment
   \item \lstinline!description! - a description of the environment
   \item \lstinline!chef_type! - this should always be set to environment
   \item \lstinline!json_class! - this should always be set to Chef::Environment
@@ -30,7 +30,7 @@ Let's consider a json structure:
   \item \lstinline!override_attributes! - a set of attributes that should be applied to all nodes, even if the node already has a value for an attribute. This is useful for ensuring that certain attributes always have specific values. This attribute is optional
 \end{itemize}
 
-As you can see environment doesn't have \lstinline!run_list!, but it have attributes. Attributes in most cases contain information, which specific for environment: connection information to databases (hostname, port, etc.), cluster settings for database or queue, etc.
+As you can see environment doesn't have \lstinline!run_list!, but it has attributes. Attributes in most cases contain information, which specific for environment: connection information to databases (hostname, port, etc.), cluster settings for database or queue, etc.
 
 Now we can activate this development environment in Vagrantfile:
 
@@ -79,4 +79,4 @@ and use command \lstinline!knife solo cook! without \lstinline!-E! argument.
 
 Once an environment exists on the server, a node can be associated with that environment using the \lstinline!chef_environment! method of <<node>> object in Ruby (I'll consider this in the next chapters).
 
-As you can see in Chef Solo environment can be used only for setting attributes. In Chef Server it have additional feature for locking cookbook versions, which we will consider in <<\ref{sec:server-environment}~\nameref{sec:server-environment}>> chapter.
+As you can see in Chef Solo environment can be used only for setting attributes. In Chef Server it has additional feature for locking cookbook versions, which we will consider in <<\ref{sec:server-environment}~\nameref{sec:server-environment}>> chapter.
