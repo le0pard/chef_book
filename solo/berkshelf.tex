@@ -1,7 +1,7 @@
 \section{Vendor cookbooks and berkshelf}
 \label{sec:solo-berkshelf}
 
-Suppose, that our task to install Apache2 on node. For this purpose we can use vendor cookbook through berkshelf. Huge amount cookbooks you can find at \href{https://supermarket.getchef.com/cookbooks-directory}{Chef community website}. To install Apache2 cookbook we need add it to Berksfile:
+Suppose, that our task is to install Apache2 on node. For this purpose we can use vendor cookbook through berkshelf. Huge amount of cookbooks you can find at \href{https://supermarket.getchef.com/cookbooks-directory}{Chef community website}. To install Apache2 cookbook we need add it to Berksfile:
 
 \begin{lstlisting}[label=lst:my-cloud-berkshelf1,title=my-cloud/Berksfile]
 source "http://api.berkshelf.com"
@@ -16,7 +16,7 @@ $ berks install
 Using apache2 (1.7.0)
 \end{lstlisting}
 
-By default, you will not find this cookbook in <<cookbooks>> directory. Berkshelf install cookbooks in <<~/.berkshelf>> directory (to avoid duplication of cookbooks, if you have several chef-repo). To install it in special path you can use \lstinline!vendor! command:
+By default, you will not find this cookbook in <<cookbooks>> directory. Berkshelf installs cookbooks in <<~/.berkshelf>> directory (to avoid duplication of cookbooks, if you have several chef-repo). To install it in a special path you can use \lstinline!vendor! command:
 
 \begin{lstlisting}[language=Bash,label=lst:my-cloud-berkshelf3]
 $ berks vendor cookbooks
