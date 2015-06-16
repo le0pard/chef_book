@@ -251,7 +251,7 @@ defaults
 <% end %>
 \end{lstlisting}
 
-As you can see, this recipe install and configure haproxy. It using \lstinline!search! command to get all nodes with role \lstinline!web! (by default attributes) and chef environment. After this it collect from all selected nodes hostname and ip address. This data is used to create config for haproxy. This is very useful way, because if you will add or remove node with role \lstinline!web! from Chef server, it will automatically update haproxy config. But because we using \lstinline!search! command, we need test our cookbook with Chef Zero. Here how it look our tests:
+As you can see, this recipe install and configure haproxy. It is using \lstinline!search! command to get all nodes with role \lstinline!web! (by default attributes) and chef environment. After this it collects from all selected nodes hostname and ip address. This data is used to create config for haproxy. This is very useful way, because if you add or remove node with role \lstinline!web! from Chef server, it will automatically update haproxy config. But because we are using \lstinline!search! command, we need test our cookbook with Chef Zero. Here how it looks:
 
 \begin{lstlisting}[label=lst:testing-chef-zero15]
 require 'spec_helper'

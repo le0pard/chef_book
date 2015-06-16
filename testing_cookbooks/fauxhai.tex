@@ -1,7 +1,7 @@
 \section{Fauxhai}
 \label{sec:testing-fauxhai}
 
-Ohai is a tool that is used to detect attributes on a node, and then provide these attributes to the chef-client at the start of every chef-client run. Ohai is required by the chef-client and must be present on a node. It's awesome, but this can be problem for testing. What is why exist Fauxhai. \href{http://technology.customink.com/fauxhai/}{Fauxhai} is a gem for mocking out ohai data in your chef testing.
+Ohai is a tool that is used to detect attributes on a node, and then provide these attributes to the chef-client at the start of every chef-client run. Ohai is required by the chef-client and must be present on a node. It's awesome, but this can be a problem for testing. That is why exists Fauxhai. \href{http://technology.customink.com/fauxhai/}{Fauxhai} is a gem for mocking out ohai data in your chef testing.
 
 \subsection{Testing}
 
@@ -31,7 +31,7 @@ describe 'my_cool_app::default' do
 end
 \end{lstlisting}
 
-As you can see from example, we mock platform, fqdn and cpu numbers from Ohai attributes. And in our recipe we create \lstinline!/tmp/cpu_count! file, which contain number of cpu on node. By tests we check what this works on different values of Ohai attributes.
+As you can see from example, we mock platform, fqdn and cpu numbers from Ohai attributes. And in our recipe we create \lstinline!/tmp/cpu_count! file, which contains number of cpu on node. By tests we check what this works on different values of Ohai attributes.
 
 Also we can set node attributes by \lstinline!ChefSpec::Runner!:
 
