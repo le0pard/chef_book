@@ -42,7 +42,7 @@ $ berks install --path cookbooks
 Using chef-server (2.0.1)
 \end{lstlisting}
 
-Now we should configure a Chef Solo node for our Chef Server. From chapter <<\ref{sec:solo-node}~\nameref{sec:solo-node}>> you should know how to define node.
+Now we should configure a Chef Solo node for our Chef Server. From chapter <<\ref{sec:solo-node}~\nameref{sec:solo-node}>> you should know how to define a node.
 
 \begin{lstlisting}[language=JSON,label=lst:my-server-cloud-installation4,title=my-server-cloud/nodes/chef-server.example.com.json]
 {
@@ -136,6 +136,6 @@ We can check Chef Server web interface by \href{https://10.33.33.33}{https://10.
   \label{fig:chef-server-versions}
 \end{figure}
 
-I most cases web interface give information about your cloud, which you can get from knife tool. What is why generally it disabled by attribute <<chef-server-webui.enable = false>>.
+In most cases web interface gives information about your cloud, which you can get from knife tool. That is why generally it is disabled by attribute <<chef-server-webui.enable = false>>.
 
 Next we should configure our knife to work with this Chef Server.
