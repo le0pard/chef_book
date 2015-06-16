@@ -1,7 +1,7 @@
 \section{Cookbook file organization}
 \label{sec:cookbook-files}
 
-For beginning we will generate cookbook by knife or berks. You can install both by bundler (we already did this in our Chef server kitchens). So, let's create <<my\_cool\_app>> cookbook inside <<site-cookbooks>> dir:
+At the beginning we will generate cookbook by knife or berks. You can install both by bundler (we already did this in our Chef server kitchens). So, let's create <<my\_cool\_app>> cookbook inside <<site-cookbooks>> dir:
 
 \begin{lstlisting}[language=Bash,label=lst:cookbook-organization1]
 $ cd site-cookbooks
@@ -48,14 +48,14 @@ Let's consider this structure:
   \item \lstinline!README.md! - file contains information about cookbook. <<.md>> mean \href{http://daringfireball.net/projects/markdown/syntax}{markdown} syntax
   \item \lstinline!Thorfile! - file include tasks for thor gem (toolkit for building command-line interfaces, used for testing)
   \item \lstinline!Vagrantfile! - file describe the type of machine required for a cookbook for vagrant
-  \item \lstinline!attributes! - this folder contain ruby files with default cookbook attributes, which you can redefine in environment, role or node attributes
+  \item \lstinline!attributes! - this folder contains ruby files with default cookbook attributes, which you can redefine in environment, role or node attributes
   \item \lstinline!chefignore! - specifies intentionally untracked files to ignore by Chef, Knife
-  \item \lstinline!definitions! - this folder contain ruby files which is used to declare resources so they can be added to the resource collection
-  \item \lstinline!files! - this folder contain files, which just need transfer to node (used by command \lstinline!cookbook_file!)
-  \item \lstinline!libraries! - this folder contain ruby files with Ruby code to be included in a cookbook, either as a way to extend the classes used by the chef-client or to implement a new class directly
+  \item \lstinline!definitions! - this folder contains ruby files which is used to declare resources so they can be added to the resource collection
+  \item \lstinline!files! - this folder contains files, which just need transfer to node (used by command \lstinline!cookbook_file!)
+  \item \lstinline!libraries! - this folder contains ruby files with Ruby code to be included in a cookbook, either as a way to extend the classes used by the chef-client or to implement a new class directly
   \item \lstinline!metadata.rb! - a file, which contain all information (metadata) about the cookbook: name, dependencies, etc. (it is like gemset for ruby gems, package.json for npm, etc)
-  \item \lstinline!providers! - this folder contain providers for chef resources
-  \item \lstinline!recipes! - this folder contain recipes of this cookbook
-  \item \lstinline!resources! - this folder contain resources for chef (like build-in cron, deploy, etc)
-  \item \lstinline!templates! - this folder contain files written in a markup language that allows the contents of a file to be dynamically generated based on variables or complex logic. Used an Embedded Ruby (ERB) templates.
+  \item \lstinline!providers! - this folder contains providers for chef resources
+  \item \lstinline!recipes! - this folder contains recipes of this cookbook
+  \item \lstinline!resources! - this folder contains resources for chef (like build-in cron, deploy, etc)
+  \item \lstinline!templates! - this folder contains files written in a markup language that allows the contents of a file to be dynamically generated based on variables or complex logic. Used an Embedded Ruby (ERB) templates.
 \end{itemize}

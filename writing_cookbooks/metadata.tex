@@ -1,7 +1,7 @@
 \section{Metadata}
 \label{sec:cookbook-metadata}
 
-Metadata is file, which contain all main information about cookbook. Let's consider our generated example:
+Metadata is a file, which contains all main information about cookbook. Let's consider our generated example:
 
 \begin{lstlisting}[label=lst:cookbook-metadata1,title=my-server-cloud/site-cookbooks/my\_cool\_app/metadata.rb]
 name             'my_cool_app'
@@ -21,7 +21,7 @@ This file written on Ruby and can have such settings:
   \item \lstinline!maintainer_email! - the email address for the person responsible for maintaining a cookbook. Only one email can be listed here
   \item \lstinline!license! - the type of license under which a cookbook is distributed: <<Apache v2.0>>, <<GPL v2>>, <<GPL v3>>, <<MIT>>, or license <<Proprietary - All Rights Reserved>> (default)
   \item \lstinline!description! - a short description of a cookbook and its functionality
-  \item \lstinline!long_description! - a longer description that ideally contains full instructions on the proper use of a cookbook, including definitions, libraries, dependencies, and so on. In example the contents pulled from <<README.md>> file
+  \item \lstinline!long_description! - a longer description that ideally contains full instructions on the proper use of a cookbook, including definitions, libraries, dependencies, and so on. In the example the contents pulled from <<README.md>> file
   \item \lstinline!version! - the current version of a cookbook. Version numbers always follow a simple three-number version sequence
   \item \lstinline!attribute! - the list of attributes that are required to configure a cookbook
   \item \lstinline!depends! - indicates that a cookbook has a dependency on another cookbook

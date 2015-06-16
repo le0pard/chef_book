@@ -90,7 +90,7 @@ my_cool_app_know_host 'github.com' do
 end
 \end{lstlisting}
 
-In the second example above, the \lstinline!:host! attribute wll be set to <<github.com>>.
+In the second example above, the \lstinline!:host! attribute will be set to <<github.com>>.
 
 Also, on line 4, we are defining the \lstinline!kind_of! validation parameter to tell the resource which kind of data we should expect (in this case, a string), whether this attribute is required (yes). Line 5 defines a \lstinline!:key! attribute, which is an optional string with no default. Line 6 defines a \lstinline!:port! attribute, a Ruby Fixnum (i.e. an integer) with a default of 22, which is the default when you create a known host. Line 7 defines a \lstinline!:known_hosts_file! attribute, a string with a default of \lstinline!/etc/ssh/ssh_known_hosts!, which is the default file with known hosts for ssh client.
 
