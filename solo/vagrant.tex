@@ -60,10 +60,28 @@ Bringing machine 'default' up with 'virtualbox' provider...
 
 After this you can use command \lstinline!vagrant ssh! to SSH into a running Vagrant machine and give you access to a shell. Command <<vagrant halt>> shuts down the running machine Vagrant is managing. \lstinline!vagrant destroy! command stops the running machine Vagrant is managing and destroys all resources that were created during the machine creation process.
 
+Tell vagrant to output the ssh connection details by doing:
+
+\begin{lstlisting}[label=lst:my-cloud-vagrant-ssh-config]
+$ vagrant ssh-config
+Host default
+  HostName 127.0.0.1
+  User vagrant
+  Port 2222
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  PasswordAuthentication no
+  IdentityFile /../.vagrant/machines/default/virtualbox/private_key
+  IdentitiesOnly yes
+  LogLevel FATAL
+\end{lstlisting}
+
+Vagrant 1.7 changed how it handled private ssh keys. Starting with 1.7, Vagrant generates a new private key for each machine. Earlier versions used the same key, which was in the default location of \lstinline!~/.vagrant.d/insecure_private_key!. The examples in this book are from the newer version of Vagrant.
+
 In most cases, your machine will not contain chef client. We should install it before using our kitchen. As you remember, we have knife with command \lstinline!prepare!. Let use this command:
 
 \begin{lstlisting}[label=lst:my-cloud-vagrant5]
-$ knife solo prepare vagrant@localhost -i ~/.vagrant.d/insecure_private_key -p 2222 -N web1.example.com
+$ knife solo prepare vagrant@localhost -i ./.vagrant/machines/default/virtualbox/private_key -p 2222 -N web1.example.com
 Bootstrapping Chef...
 --2013-12-27 19:12:56--  https://www.opscode.com/chef/install.sh
 Resolving www.opscode.com (www.opscode.com)... 184.106.28.91
@@ -82,7 +100,7 @@ We used some options for the \lstinline!knife prepare! command. \lstinline!-i! o
 Basically, to run our kitchen on node we are using \lstinline!knife solo cook! command:
 
 \begin{lstlisting}[label=lst:my-cloud-vagrant11]
-$ knife solo cook vagrant@localhost -i ~/.vagrant.d/insecure_private_key -p 2222 -N web1.example.com
+$ knife solo cook vagrant@localhost -i ./.vagrant/machines/default/virtualbox/private_key -p 2222 -N web1.example.com
 Running Chef on localhost...
 Checking Chef version...
 Installing Berkshelf cookbooks to 'cookbooks'...

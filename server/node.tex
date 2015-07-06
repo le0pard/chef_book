@@ -34,7 +34,7 @@ Bringing machine 'chef_client' up with 'virtualbox' provider...
 And now we can bootstrap node:
 
 \begin{lstlisting}[language=Bash,label=lst:my-server-cloud-node3]
-$ knife bootstrap localhost -x vagrant -p 2200 -i ~/.vagrant.d/insecure_private_key -N first.example.com --sudo
+$ knife bootstrap localhost -x vagrant -p 2200 -i ./.vagrant/machines/default/virtualbox/private_key -N first.example.com --sudo
 Bootstrapping Chef on localhost
 localhost --2014-01-05 16:01:33--  https://www.opscode.com/chef/install.sh
 ...

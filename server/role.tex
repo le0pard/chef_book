@@ -75,7 +75,7 @@ Next we should use \lstinline!knife ssh! command to do something on nodes. The \
 
 \begin{lstlisting}[language=Bash,label=lst:my-serer-cloud-role5]
 // execute on 'first.example.com' chef-client
-$ knife ssh 'name:first.example.com' 'sudo chef-client' -i ~/.vagrant.d/insecure_private_key -x vagrant
+$ knife ssh 'name:first.example.com' 'sudo chef-client' -i ./.vagrant/machines/default/virtualbox/private_key -x vagrant
 10.33.33.34 Starting Chef Client, version 11.8.2
 10.33.33.34 resolving cookbooks for run list: ["nginx::source"]
 ...
