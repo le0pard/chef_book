@@ -1,0 +1,9 @@
+provides "system_node_js"
+provides "system_node_js/version"
+
+system_node_js Mash.new unless system_node_js
+system_node_js[:version] = nil unless system_node_js[:version]
+
+status, stdout, stderr = run_command(:no_status_check => true, :command => "<%= @node_js_bin %> --version")
+
+system_node_js[:version] = stdout[1..-1] if 0 == status

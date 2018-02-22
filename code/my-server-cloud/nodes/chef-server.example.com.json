@@ -1,0 +1,16 @@
+{
+  "fqdn": "10.33.33.33",
+  "chef-server": {
+    "api_fqdn": "10.33.33.33",
+    "version": "latest",
+    "configuration": {
+      "notification_email": "notify@example.com",
+      "chef-server-webui": {
+        "enable": true
+      }
+    }
+  },
+  "run_list": [
+    "recipe[chef-server]"
+  ]
+}

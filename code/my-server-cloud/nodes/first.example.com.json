@@ -1,0 +1,14 @@
+{
+  "name": "first.example.com",
+  "json_class": "Chef::Node",
+  "chef_type": "node",
+  "normal": {
+    "fqdn": "10.33.33.34"
+  },
+  "default": {},
+  "override": {},
+  "run_list": [
+    "role[chef-client]",
+    "role[nginx]"
+  ]
+}

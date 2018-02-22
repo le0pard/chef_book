@@ -1,0 +1,2 @@
+chefspec:     bundle exec rspec --color
+kitchen:      bundle exec thor kitchen:default-ubuntu-1204

@@ -1,0 +1,6 @@
+server {
+    listen 80;
+    server_name <%= node['my_cool_app']['web_host'] %>;
+    charset utf-8;
+    root <%= node['my_cool_app']['web_dir'] %>;
+}

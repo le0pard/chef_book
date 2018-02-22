@@ -1,0 +1,1 @@
+{"name":"data_bag_item_passwords_mysql","json_class":"Chef::DataBagItem","chef_type":"data_bag_item","data_bag":"passwords","raw_data":{"id":"mysql","password":{"encrypted_data":"qsoqyxXYSrQ29EJZZ8dPLx3dhlDsVpalLmkm5IDr4jk=\n","iv":"QwXUtR8P5/5e7xb+M0lgJw==\n","version":1,"cipher":"aes-256-cbc"}}}

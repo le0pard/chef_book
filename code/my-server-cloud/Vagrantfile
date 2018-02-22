@@ -1,0 +1,58 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'chef'
+require 'json'
+
+Chef::Config.from_file(File.join(File.dirname(__FILE__), '.chef', 'knife.rb'))
+
+chef_server_json = JSON.parse(Pathname(__FILE__).dirname.join('nodes', 'chef-server.example.com.json').read)
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.define :chef_server do |chef_server|
+    chef_server.vm.box = "precise64"
+    chef_server.vm.box_url = "http://files.vagrantup.com/precise64.box"
+    chef_server.vm.network "private_network", ip: "10.33.33.33"
+
+    config.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--cpus", 2]
+      vb.customize ["modifyvm", :id, "--memory", 1024]
+    end
+
+    chef_server.vm.provision :chef_solo do |chef|
+      chef.cookbooks_path = Chef::Config[:cookbook_path]
+      chef.roles_path = Chef::Config[:role_path]
+      chef.data_bags_path = Chef::Config[:data_bag_path]
+      chef.environments_path = Chef::Config[:environment_path]
+
+      chef.run_list = chef_server_json.delete('run_list')
+      chef.json = chef_server_json
+    end
+  end
+
+  config.vm.define :chef_first_client do |chef_client|
+    chef_client.vm.box = "precise64"
+    chef_client.vm.box_url = "http://files.vagrantup.com/precise64.box"
+    chef_client.vm.network "private_network", ip: "10.33.33.34"
+  end
+
+  config.vm.define :chef_second_client do |chef_client|
+    chef_client.vm.box = "precise64"
+    chef_client.vm.box_url = "http://files.vagrantup.com/precise64.box"
+    chef_client.vm.network "private_network", ip: "10.33.33.35"
+    chef_client.vm.provision :chef_client do |chef|
+      chef.chef_server_url = Chef::Config[:chef_server_url]
+      chef.validation_key_path = Chef::Config[:validation_key]
+      chef.validation_client_name = Chef::Config[:validation_client_name]
+      chef.node_name = 'second.example.com'
+
+      chef.delete_node = true
+      chef.delete_client = true
+    end
+  end
+
+end

@@ -1,0 +1,6 @@
+source "http://api.berkshelf.com"
+
+cookbook 'chef-server'
+cookbook 'nginx'
+cookbook 'yum', '~> 3.0'
+cookbook 'chef-client'

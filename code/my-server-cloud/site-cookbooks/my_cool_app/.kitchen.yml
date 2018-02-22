@@ -1,0 +1,39 @@
+---
+driver:
+  name: vagrant
+  customize:
+    memory: 1024
+  driver_config:
+    require_chef_omnibus: true
+
+provisioner:
+  name: chef_zero
+  roles_path: "test/chef-zero/roles"
+  environments_path: "test/chef-zero/environments"
+  nodes_path: "test/chef-zero/nodes"
+  client_rb:
+    environment: test
+
+platforms:
+  - name: ubuntu-12.04
+  - name: ubuntu-10.04
+  - name: centos-6.4
+
+suites:
+  - name: default
+    run_list:
+      - recipe[my_cool_app::default]
+      - recipe[minitest-handler]
+    attributes:
+  - name: node
+    run_list:
+      - recipe[my_cool_app::default]
+      - recipe[my_cool_app::node]
+    attributes:
+  - name: haproxy
+    run_list:
+      - recipe[my_cool_app::haproxy]
+    attributes:
+    excludes:
+      - centos-6.4
+

@@ -1,0 +1,1 @@
+default['my_cool_app']['haproxy']['app_server_role']       = 'web'

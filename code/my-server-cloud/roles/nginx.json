@@ -1,0 +1,21 @@
+{
+  "name": "nginx",
+  "description": "The base role for systems that serve web server",
+  "chef_type": "role",
+  "json_class": "Chef::Role",
+  "default_attributes": {
+    "nginx": {
+      "install_method": "source",
+      "version": "1.6.0",
+      "default_site_enabled": true,
+      "source": {
+        "url": "http://nginx.org/download/nginx-1.6.0.tar.gz"
+      },
+      "worker_rlimit_nofile": 30000,
+      "worker_connections": 4000
+    }
+  },
+  "run_list": [
+    "recipe[nginx]"
+  ]
+}
