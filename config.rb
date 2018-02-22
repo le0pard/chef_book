@@ -118,8 +118,8 @@ end
 
 # copy code
 after_build do |builder|
-  FileUtils.cp_r File.join(config[:source], 'code'), File.join(config[:build_dir], 'code')
-  builder.say_status :chef_code, 'Chef code copied'
+  FileUtils.cp_r File.join(config[:source], 'code'), File.join(config[:build_dir])
+  builder.thor.say_status :chef_code, 'Chef code copied'
 end
 
 # deploy
