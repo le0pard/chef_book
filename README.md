@@ -2,21 +2,14 @@
 
 Book about [Chef (DevOps tool)](http://www.getchef.com/chef/).
 
+## Pdf and html5 builds
+
+[Latest releases](https://github.com/le0pard/chef_book/releases)
+
 ## Generate HTML
 
-    pandoc -s -S --toc --latexmathml --highlight-style pygments -t html5 -s chef.tex -o index.html
+    pdf2htmlEX --zoom 1.3 --embed CFIJO chef.pdf
 
-## Generate Epub
+## License
 
-    pandoc --smart -t epub3 -s chef.tex -o chef.epub --epub-cover-image=cover/cover.jpg --epub-chapter-level=3
-
-If you want to see in the output were normal quotes (`U+00ab` &laquo;, `U+00bb` &raquo;), you need to put them first hand because pandoc until it is able to (https://github.com/jgm/pandoc/issues/84). For example, by using vim:
-
-    vim -e - $(find . -name "*.tex") << EOF
-    :bufdo %s/<</\\=nr2char("0x00ab")/ge | %s/>>/\\=nr2char("0x00bb")/ge | update
-    EOF
-
-
-## Mobi
-
-http://www.epub2mobi.com/
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
