@@ -1,8 +1,6 @@
 # encoding: utf-8
 Encoding.default_external = Encoding::UTF_8
 Encoding.default_internal = Encoding::UTF_8
-
-Time.zone = "Kyiv"
 ###
 # Blog settings
 ###
@@ -49,6 +47,8 @@ helpers do
   end
 end
 
+ignore "code/*" # ignore source code
+
 # Automatic image dimensions on image_tag helper
 # activate :automatic_image_sizes
 
@@ -65,46 +65,38 @@ end
 set :css_dir, 'stylesheets'
 set :js_dir, 'javascripts'
 set :images_dir, 'images'
-set :markdown_engine, :redcarpet
+set :markdown_engine, :kramdown
 set :markdown, filter_html: false, fenced_code_blocks: true, smartypants: true
-set :encoding, 'utf-8'
+set :encoding, "utf-8"
 
-activate :autoprefixer do |config|
-  config.browsers = ['last 2 versions', '> 1%']
-  config.cascade  = false
+activate :sprockets do |c|
+  c.expose_middleman_helpers = true
 end
 
-ignore "code/*" # ignore source code
+if defined?(RailsAssets)
+  RailsAssets.load_paths.each do |path|
+    sprockets.append_path path
+  end
+end
+
+activate :autoprefixer do |config|
+  config.browsers = ['last 2 versions']
+end
 
 # Build-specific configuration
 configure :build do
   # For example, change the Compass output style for deployment
   activate :minify_css
-
   # Minify Javascript on build
   activate :minify_javascript
-
-  # Enable cache buster
-  # activate :cache_buster
-
-  # Use relative URLs
-  # activate :relative_assets
-
-  # Compress PNGs after build
-  # First: gem install middleman-smusher
-  #require "middleman-smusher"
-  #activate :smusher
-
-  # Or use a different image path
-  # set :http_path, "/Content/images/"
-  #
-  activate :asset_hash
+  # assets hash
+  activate :asset_hash, ignore: [/^html\//]
   # min html
   activate :minify_html
 
   activate :favicon_maker do |f|
-    f.template_dir  = File.join(root, 'source/images/favicons')
-    f.output_dir    = File.join(root, 'build/images/favicons')
+    f.template_dir  = 'source/images/favicons'
+    f.output_dir    = 'build/images/favicons'
     f.icons = {
       "favicon_base.png" => [
         { icon: "apple-touch-icon-152x152-precomposed.png", size: "152x152" },
@@ -132,7 +124,7 @@ end
 
 # deploy
 activate :deploy do |deploy|
-  deploy.method = :git
+  deploy.deploy_method = :git
   deploy.branch = "gh-pages"
   deploy.clean = true
 end
